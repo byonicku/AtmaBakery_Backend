@@ -17,4 +17,9 @@ class BahanBaku extends Model
         'stok',
         'satuan',
     ];
+
+    public function resep()
+    {
+        return $this->hasMany(Resep::class, 'id_bahan_baku', 'id_bahan_baku');
+    }
 }
