@@ -66,7 +66,10 @@ class UserAuthController extends Controller
             'password' => 'required',
         ]);
 
-        $user = $request->all();
+        $user = [
+            'email' => $request->email,
+            'password' => $request->password,
+        ];
 
         if (!Auth::attempt($user)) {
             return response()->json([
