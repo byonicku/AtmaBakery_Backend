@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -21,11 +20,12 @@ class User extends Authenticatable
 
     protected $fillable = [
         'id_role',
-        'name',
+        'nama',
         'email',
         'password',
         'no_telp',
         'tanggal_lahir',
+        'verify_key',
     ];
 
     /**
