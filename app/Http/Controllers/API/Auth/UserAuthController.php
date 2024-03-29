@@ -88,6 +88,7 @@ class UserAuthController extends Controller
         }
 
         return response()->json([
+            'message' => 'Successfully logged in',
             'data' => $user,
             'token' => $user->createToken('login', ['role:user'])->plainTextToken
         ], 200);
