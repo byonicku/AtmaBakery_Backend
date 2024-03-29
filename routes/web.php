@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\Auth\UserAuthController;
 
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -16,3 +17,5 @@ Route::get('/verify/failed', function () {
 Route::get('/verify/success', function () {
     return view('SuccessVerify');
 });
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
