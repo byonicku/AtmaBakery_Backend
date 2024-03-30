@@ -29,7 +29,7 @@
         </div>
         <div style="max-width: 25%;" class="mt-4">
             <h4>
-                Akun anda berhasil terverifikasi.
+                Invalid, akun anda sudah terverifikasi sebelumnya.
             </h4>
         </div>
     </div>

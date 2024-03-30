@@ -27,7 +27,7 @@
         </div>
         <div style="max-width: 25%;" class="mt-4">
             <h4>
-                Your account has failed to verify. Please Try Again Later or Contact Our Customer Service.
+                Akun anda gagal terverifikasi. Token tidak valid atau sudah kadaluarsa.
             </h4>
         </div>
     </div>

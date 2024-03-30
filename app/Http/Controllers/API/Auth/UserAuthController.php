@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Mail\MailSend;
+use App\Notifications\EmailVerify;
 use Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
+use Notification;
 
 class UserAuthController extends Controller
 {
@@ -46,12 +48,13 @@ class UserAuthController extends Controller
         $details = [
             'nama' => $request->nama,
             'email' => $request->email,
-            'website' => 'Atma Kitchen',
+            'website' => 'Atma Bakery',
             'datetime' => date('Y-m-d H:i:s'),
-            'url' => request()->getHttpHost() . '/verify/' . $str,
+            'url' => url('/verify/' . $str),
         ];
 
-        Mail::to($request->email)->send(new MailSend($details));
+        Notification::route('mail', $request->email)
+            ->notify(new EmailVerify($details));
 
         return response()->json([
             'message' => 'Successfully registered. Please check your email to verify your account',
@@ -119,7 +122,7 @@ class UserAuthController extends Controller
             ->exists();
 
         if ($checkAlready) {
-            return View::make('SuccessVerify');
+            return View::make('SuccessVerifyAlready');
         }
 
         User::where('verify_key', $verify_key)
