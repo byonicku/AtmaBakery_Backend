@@ -18,14 +18,16 @@ return new class extends Migration
             $table->string('id_role')->index('id_role');
             $table->string('nama');
             $table->string('no_telp', 13);
-            $table->string('email')->unique();
-            $table->integer('poin')->nullable();
-            $table->float('saldo')->nullable();
+            $table->string('email')->unique('email_unique');
+            $table->integer('poin')->nullable()->default(0);
+            $table->float('saldo')->nullable()->default(0);
             $table->string('password');
             $table->date('tanggal_lahir');
+            $table->boolean('active')->default(false);
+            $table->string('verify_key', 100);
+            $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
-            $table->timestamp('email_verified_at')->nullable();
         });
     }
 

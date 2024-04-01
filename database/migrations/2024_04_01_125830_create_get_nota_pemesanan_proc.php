@@ -31,11 +31,7 @@ BEGIN
         UNION ALL
         SELECT 'tipe_delivery' AS nama, tipe_delivery AS data_pemesanan FROM transaksi WHERE no_nota = no_nota_in
         UNION ALL
-        SELECT nama_produk AS nama, jumlah * harga AS data_pemesanan FROM produk p JOIN detail_transaksi dt ON p.id_produk = dt.id_produk WHERE no_nota = no_nota_in
-        UNION ALL
-        SELECT nama_hampers AS nama, jumlah * harga AS data_pemesanan FROM hampers h JOIN detail_transaksi dt ON h.id_hampers = dt.id_hampers WHERE no_nota = no_nota_in
-        UNION ALL
-                SELECT 'penggunaan_poin' AS nama, COALESCE(penggunaan_poin, 0) AS data_pemesanan FROM transaksi WHERE no_nota = no_nota_in
+        SELECT 'penggunaan_poin' AS nama, COALESCE(penggunaan_poin, 0) AS data_pemesanan FROM transaksi WHERE no_nota = no_nota_in
         UNION ALL
         SELECT 'total' AS nama, total AS data_pemesanan FROM transaksi WHERE no_nota = no_nota_in
         UNION ALL

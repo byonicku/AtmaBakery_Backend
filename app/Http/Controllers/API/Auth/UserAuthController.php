@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\API\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Mail\MailSend;
 use App\Notifications\EmailVerify;
 use Auth;
 use Illuminate\Http\Request;
@@ -12,20 +11,27 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\View;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
+
 use Notification;
 
 class UserAuthController extends Controller
 {
     public function register(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'nama' => 'required',
             'email' => 'required|email|unique:user',
             'password' => 'required',
             'no_telp' => 'required|digits_between:8,11',
             'tanggal_lahir' => 'required|date',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => $validator->errors(),
+            ], 400);
+        }
 
         if (User::where('email', $request->email)->exists()) {
             return response()->json([
@@ -64,10 +70,16 @@ class UserAuthController extends Controller
     }
     public function login(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => $validator->errors(),
+            ], 400);
+        }
 
         $user = [
             'email' => $request->email,

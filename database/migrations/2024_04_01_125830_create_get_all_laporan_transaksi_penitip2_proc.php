@@ -14,7 +14,7 @@ return new class extends Migration
     {
         DB::unprepared("CREATE DEFINER=`root`@`localhost` PROCEDURE `get_all_laporan_transaksi_penitip2`(IN `month_param` INT, IN `year_param` INT)
 BEGIN
-        SELECT
+        SELECT 
         p.id_penitip AS \"ID Penitip\",
         nama AS \"Nama Penitip\",
         p.nama_produk AS \"Nama Produk\",
@@ -27,10 +27,10 @@ BEGIN
     JOIN detail_transaksi dt ON t.no_nota = dt.no_nota
     JOIN produk p ON p.id_produk = dt.id_produk
     JOIN penitip pt ON pt.id_penitip = p.id_penitip
-    WHERE
-        MONTH(t.tanggal_lunas) = month_param
+    WHERE 
+        MONTH(t.tanggal_lunas) = month_param 
         AND YEAR(t.tanggal_lunas) = year_param
-    GROUP BY
+    GROUP BY 
     	p.id_penitip, nama, p.nama_produk, harga;
 END");
     }
