@@ -8,6 +8,7 @@ class Kategori extends Model
 {
     protected $table = 'kategori';
     protected $primaryKey = 'id_kategori';
+    protected $timestamps = false;
 
     protected $fillable = [
         'id_kategori',

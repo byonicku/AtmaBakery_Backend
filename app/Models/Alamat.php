@@ -8,6 +8,7 @@ class Alamat extends Model
 {
     protected $table = 'alamat';
     protected $primaryKey = 'id_alamat';
+    protected $timestamps = false;
 
     protected $fillable = [
         'id_alamat',

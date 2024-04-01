@@ -8,7 +8,7 @@ class Resep extends Model
 {
     protected $table = 'resep';
     protected $primaryKey = 'id_resep';
-
+    protected $timestamps = false;
     protected $fillable = [
         'id_resep',
         'id_produk',

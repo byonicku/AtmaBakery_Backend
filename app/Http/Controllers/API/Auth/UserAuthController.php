@@ -94,7 +94,7 @@ class UserAuthController extends Controller
 
         $user = Auth::user();
 
-        if (!$user->active && $user->role == 'CUST') {
+        if (!$user->active && $user->id_role == 'CUST') {
             Auth::logout();
 
             return response()->json([
@@ -102,20 +102,45 @@ class UserAuthController extends Controller
             ], 400);
         }
 
+        $abilities = [];
+
+        switch($user->id_role){
+            case 'ADM':
+                $abilities[] = "admin";
+                break;
+            case 'MO':
+                $abilities[] = "mo";
+                break;
+            case 'OWN':
+                $abilities[] = "owner";
+                break;
+            case 'CUST':
+                $abilities[] = "user";
+                break;
+            default :
+                return response()->json([
+                    'message' => 'Login Failed, Role not found',
+                ], 400);
+        }
+
         return response()->json([
             'message' => 'Successfully logged in',
             'data' => $user,
-            'token' => $user->createToken('login', ['role:user'])->plainTextToken
+            'token' => $user->createToken('login', $abilities)->plainTextToken
         ], 200);
     }
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        if ($request->user()->currentAccessToken()->delete()) {
+            return response()->json([
+                'message' => 'Successfully logged out',
+            ], 200);
+        }
 
         return response()->json([
-            'message' => 'Successfully logged out',
-        ], 200);
+            'message' => 'Failed to log out',
+        ], 400);
     }
 
     public function verify($verify_key)

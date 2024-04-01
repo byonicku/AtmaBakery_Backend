@@ -103,14 +103,14 @@ class ProdukController extends Controller
     public function update(Request $request, string $id)
     {
         $validate = Validator::make($request->all(), ([
-            'nama_produk' => 'required|max:255',
-            'id_kategori' => 'required|in:CK, MNM, RT, TP',
-            'ukuran' => 'required:in:1, 1/2',
-            'harga' => 'required|min:0',
-            'stok' => 'required|min:0',
-            'limit' => 'required|min:0',
+            'nama_produk' => 'sometimes|max:255',
+            'id_kategori' => 'sometimes|in:CK, MNM, RT, TP',
+            'ukuran' => 'sometimes:in:1, 1/2',
+            'harga' => 'sometimes|min:0',
+            'stok' => 'sometimes|min:0',
+            'limit' => 'sometimes|min:0',
             'id_penitip' => 'nullable|numeric',
-            'status' => 'required|in:PO,READY',
+            'status' => 'sometimes|in:PO,READY',
         ]));
 
         if ($validate->fails()) {
@@ -127,19 +127,29 @@ class ProdukController extends Controller
             ], 404);
         }
 
+        $updateData = [];
+
+        $fillableAttributes = [
+            'nama_produk',
+            'id_kategori',
+            'ukuran',
+            'harga',
+            'stok',
+            'limit',
+            'id_penitip',
+            'status',
+        ];
+
+        foreach ($fillableAttributes as $attribute) {
+            if ($request->has($attribute)) {
+                $updateData[$attribute] = $request->$attribute;
+            }
+        }
+
         DB::beginTransaction();
 
         try {
-            $data->update([
-                'nama_produk' => $request->nama_produk,
-                'id_kategori' => strtoupper($request->id_kategori),
-                'ukuran' => $request->ukuran,
-                'harga' => $request->harga,
-                'stok' => $request->stok,
-                'limit' => $request->limit,
-                'id_penitip' => $request->id_penitip,
-                'status' => strtoupper($request->status),
-            ]);
+            $data->update($updateData);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -181,89 +191,6 @@ class ProdukController extends Controller
 
         return response()->json([
             'message' => 'Data successfully deleted',
-        ], 200);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function updateStok(Request $request, string $id)
-    {
-        $validate = Validator::make($request->all(), ([
-            'stok' => 'required|min:0',
-        ]));
-
-        if ($validate->fails()) {
-            return response()->json([
-                'message' => $validate->errors(),
-            ], 400);
-        }
-
-        $data = Produk::find($id);
-
-        if (!$data) {
-            return response()->json([
-                'message' => 'Data not found',
-            ], 404);
-        }
-
-        DB::beginTransaction();
-
-        try {
-            $data->update([
-                'stok' => $request->stok,
-            ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'message' => 'Failed to update data',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-
-        return response()->json([
-            'message' => 'Data successfully updated',
-            'data' => $data,
-        ], 200);
-    }
-
-    public function updateLimit(Request $request, string $id)
-    {
-        $validate = Validator::make($request->all(), ([
-            'limit' => 'required|min:0',
-        ]));
-
-        if ($validate->fails()) {
-            return response()->json([
-                'message' => $validate->errors(),
-            ], 400);
-        }
-
-        $data = Produk::find($id);
-
-        if (!$data) {
-            return response()->json([
-                'message' => 'Data not found',
-            ], 404);
-        }
-
-        DB::beginTransaction();
-
-        try {
-            $data->update([
-                'limit' => $request->limit,
-            ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'message' => 'Failed to update data',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-
-        return response()->json([
-            'message' => 'Data successfully updated',
-            'data' => $data,
         ], 200);
     }
 }

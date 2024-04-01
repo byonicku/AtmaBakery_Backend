@@ -8,6 +8,7 @@ class Hampers extends Model
 {
     protected $table = 'hampers';
     protected $primaryKey = 'id_hampers';
+    protected $timestamps = false;
 
     protected $fillable = [
         'id_hampers',

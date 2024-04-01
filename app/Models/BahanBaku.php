@@ -8,6 +8,7 @@ class BahanBaku extends Model
 {
     protected $table = 'bahan_baku';
     protected $primaryKey = 'id_bahan_baku';
+    protected $timestamps = false;
 
     protected $fillable = [
         'nama_bahan_baku',
