@@ -8,7 +8,7 @@ class HistoriBahanBaku extends Model
 {
     protected $table = 'histori_bahanbaku';
     protected $primaryKey = 'id_histori_bahanbaku';
-    protected $timestamps = false;
+    public $timestamps = false;
 
     protected $fillable = [
         'id_histori_bahanbaku',

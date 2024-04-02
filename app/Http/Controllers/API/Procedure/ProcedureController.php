@@ -5,14 +5,21 @@ namespace App\Http\Controllers\API\Procedure;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class ProcedureController extends Controller
 {
     public function getNotaPemesanan(Request $request)
     {
-        $request->validate([
+        $validate = Validator::make($request->id_nota, [
             'id_nota' => 'required',
         ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'message' => $validate->errors(),
+            ], 400);
+        }
 
         $nota = DB::select("CALL get_nota_pemesanan(?);", [$request['id_nota']]);
         $barang = DB::select("CALL get_produk_for_nota(?);", [$request['id_nota']]);

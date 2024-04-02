@@ -8,7 +8,7 @@ class Presensi extends Model
 {
     protected $table = 'presensi';
     protected $primaryKey = 'id_presensi';
-    protected $timestamps = false;
+    public $timestamps = false;
 
     protected $fillable = [
         'id_presensi',

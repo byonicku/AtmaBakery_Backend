@@ -8,7 +8,7 @@ class HistoriSaldo extends Model
 {
     protected $table = 'histori_saldo';
     protected $primaryKey = 'id_histori_saldo';
-    protected $timestamps = false;
+    public $timestamps = false;
 
     protected $fillable = [
         'tanggal',

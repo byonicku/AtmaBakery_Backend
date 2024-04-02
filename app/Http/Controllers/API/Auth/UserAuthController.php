@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\View;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 
@@ -20,22 +19,16 @@ class UserAuthController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nama' => 'required',
-            'email' => 'required|email|unique:user',
+            'nama' => 'required|max:255',
+            'email' => 'required|email|unique:user,email',
             'password' => 'required',
-            'no_telp' => 'required|digits_between:8,11',
+            'no_telp' => 'required|digits_between:8,13|unique:user,no_telp',
             'tanggal_lahir' => 'required|date',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => $validator->errors(),
-            ], 400);
-        }
-
-        if (User::where('email', $request->email)->exists()) {
-            return response()->json([
-                'message' => 'Email already exists',
             ], 400);
         }
 

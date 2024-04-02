@@ -8,7 +8,7 @@ class Produk extends Model
 {
     protected $table = 'produk';
     protected $primaryKey = 'id_produk';
-    protected $timestamps = false;
+    public $timestamps = false;
     protected $fillable = [
         'id_kategori',
         'nama_produk',
@@ -23,5 +23,10 @@ class Produk extends Model
     public function kategori()
     {
         return $this->belongsTo(Kategori::class, 'id_kategori', 'id_kategori');
+    }
+
+    public function gambar()
+    {
+        return $this->hasMany(Gambar::class, 'id_produk', 'id_produk');
     }
 }

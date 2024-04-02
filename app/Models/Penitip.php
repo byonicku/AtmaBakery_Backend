@@ -9,7 +9,7 @@ class Penitip extends Model
     protected $table = 'penitip';
     protected $primaryKey = 'id_penitip';
     protected $keyType = 'string';
-    protected $timestamps = false;
+    public $timestamps = false;
 
     protected $fillable = [
         'id_penitip',

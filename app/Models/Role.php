@@ -10,7 +10,7 @@ class Role extends Model
     protected $table = 'role';
     protected $primaryKey = 'id_role';
     protected $keyType = 'string';
-    protected $timestamps = false;
+    public $timestamps = false;
     protected $fillable = [
         'id_role',
         'nama_role',

@@ -8,7 +8,7 @@ class DetailHampers extends Model
 {
     protected $table = 'detail_hampers';
     protected $primaryKey = 'id_detail_hampers';
-    protected $timestamps = false;
+    public $timestamps = false;
 
     protected $fillable = [
         'id_detail_hampers',

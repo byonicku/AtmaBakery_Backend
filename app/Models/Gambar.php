@@ -4,16 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Resep extends Model
+class Gambar extends Model
 {
-    protected $table = 'resep';
-    protected $primaryKey = 'id_resep';
+    protected $table = 'gambar';
+    protected $primaryKey = 'id_gambar';
     public $timestamps = false;
     protected $fillable = [
-        'id_resep',
         'id_produk',
-        'id_bahan_baku',
-        'jumlah'
+        'id_hampers',
+        'url',
+        'public_id',
     ];
 
     public function produk()
@@ -21,8 +21,8 @@ class Resep extends Model
         return $this->belongsTo(Produk::class, 'id_produk', 'id_produk');
     }
 
-    public function bahan_baku()
+    public function hampers()
     {
-        return $this->belongsTo(BahanBaku::class, 'id_bahan_baku', 'id_bahan_baku');
+        return $this->belongsTo(Hampers::class, 'id_hampers', 'id_hampers');
     }
 }
