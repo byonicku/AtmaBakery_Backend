@@ -1,13 +1,12 @@
 <?php
 
+use App\Http\Controllers\API\Data\GambarController;
 use App\Http\Controllers\API\Data\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\Auth\UserAuthController;
 use App\Http\Controllers\API\Auth\ForgotPasswordAPIController;
 use App\Http\Controllers\API\Auth\ResetPasswordAPIController;
 use App\Http\Controllers\API\Data\ProdukController;
-
 use App\Http\Controllers\API\Procedure\ProcedureController;
 
 Route::controller(UserAuthController::class)
@@ -43,10 +42,16 @@ Route::post('password/reset', [ResetPasswordAPIController::class, 'reset'])
 Route::apiResource('produk', ProdukController::class)
        ->middleware(['auth:sanctum', 'ability:admin,owner']);
 
-Route::controller(ProdukController::class)
-         ->group(function () {
-                Route::post('/produk/gambar/{id}', 'storeGambar')->name('add-gambar')->middleware(['auth:sanctum', 'ability:admin,owner']);
-         })->name('produk');
+Route::apiResource('gambar', GambarController::class, ['except' => ['update']])
+       ->middleware(['auth:sanctum', 'ability:admin,owner']);
+
+Route::controller(GambarController::class)
+       ->middleware(['auth:sanctum', 'ability:admin,owner'])
+       ->group(function () {
+            Route::put('/gambar', 'update')->name('gambar.update');
+            Route::get('/gambar/produk/{id}', 'showProduk')->name('gambar.produk');
+            Route::get('/gambar/hampers/{id}', 'showHampers')->name('gambar.hampers');
+       })->name('gambar');
 
 Route::controller(ProcedureController::class)
        ->middleware(['auth:sanctum', 'ability:mo,owner'])
@@ -54,4 +59,3 @@ Route::controller(ProcedureController::class)
             Route::get('/get-nota', 'getNotaPemesanan')->name('get-nota');
 
        })->name('laporan');
-

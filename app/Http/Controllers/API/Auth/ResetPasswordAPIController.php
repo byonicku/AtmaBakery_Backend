@@ -30,6 +30,10 @@ class ResetPasswordAPIController extends Controller
             'password' => ['required', 'confirmed', 'min:8'],
         ]);
 
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 422);
+        }
+
         $response = $this->broker()->reset(
             $this->credentials($request), function ($user, $password) {
                 $this->resetPassword($user, $password);

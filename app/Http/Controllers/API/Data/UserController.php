@@ -88,7 +88,7 @@ class UserController extends Controller
 
         if ($validate->fails()) {
             return response()->json([
-                'message' => $validate->errors(),
+                'message' => $validate->errors()->first(),
             ], 400);
         }
 
@@ -158,7 +158,9 @@ class UserController extends Controller
 
         if ($data->foto_profil != null) {
             $publicId = $data->public_id;
-            cloudinary()->destroy($publicId);
+            cloudinary()->destroy('atma-bakery/'. $publicId, [
+                'invalidate' => true,
+            ]);
         }
 
         DB::beginTransaction();
