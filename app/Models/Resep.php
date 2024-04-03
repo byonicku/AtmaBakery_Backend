@@ -7,13 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class Resep extends Model
 {
     protected $table = 'resep';
-    protected $primaryKey = 'id_resep';
+    protected $primaryKey = 'id_produk';
     public $timestamps = false;
     protected $fillable = [
-        'id_resep',
         'id_produk',
         'id_bahan_baku',
-        'jumlah'
+        'kuantitas',
+        'satuan'
     ];
 
     public function produk()

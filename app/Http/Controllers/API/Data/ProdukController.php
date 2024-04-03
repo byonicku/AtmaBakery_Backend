@@ -40,7 +40,7 @@ class ProdukController extends Controller
 
         $validate = Validator::make($request->all(), ([
             'nama_produk' => 'required|max:255',
-            'id_kategori' => 'required|in:CK,MNM,RT,TP',
+            'id_kategori' => 'required|exists:kategori,id_kategori',
             'ukuran' => 'required:in:1,1/2',
             'harga' => 'required|min:0',
             'stok' => 'required|min:0',
@@ -142,7 +142,7 @@ class ProdukController extends Controller
 
         $validate = Validator::make($request->all(), ([
             'nama_produk' => 'sometimes|max:255',
-            'id_kategori' => 'sometimes|in:CK,MNM,RT,TP',
+            'id_kategori' => 'sometimes|exists:kategori,id_kategori',
             'ukuran' => 'sometimes:in:1,1/2',
             'harga' => 'sometimes|min:0',
             'stok' => 'sometimes|min:0',

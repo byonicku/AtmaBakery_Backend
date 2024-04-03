@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\Data\GambarController;
+use App\Http\Controllers\API\Data\ResepController;
 use App\Http\Controllers\API\Data\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\Auth\UserAuthController;
@@ -14,7 +15,7 @@ Route::controller(UserAuthController::class)
         Route::post('/login', 'login')->name('login');
         Route::post('/register', 'register')->name('register');
         Route::post('/logout',  'logout')->name('logout')->middleware('auth:sanctum');
-        Route::get('/verify/{verify_key}', ['verify'])->name('verify');
+        Route::post('/verify/{verify_key}', 'verify')->name('verify');
        })->name('authentications');
 
 Route::controller(UserController::class)
@@ -43,12 +44,10 @@ Route::post('password/reset', [ResetPasswordAPIController::class, 'reset'])
 Route::apiResource('produk', ProdukController::class)
        ->middleware(['auth:sanctum', 'ability:admin,owner']);
 
-Route::apiResource('gambar', GambarController::class, ['except' => ['update']])
-       ->middleware(['auth:sanctum', 'ability:admin,owner']);
-
 Route::controller(GambarController::class)
        ->middleware(['auth:sanctum', 'ability:admin,owner'])
        ->group(function () {
+            Route::apiResource('gambar', GambarController::class, ['except' => ['update']]);
             Route::put('/gambar', 'update')->name('gambar.update');
             Route::get('/gambar/produk/{id}', 'showProduk')->name('gambar.produk');
             Route::get('/gambar/hampers/{id}', 'showHampers')->name('gambar.hampers');
@@ -60,3 +59,12 @@ Route::controller(ProcedureController::class)
             Route::get('/get-nota', 'getNotaPemesanan')->name('get-nota');
 
        })->name('laporan');
+
+Route::controller(ResepController::class)
+       ->middleware(['auth:sanctum', 'ability:admin,owner'])
+       ->group(function () {
+            Route::apiResource('resep', ResepController::class, ['except' => ['destroy', 'update']]);
+            Route::put('/resep', 'update')->name('resep.update');
+            Route::delete('/resep', 'destroy')->name('resep.destroy');
+            Route::delete('/resep/all/{id_produk}', 'destroyAll')->name('resep.destroy-all');
+       })->name('resep');
