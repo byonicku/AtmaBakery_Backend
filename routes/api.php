@@ -14,6 +14,7 @@ Route::controller(UserAuthController::class)
         Route::post('/login', 'login')->name('login');
         Route::post('/register', 'register')->name('register');
         Route::post('/logout',  'logout')->name('logout')->middleware('auth:sanctum');
+        Route::get('/verify/{verify_key}', ['verify'])->name('verify');
        })->name('authentications');
 
 Route::controller(UserController::class)

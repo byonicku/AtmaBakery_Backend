@@ -26,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
         date_default_timezone_set('Asia/Jakarta');
 
         ResetPassword::createUrlUsing(function ($notifiable, $token) {
-            return "http://localhost:5173/password/{$token}?email={$notifiable->getEmailForPasswordReset()}";
+            return "https://atma-bakery.vercel.app/password/{$token}?email={$notifiable->getEmailForPasswordReset()}";
         });
     }
 }

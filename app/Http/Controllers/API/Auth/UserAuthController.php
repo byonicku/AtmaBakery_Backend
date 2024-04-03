@@ -8,7 +8,6 @@ use Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 
@@ -49,7 +48,7 @@ class UserAuthController extends Controller
             'email' => $request->email,
             'website' => 'Atma Bakery',
             'datetime' => date('Y-m-d H:i:s'),
-            'url' => url('/verify/' . $str),
+            'url' => 'https://atma-bakery.vercel.app/verify/' . $str,
         ];
 
         Notification::route('mail', $request->email)
@@ -136,14 +135,17 @@ class UserAuthController extends Controller
         ], 400);
     }
 
-    public function verify($verify_key)
+    public function verify(string $verify_key)
     {
         $keyCheck = User::select('verify_key')
             ->where('verify_key', $verify_key)
             ->exists();
 
         if (!$keyCheck) {
-            return View::make('FailedVerify');
+            return response()->json([
+                'message' => 'Invalid verification key',
+                'state' => '-1'
+            ], 400);
         }
 
         $checkAlready = User::select('active')
@@ -152,7 +154,10 @@ class UserAuthController extends Controller
             ->exists();
 
         if ($checkAlready) {
-            return View::make('SuccessVerifyAlready');
+            return response()->json([
+                'message' => 'Account already verified',
+                'state' => '0'
+            ], 400);
         }
 
         User::where('verify_key', $verify_key)
@@ -161,6 +166,9 @@ class UserAuthController extends Controller
                 'email_verified_at' => date('Y-m-d H:i:s'),
             ]);
 
-        return View::make('SuccessVerify');
+        return response()->json([
+            'message' => 'Account successfully verified',
+            'state' => '1'
+        ], 200);
     }
 }
