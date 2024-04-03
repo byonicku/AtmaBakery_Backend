@@ -36,6 +36,8 @@ class ProdukController extends Controller
      */
     public function store(Request $request)
     {
+        // Gambar wajib dikirim dengan key 'foto[]'
+
         $validate = Validator::make($request->all(), ([
             'nama_produk' => 'required|max:255',
             'id_kategori' => 'required|in:CK,MNM,RT,TP',
@@ -43,13 +45,11 @@ class ProdukController extends Controller
             'harga' => 'required|min:0',
             'stok' => 'required|min:0',
             'limit' => 'required|min:0',
-            'foto' => 'required|array|min:1',
+            'foto' => 'required|array|min:1|max:5',
             'foto.*' => 'image|mimes:jpg,jpeg,png|max:1024',
             'id_penitip' => 'nullable|numeric',
             'status' => 'required|in:PO,READY',
         ]));
-
-        // gambar wajib dikirim dengan key 'foto[]'
 
         if ($validate->fails()) {
             return response()->json([

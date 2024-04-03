@@ -36,6 +36,8 @@ class GambarController extends Controller
      */
     public function store(Request $request)
     {
+        // Gambar wajib dikirim dengan key array 'foto[]'
+
         $validate = Validator::make($request->all(), [
             'id_produk' => 'sometimes|numeric|exists:produk,id_produk',
             'id_hampers' => 'sometimes|numeric|exists:hampers,id_hampers',
@@ -55,11 +57,24 @@ class GambarController extends Controller
             ], 400);
         }
 
-        // gambar wajib dikirim dengan key 'foto[]'
-
         if ($validate->fails()) {
             return response()->json([
                 'message' => $validate->errors()->first(),
+            ], 400);
+        }
+
+        $count = 0;
+
+        if ($request->id_produk) {
+            $count = Gambar::find($request->id_produk)->count();
+        } else {
+            $count = Gambar::find($request->id_hampers)->count();
+        }
+
+        if ($count >= 5) {
+            return response()->json([
+                'message' => 'Maximum image is 5, you can add only ' . (5 - $count) . ' image(s) left',
+                'left' => (5 - $count),
             ], 400);
         }
 
