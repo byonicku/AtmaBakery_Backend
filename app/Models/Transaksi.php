@@ -9,6 +9,7 @@ class Transaksi extends Model
     protected $table = 'transaksi';
     protected $primaryKey = 'no_nota';
     protected $keyType = 'string';
+    public $incrementing = false;
     public $timestamps = false;
     protected $fillable = [
         'no_nota',

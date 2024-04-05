@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\API\Data\GambarController;
+use App\Http\Controllers\API\Data\KaryawanController;
+use App\Http\Controllers\API\Data\PenitipController;
 use App\Http\Controllers\API\Data\ResepController;
 use App\Http\Controllers\API\Data\UserController;
 use Illuminate\Support\Facades\Route;
@@ -68,3 +70,9 @@ Route::controller(ResepController::class)
             Route::delete('/resep', 'destroy')->name('resep.destroy');
             Route::delete('/resep/all/{id_produk}', 'destroyAll')->name('resep.destroy-all');
        })->name('resep');
+
+Route::apiResource('karyawan', KaryawanController::class)
+        ->middleware(['auth:sanctum', 'ability:mo,owner']);
+
+Route::apiResource('penitip', PenitipController::class)
+        ->middleware(['auth:sanctum', 'ability:mo,owner']);
