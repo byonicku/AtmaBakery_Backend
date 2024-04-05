@@ -12,7 +12,7 @@ class ProcedureController extends Controller
     public function getNotaPemesanan(Request $request)
     {
         $validate = Validator::make($request->id_nota, [
-            'id_nota' => 'required',
+            'no_nota' => 'required|exists:transaksi,no_nota',
         ]);
 
         if ($validate->fails()) {
@@ -21,8 +21,8 @@ class ProcedureController extends Controller
             ], 400);
         }
 
-        $nota = DB::select("CALL get_nota_pemesanan(?);", [$request['id_nota']]);
-        $barang = DB::select("CALL get_produk_for_nota(?);", [$request['id_nota']]);
+        $nota = DB::select("CALL p3l.get_nota_pemesanan(?);", [$request['no_nota']]);
+        $barang = DB::select("CALL p3l.get_produk_for_nota(?);", [$request['no_nota']]);
 
         $result = [
             'id_nota' => $nota[0]->data_pemesanan,
