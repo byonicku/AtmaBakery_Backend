@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up()
     {
-        DB::unprepared("CREATE DEFINER=`root`@`localhost` PROCEDURE `get_produk_for_nota`(IN `no_nota_in` VARCHAR(20))
+        DB::unprepared("CREATE PROCEDURE `get_produk_for_nota`(IN `no_nota_in` VARCHAR(20))
 BEGIN
 	    SELECT nama_produk AS nama, ukuran, jumlah * harga AS total_harga FROM produk p JOIN detail_transaksi dt ON p.id_produk = dt.id_produk WHERE no_nota = no_nota_in
         UNION ALL

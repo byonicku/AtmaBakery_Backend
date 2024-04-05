@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up()
     {
-        DB::unprepared("CREATE DEFINER=`root`@`localhost` PROCEDURE `get_laporan_penggunaan_periode`(IN `start_date` DATE, IN `end_date` DATE)
+        DB::unprepared("CREATE PROCEDURE `get_laporan_penggunaan_periode`(IN `start_date` DATE, IN `end_date` DATE)
 BEGIN
     SELECT nama_bahan_baku, satuan, SUM(JUMLAH) as digunakan
     FROM bahan_baku b

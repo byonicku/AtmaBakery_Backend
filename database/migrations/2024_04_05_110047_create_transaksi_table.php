@@ -25,6 +25,8 @@ return new class extends Migration
             $table->float('radius');
             $table->float('tip');
             $table->string('tipe_delivery');
+            $table->string('bukti_pembayaran')->nullable();
+            $table->string('public_id')->nullable();
             $table->string('status');
         });
     }

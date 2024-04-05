@@ -23,6 +23,8 @@ return new class extends Migration
             $table->float('saldo')->nullable()->default(0);
             $table->string('password');
             $table->date('tanggal_lahir');
+            $table->string('foto_profil')->nullable();
+            $table->string('public_id')->nullable();
             $table->boolean('active')->default(false);
             $table->string('verify_key', 100);
             $table->timestamp('email_verified_at')->nullable();

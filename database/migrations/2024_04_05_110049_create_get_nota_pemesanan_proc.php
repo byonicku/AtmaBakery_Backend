@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up()
     {
-        DB::unprepared("CREATE DEFINER=`root`@`localhost` PROCEDURE `get_nota_pemesanan`(IN `no_nota_in` VARCHAR(20))
+        DB::unprepared("CREATE PROCEDURE `get_nota_pemesanan`(IN `no_nota_in` VARCHAR(20))
 BEGIN
     SELECT nama, data_pemesanan FROM (
         SELECT 'no_nota' AS nama, no_nota AS data_pemesanan FROM transaksi WHERE no_nota = no_nota_in

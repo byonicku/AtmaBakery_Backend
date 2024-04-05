@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up()
     {
-        DB::unprepared("CREATE DEFINER=`root`@`localhost` PROCEDURE `get_bahan_baku`()
+        DB::unprepared("CREATE PROCEDURE `get_bahan_baku`()
 BEGIN
     SELECT nama_bahan_baku, satuan, stok
     FROM bahan_baku;

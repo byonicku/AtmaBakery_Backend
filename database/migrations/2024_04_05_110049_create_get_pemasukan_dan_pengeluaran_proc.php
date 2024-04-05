@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up()
     {
-        DB::unprepared("CREATE DEFINER=`root`@`localhost` PROCEDURE `get_pemasukan_dan_pengeluaran`(IN `target_month` INT, IN `target_year` INT)
+        DB::unprepared("CREATE PROCEDURE `get_pemasukan_dan_pengeluaran`(IN `target_month` INT, IN `target_year` INT)
 BEGIN
     SELECT nama, pemasukan, pengeluaran
     FROM (
@@ -20,45 +20,45 @@ BEGIN
         FROM (
             SELECT 'Transaksi' AS nama, COALESCE(SUM(total), 0) AS pemasukan, NULL AS pengeluaran
             FROM transaksi
-            WHERE 
+            WHERE
                 MONTH(TANGGAL_LUNAS) = target_month AND YEAR(TANGGAL_LUNAS) = target_year
-            
+
             UNION ALL
-            
+
             SELECT 'Tip' AS nama, COALESCE(SUM(tip), 0) AS pemasukan, NULL AS pengeluaran
             FROM transaksi
-            WHERE 
+            WHERE
                 MONTH(TANGGAL_LUNAS) = target_month AND YEAR(TANGGAL_LUNAS) = target_year
-            
+
             UNION ALL
-            
+
             SELECT nama, NULL AS pemasukan, total AS pengeluaran
             FROM pengeluaran
-            WHERE 
+            WHERE
                 MONTH(TANGGAL_PENGELUARAN) = target_month AND YEAR(TANGGAL_PENGELUARAN) = target_year
         ) AS tabel_transaksi
-        
+
         UNION ALL
-        
+
         SELECT 'Total' AS nama, SUM(pemasukan) AS pemasukan, SUM(pengeluaran) AS pengeluaran
         FROM (
             SELECT COALESCE(SUM(total), 0) AS pemasukan, NULL AS pengeluaran
             FROM transaksi
-            WHERE 
+            WHERE
                 MONTH(TANGGAL_LUNAS) = target_month AND YEAR(TANGGAL_LUNAS) = target_year
-            
+
             UNION ALL
-            
+
             SELECT COALESCE(SUM(tip), 0) AS pemasukan, NULL AS pengeluaran
             FROM transaksi
-            WHERE 
+            WHERE
                 MONTH(TANGGAL_LUNAS) = target_month AND YEAR(TANGGAL_LUNAS) = target_year
-            
+
             UNION ALL
-            
+
             SELECT NULL AS pemasukan, COALESCE(SUM(total), 0) AS pengeluaran
             FROM pengeluaran
-            WHERE 
+            WHERE
                 MONTH(TANGGAL_PENGELUARAN) = target_month AND YEAR(TANGGAL_PENGELUARAN) = target_year
         ) AS tabel_pengeluaran
     ) AS laporan_pemasukan_pengeluaran;

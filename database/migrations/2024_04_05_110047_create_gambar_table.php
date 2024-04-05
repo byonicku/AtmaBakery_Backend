@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('id_produk')->nullable()->index('id_produk');
             $table->integer('id_hampers')->nullable()->index('id_hampers');
             $table->string('url');
+            $table->string('public_id');
         });
     }
 
