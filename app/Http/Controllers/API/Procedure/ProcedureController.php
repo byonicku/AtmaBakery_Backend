@@ -21,8 +21,14 @@ class ProcedureController extends Controller
             ], 400);
         }
 
-        $nota = DB::select("CALL p3l.get_nota_pemesanan(?);", [$request['no_nota']]);
-        $barang = DB::select("CALL p3l.get_produk_for_nota(?);", [$request['no_nota']]);
+        try {
+            $nota = DB::select("CALL p3l.get_nota_pemesanan(?);", [$request['no_nota']]);
+            $barang = DB::select("CALL p3l.get_produk_for_nota(?);", [$request['no_nota']]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
+        }
 
         $result = [
             'id_nota' => $nota[0]->data_pemesanan,
