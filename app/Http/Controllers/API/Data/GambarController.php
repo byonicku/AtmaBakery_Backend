@@ -230,8 +230,11 @@ class GambarController extends Controller
         }
 
         DB::beginTransaction();
+        $response = null;
 
         try {
+            $response = (new FunctionHelper())
+                        ->deleteImage($data->public_id);
             $data->delete();
             DB::commit();
         } catch (\Exception $e) {
@@ -244,6 +247,7 @@ class GambarController extends Controller
 
         return response()->json([
             'message' => 'Data successfully deleted',
+            'response' => $response,
         ], 200);
     }
 }

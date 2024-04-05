@@ -92,19 +92,14 @@ class UserController extends Controller
             ], 400);
         }
 
-        $updateData = [];
-
         $fillableAttributes = [
             'nama',
             'email',
             'no_telp',
         ];
 
-        foreach ($fillableAttributes as $attribute) {
-            if ($request->has($attribute)) {
-                $updateData[$attribute] = $request[$attribute];
-            }
-        }
+        $updateData = (new FunctionHelper())
+                        ->updateDataMaker($fillableAttributes, $request);
 
         if ($request->hasFile('foto_profil')) {
             $imageName = null;

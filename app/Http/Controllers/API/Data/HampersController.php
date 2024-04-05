@@ -2,22 +2,21 @@
 
 namespace App\Http\Controllers\API\Data;
 
-use App\Http\Controllers\Controller;
-use App\Models\Produk;
 use App\Models\Gambar;
+use App\Models\Hampers;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\API\Data\FunctionHelper;
 
-class ProdukController extends Controller
+class HampersController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $data = Produk::all();
+        $data = Hampers::all();
 
         if (count($data) == 0) {
             return response()->json([
@@ -36,20 +35,12 @@ class ProdukController extends Controller
      */
     public function store(Request $request)
     {
-        // Gambar wajib dikirim dengan key 'foto[]'
-
-        $validate = Validator::make($request->all(), ([
-            'nama_produk' => 'required|max:255',
-            'id_kategori' => 'required|exists:kategori,id_kategori',
-            'ukuran' => 'required:in:1,1/2',
-            'harga' => 'required|min:0',
-            'stok' => 'required|min:0',
-            'limit' => 'required|min:0',
+        $validate = Validator::make($request->all(), [
+            'nama_hampers' => 'required|max:255',
+            'harga' => 'required|numeric|min:0',
             'foto' => 'required|array|min:1|max:5',
             'foto.*' => 'image|mimes:jpg,jpeg,png|max:1024',
-            'id_penitip' => 'nullable|numeric',
-            'status' => 'required|in:PO,READY',
-        ]));
+        ]);
 
         if ($validate->fails()) {
             return response()->json([
@@ -62,21 +53,15 @@ class ProdukController extends Controller
         DB::beginTransaction();
 
         try {
-            $data = Produk::create([
-                'nama_produk' => $request->nama_produk,
-                'id_kategori' => strtoupper($request->id_kategori),
-                'ukuran' => $request->ukuran,
+            $data = Hampers::create([
+                'nama_hampers' => $request->nama_hampers,
                 'harga' => $request->harga,
-                'stok' => $request->stok,
-                'limit' => $request->limit,
-                'id_penitip' => $request->id_penitip,
-                'status' => strtoupper($request->status),
             ]);
 
             $picture = $request->file('foto');
 
             foreach ($picture as $pic) {
-                $imageName = time() . "-produk";
+                $imageName = time() . "-hampers";
 
                 $url = (new FunctionHelper())
                     ->uploadImage($pic, $imageName);
@@ -113,7 +98,7 @@ class ProdukController extends Controller
      */
     public function show(string $id)
     {
-        $data = Produk::find($id);
+        $data = Hampers::find($id);
 
         if (!$data) {
             return response()->json([
@@ -132,24 +117,12 @@ class ProdukController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $data = Produk::find($id);
+        $data = Hampers::find($id);
 
-        if (!$data) {
-            return response()->json([
-                'message' => 'Data not found',
-            ], 404);
-        }
-
-        $validate = Validator::make($request->all(), ([
-            'nama_produk' => 'sometimes|max:255',
-            'id_kategori' => 'sometimes|exists:kategori,id_kategori',
-            'ukuran' => 'sometimes:in:1,1/2',
-            'harga' => 'sometimes|min:0',
-            'stok' => 'sometimes|min:0',
-            'limit' => 'sometimes|min:0',
-            'id_penitip' => 'nullable|numeric',
-            'status' => 'sometimes|in:PO,READY',
-        ]));
+        $validate = Validator::make($request->all(), [
+            'nama_hampers' => 'sometimes|max:255',
+            'harga' => 'sometimes|numeric|min:0',
+        ]);
 
         if ($validate->fails()) {
             return response()->json([
@@ -158,14 +131,8 @@ class ProdukController extends Controller
         }
 
         $fillableAttributes = [
-            'nama_produk',
-            'id_kategori',
-            'ukuran',
+            'nama_hampers',
             'harga',
-            'stok',
-            'limit',
-            'id_penitip',
-            'status',
         ];
 
         $updateData = (new FunctionHelper())
@@ -179,13 +146,13 @@ class ProdukController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Failed to update data',
+                'message' => 'Failed to create data',
                 'error' => $e->getMessage(),
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Data successfully updated',
+            'message' => 'Data successfully created',
             'data' => $data,
         ], 200);
     }
@@ -195,7 +162,7 @@ class ProdukController extends Controller
      */
     public function destroy(string $id)
     {
-        $data = Produk::find($id);
+        $data = Hampers::find($id);
 
         if (!$data) {
             return response()->json([
@@ -212,7 +179,6 @@ class ProdukController extends Controller
             }
 
             $data->delete();
-
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
