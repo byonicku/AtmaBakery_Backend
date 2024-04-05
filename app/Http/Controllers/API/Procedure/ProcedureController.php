@@ -11,7 +11,7 @@ class ProcedureController extends Controller
 {
     public function getNotaPemesanan(Request $request)
     {
-        $validate = Validator::make($request->id_nota, [
+        $validate = Validator::make($request->all(), [
             'no_nota' => 'required|exists:transaksi,no_nota',
         ]);
 

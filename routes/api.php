@@ -56,7 +56,7 @@ Route::controller(GambarController::class)
 Route::controller(ProcedureController::class)
        ->middleware(['auth:sanctum', 'ability:mo,owner'])
        ->group(function () {
-            Route::get('/get-nota', 'getNotaPemesanan')->name('get-nota');
+            Route::post('/get-nota', 'getNotaPemesanan')->name('get-nota');
 
        })->name('laporan');
 
