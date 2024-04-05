@@ -11,7 +11,6 @@ class DetailHampers extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'id_detail_hampers',
         'id_hampers',
         'id_produk',
         'jumlah',
