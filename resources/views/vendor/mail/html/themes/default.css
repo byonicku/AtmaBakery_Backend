@@ -232,11 +232,8 @@ img {
 
 .button-blue,
 .button-primary {
-    background-color: #2d3748;
-    border-bottom: 8px solid #2d3748;
-    border-left: 18px solid #2d3748;
-    border-right: 18px solid #2d3748;
-    border-top: 8px solid #2d3748;
+    background: linear-gradient(to bottom, #EFAB68, #F48E28 75%);
+    padding: 12px 16px;
 }
 
 .button-green,
