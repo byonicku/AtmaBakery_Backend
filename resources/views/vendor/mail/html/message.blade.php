@@ -3,7 +3,8 @@
 <x-slot:header>
 <x-mail::header :url="config('app.url')">
 {{--  --}}
-<img src="https://i.ibb.co/SySdLDJ/Group-48.png" alt="{{config('app.name')}}">
+
+<img src="https://res.cloudinary.com/daorbrq8v/image/upload/f_auto,q_auto/v1/atma-bakery/kgpbuy3s9vgdkdaheeo0" alt="{{config('app.name')}}">
 </x-mail::header>
 </x-slot:header>
 
