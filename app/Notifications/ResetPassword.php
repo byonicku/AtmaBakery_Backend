@@ -38,7 +38,7 @@ class ResetPassword extends Notification
         return (new MailMessage)
                     ->greeting('Hello!')
                     ->line('Anda menerima email ini karena kami menerima permintaan reset password untuk akun anda.')
-                    ->action('Reset Password', "http://localhost:5173/password/{$token}?email={$notifiable->getEmailForPasswordReset()}")
+                    ->action('Reset Password', "https://atma-bakery.vercel.app/password/{$token}?email={$notifiable->getEmailForPasswordReset()}")
                     ->line('Link reset password akan kadaluarsa dalam 60 menit.')
                     ->line('Jika anda tidak merasa melakukan permintaan reset password, abaikan email ini.');
     }
