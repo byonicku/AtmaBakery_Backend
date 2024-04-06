@@ -69,7 +69,7 @@ class ResepController extends Controller
         return response()->json([
             'message' => 'Data successfully saved',
             'data' => $data,
-        ], 200);
+        ], 201);
     }
 
     /**

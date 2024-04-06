@@ -116,7 +116,7 @@ class GambarController extends Controller
         return response()->json([
             'message' => 'Image successfully added',
             'img_count_success' => $num_success,
-        ], 200);
+        ], 201);
     }
 
     /**

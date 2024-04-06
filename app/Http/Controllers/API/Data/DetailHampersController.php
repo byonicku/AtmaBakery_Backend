@@ -75,7 +75,7 @@ class DetailHampersController extends Controller
         return response()->json([
             'message' => 'Data successfully stored',
             'data' => $data,
-        ], 200);
+        ], 201);
     }
 
     /**

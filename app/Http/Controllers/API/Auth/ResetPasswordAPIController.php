@@ -67,7 +67,9 @@ class ResetPasswordAPIController extends Controller
      */
     protected function sendResetResponse(Request $request, $response)
     {
-        return response()->json(['success' => ["message" => trans($response)] ], 200);
+        return response()->json([
+            "message" => trans($response)],
+        200);
     }
 
     /**
@@ -79,6 +81,8 @@ class ResetPasswordAPIController extends Controller
      */
     protected function sendResetFailedResponse(Request $request, $response)
     {
-        return response()->json(['error' => ["message" => trans($response)] ], 422);
+        return response()->json([
+            "message" => trans($response)]
+        , 422);
     }
 }

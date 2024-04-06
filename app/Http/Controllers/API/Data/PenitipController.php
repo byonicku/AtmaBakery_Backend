@@ -74,7 +74,7 @@ class PenitipController extends Controller
         return response()->json([
             'message' => 'Data successfully created',
             'data' => $data,
-        ], 200);
+        ], 201);
     }
 
     /**

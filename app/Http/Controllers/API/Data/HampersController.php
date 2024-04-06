@@ -90,7 +90,7 @@ class HampersController extends Controller
             'message' => 'Data successfully created',
             'data' => $data,
             'img_count_success' => $num_success,
-        ], 200);
+        ], 201);
     }
 
     /**

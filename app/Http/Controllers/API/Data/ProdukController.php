@@ -47,7 +47,7 @@ class ProdukController extends Controller
             'limit' => 'required|min:0',
             'foto' => 'required|array|min:1|max:5',
             'foto.*' => 'image|mimes:jpg,jpeg,png|max:1024',
-            'id_penitip' => 'nullable|numeric',
+            'id_penitip' => 'nullable|exists:penitip,id_penitip',
             'status' => 'required|in:PO,READY',
         ]));
 
@@ -105,7 +105,7 @@ class ProdukController extends Controller
             'message' => 'Data successfully created',
             'data' => $data,
             'img_count_success' => $num_success,
-        ], 200);
+        ], 201);
     }
 
     /**
@@ -147,7 +147,7 @@ class ProdukController extends Controller
             'harga' => 'sometimes|min:0',
             'stok' => 'sometimes|min:0',
             'limit' => 'sometimes|min:0',
-            'id_penitip' => 'nullable|numeric',
+            'id_penitip' => 'nullable|exists:penitip,id_penitip',
             'status' => 'sometimes|in:PO,READY',
         ]));
 

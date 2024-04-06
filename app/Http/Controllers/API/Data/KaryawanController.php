@@ -35,10 +35,10 @@ class KaryawanController extends Controller
     public function store(Request $request)
     {
         $validate = Validator::make($request->all(), [
-            'nama' => 'required',
-            'no_telp' => 'required',
+            'nama' => 'required|max:255',
+            'no_telp' => 'required|unique:karyawan,no_telp',
             'email' => 'required|email|exists:karyawan,email',
-            'hire_date' => 'required',
+            'hire_date' => 'required|date',
         ]);
 
         if ($validate->fails()) {
@@ -70,7 +70,7 @@ class KaryawanController extends Controller
         return response()->json([
             'message' => 'Data successfully created',
             'data' => $data,
-        ], 200);
+        ], 201);
     }
 
     /**
@@ -109,9 +109,9 @@ class KaryawanController extends Controller
             'nama' => 'sometimes|max:255',
             'no_telp' => 'sometimes',
             'email' => 'sometimes|email|unique:karyawan,email',
-            'hire_date' => 'sometimes',
-            'gaji' => 'sometimes',
-            'bonus' => 'sometimes',
+            'hire_date' => 'sometimes|date',
+            'gaji' => 'sometimes|numeric|min:0',
+            'bonus' => 'sometimes|numeric|min:0',
         ]);
 
         if ($validate->fails()) {

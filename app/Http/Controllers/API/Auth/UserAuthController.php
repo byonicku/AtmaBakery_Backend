@@ -20,7 +20,7 @@ class UserAuthController extends Controller
         $validator = Validator::make($request->all(), [
             'nama' => 'required|max:255',
             'email' => 'required|email|unique:user,email',
-            'password' => 'required',
+            'password' => 'required|min:8|confirmed', // pas post tambahin password_confirmation di formdata
             'no_telp' => 'required|digits_between:8,13|unique:user,no_telp',
             'tanggal_lahir' => 'required|date',
         ]);
