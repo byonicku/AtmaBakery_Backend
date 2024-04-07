@@ -170,4 +170,32 @@ class UserAuthController extends Controller
             'state' => '1'
         ], 200);
     }
+
+    public function verifyPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|exists:password_resets,email',
+            'token' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => $validator->errors()->first(),
+            ], 400);
+        }
+
+        $data = User::select('password_resets')
+            ->where('email', $request->email)
+            ->first();
+
+        if (!Hash::check($request->token, $data->token)) {
+            return response()->json([
+                'message' => 'Invalid token',
+            ], 400);
+        }
+
+        return response()->json([
+            'message' => 'Token valid',
+        ], 200);
+    }
 }
