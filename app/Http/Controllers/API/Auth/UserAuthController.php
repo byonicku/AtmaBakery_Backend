@@ -7,6 +7,7 @@ use App\Notifications\EmailVerify;
 use Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
@@ -184,7 +185,7 @@ class UserAuthController extends Controller
             ], 400);
         }
 
-        $data = User::select('password_reset_tokens')
+        $data = DB::table('password_reset_tokens')
             ->where('email', $request->email)
             ->first();
 
