@@ -21,7 +21,7 @@ class UserAuthController extends Controller
             'nama' => 'required|max:255',
             'email' => 'required|email|unique:user,email',
             'password' => 'required|min:8|confirmed', // pas post tambahin password_confirmation di formdata
-            'no_telp' => 'required|digits_between:8,13|unique:user,no_telp',
+            'no_telp' => 'required|digits_between:10,13|unique:user,no_telp|regex:/^(?:\+?08)(?:\d{2,3})?[ -]?\d{3,4}[ -]?\d{4}$/',
             'tanggal_lahir' => 'required|date',
         ]);
 

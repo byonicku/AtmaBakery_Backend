@@ -36,7 +36,7 @@ class KaryawanController extends Controller
     {
         $validate = Validator::make($request->all(), [
             'nama' => 'required|max:255',
-            'no_telp' => 'required|unique:karyawan,no_telp',
+            'no_telp' => 'required|digits_between:10,13|unique:karyawan,no_telp|regex:/^(?:\+?08)(?:\d{2,3})?[ -]?\d{3,4}[ -]?\d{4}$/',
             'email' => 'required|email|exists:karyawan,email',
             'hire_date' => 'required|date',
         ]);
@@ -107,7 +107,7 @@ class KaryawanController extends Controller
 
         $validate = Validator::make($request->all(), [
             'nama' => 'sometimes|max:255',
-            'no_telp' => 'sometimes',
+            'no_telp' => 'sometimes|digits_between:10,13|unique:karyawan,no_telp|regex:/^(?:\+?08)(?:\d{2,3})?[ -]?\d{3,4}[ -]?\d{4}$/',
             'email' => 'sometimes|email|unique:karyawan,email',
             'hire_date' => 'sometimes|date',
             'gaji' => 'sometimes|numeric|min:0',
