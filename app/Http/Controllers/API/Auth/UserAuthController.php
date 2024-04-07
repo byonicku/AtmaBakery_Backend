@@ -57,7 +57,6 @@ class UserAuthController extends Controller
         return response()->json([
             'message' => 'Successfully registered. Please check your email to verify your account',
             'data' => $user,
-            'details' => $details,
         ], 200);
     }
     public function login(Request $request)
