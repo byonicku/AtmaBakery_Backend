@@ -79,7 +79,7 @@ class UserAuthController extends Controller
 
         if (!Auth::attempt($user)) {
             return response()->json([
-                'message' => 'Login Failed, Username or Password is wrong',
+                'message' => 'Login Failed, Email or Password is wrong',
             ], 400);
         }
 
