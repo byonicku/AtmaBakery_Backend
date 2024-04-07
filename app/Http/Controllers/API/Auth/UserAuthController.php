@@ -174,7 +174,7 @@ class UserAuthController extends Controller
     public function verifyPassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email|exists:password_resets,email',
+            'email' => 'required|email|exists:password_reset_tokens,email',
             'token' => 'required',
         ]);
 
@@ -184,7 +184,7 @@ class UserAuthController extends Controller
             ], 400);
         }
 
-        $data = User::select('password_resets')
+        $data = User::select('password_reset_tokens')
             ->where('email', $request->email)
             ->first();
 
