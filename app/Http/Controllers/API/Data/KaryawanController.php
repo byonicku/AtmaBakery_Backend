@@ -107,8 +107,9 @@ class KaryawanController extends Controller
 
         $validate = Validator::make($request->all(), [
             'nama' => 'sometimes|max:255',
-            'no_telp' => 'sometimes|digits_between:10,13|unique:karyawan,no_telp|regex:/^(?:\+?08)(?:\d{2,3})?[ -]?\d{3,4}[ -]?\d{4}$/',
-            'email' => 'sometimes|email|unique:karyawan,email',
+            'no_telp' => 'sometimes|digits_between:10,13|unique:karyawan,no_telp,except,' . $data->no_telp .
+                ' |regex:/^(?:\+?08)(?:\d{2,3})?[ -]?\d{3,4}[ -]?\d{4}$/',
+            'email' => 'sometimes|email|unique:karyawan,email,except,' . $data->email,
             'hire_date' => 'sometimes|date',
             'gaji' => 'sometimes|numeric|min:0',
             'bonus' => 'sometimes|numeric|min:0',

@@ -81,7 +81,7 @@ class UserController extends Controller
 
         $validate = Validator::make($request->all(), [
             'nama' => 'sometimes|max:255',
-            'email' => 'sometimes|email|unique:user,email',
+            'email' => 'sometimes|email|unique:user,email,except,' . $data->email,
             'no_telp' => 'sometimes|digits_between:10,13|unique:user,no_telp|regex:/^(?:\+?08)(?:\d{2,3})?[ -]?\d{3,4}[ -]?\d{4}$/',
             'foto_profil' => 'sometimes|image|mimes:jpeg,png,jpg|max:1024',
         ]);
