@@ -31,6 +31,7 @@ Route::controller(UserController::class)
         Route::get('/users/{id}', 'show')->name('users')->middleware(['auth:sanctum', 'ability:admin,owner']);
         Route::put('/users/{id}', 'update')->name('users')->middleware(['auth:sanctum', 'ability:user,admin,owner']);
         Route::delete('/users/{id}', 'destroy')->name('users')->middleware(['auth:sanctum', 'ability:admin,owner']);
+        Route::get('/paginate/users', 'paginate')->name('users')->middleware(['auth:sanctum', 'ability:admin,owner']);
        })->name('users');
 
 /*
@@ -69,19 +70,25 @@ Route::controller(ResepController::class)
             Route::put('/resep', 'update')->name('resep.update');
             Route::delete('/resep', 'destroy')->name('resep.destroy');
             Route::delete('/resep/all/{id_produk}', 'destroyAll')->name('resep.destroy-all');
+            Route::get('/paginate/resep', 'paginate')->name('resep.paginate');
        })->name('resep');
 
 Route::apiResource('karyawan', KaryawanController::class);
+Route::get('/paginate/karyawan', [KaryawanController::class, 'paginate'])->name('karyawan.paginate');
 
 Route::apiResource('produk', ProdukController::class);
+Route::get('/paginate/produk', [ProdukController::class, 'paginate'])->name('produk.paginate');
 
         // Jangan lupa kasih role lagi ye :D
 
 Route::apiResource('penitip', PenitipController::class);
+Route::get('/paginate/penitip', [PenitipController::class, 'paginate'])->name('penitip.paginate');
 
 Route::apiResource('bahan_baku', BahanBakuController::class);
+Route::get('/paginate/bahan_baku', [BahanBakuController::class, 'paginate'])->name('bahan_baku.paginate');
 
 Route::apiResource('hampers', HampersController::class);
+Route::get('/paginate/hampers', [HampersController::class, 'paginate'])->name('hampers.paginate');
 
 Route::apiResource('detail_hampers', DetailHampersController::class);
 

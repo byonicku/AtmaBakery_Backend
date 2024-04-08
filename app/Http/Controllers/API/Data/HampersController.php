@@ -30,6 +30,22 @@ class HampersController extends Controller
         ], 200);
     }
 
+    public function paginate()
+    {
+        $data = Hampers::paginate(10);
+
+        if (count($data) == 0) {
+            return response()->json([
+                'message' => 'Data is empty',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Data successfully retrieved',
+            'data' => $data,
+        ], 200);
+    }
+
     /**
      * Store a newly created resource in storage.
      */
