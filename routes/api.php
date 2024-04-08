@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\API\Data\BahanBakuController;
+use App\Http\Controllers\API\Data\DetailHampersController;
 use App\Http\Controllers\API\Data\GambarController;
+use App\Http\Controllers\API\Data\HampersController;
 use App\Http\Controllers\API\Data\KaryawanController;
 use App\Http\Controllers\API\Data\PenitipController;
 use App\Http\Controllers\API\Data\ResepController;
@@ -44,9 +47,6 @@ Route::post('password/email', [ForgotPasswordAPIController::class, 'sendResetLin
 Route::post('password/reset', [ResetPasswordAPIController::class, 'reset'])
        ->name('password-reset');
 
-Route::apiResource('produk', ProdukController::class)
-       ->middleware(['auth:sanctum', 'ability:admin,owner']);
-
 Route::controller(GambarController::class)
        ->middleware(['auth:sanctum', 'ability:admin,owner'])
        ->group(function () {
@@ -64,7 +64,6 @@ Route::controller(ProcedureController::class)
        })->name('laporan');
 
 Route::controller(ResepController::class)
-       ->middleware(['auth:sanctum', 'ability:admin,owner'])
        ->group(function () {
             Route::apiResource('resep', ResepController::class, ['except' => ['destroy', 'update']]);
             Route::put('/resep', 'update')->name('resep.update');
@@ -72,8 +71,17 @@ Route::controller(ResepController::class)
             Route::delete('/resep/all/{id_produk}', 'destroyAll')->name('resep.destroy-all');
        })->name('resep');
 
-Route::apiResource('karyawan', KaryawanController::class)
-        ->middleware(['auth:sanctum', 'ability:mo,owner']);
+Route::apiResource('karyawan', KaryawanController::class);
 
-Route::apiResource('penitip', PenitipController::class)
-        ->middleware(['auth:sanctum', 'ability:mo,owner']);
+Route::apiResource('produk', ProdukController::class);
+
+        // Jangan lupa kasih role lagi ye :D
+
+Route::apiResource('penitip', PenitipController::class);
+
+Route::apiResource('bahan_baku', BahanBakuController::class);
+
+Route::apiResource('hampers', HampersController::class);
+
+Route::apiResource('detail_hampers', DetailHampersController::class);
+
