@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class KaryawanController extends Controller
 {
@@ -107,9 +108,17 @@ class KaryawanController extends Controller
 
         $validate = Validator::make($request->all(), [
             'nama' => 'sometimes|max:255',
-            'no_telp' => 'sometimes|digits_between:10,13|unique:karyawan,no_telp,except,' . $data->no_telp .
-                ' |regex:/^(?:\+?08)(?:\d{2,3})?[ -]?\d{3,4}[ -]?\d{4}$/',
-            'email' => 'sometimes|email|unique:karyawan,email,except,' . $data->email,
+            'no_telp' => [
+                'sometimes',
+                'digits_between:10,13',
+                Rule::unique('karyawan')->ignore($data->no_telp, 'no_telp'),
+                'regex:/^(?:\+?08)(?:\d{2,3})?[ -]?\d{3,4}[ -]?\d{4}$/',
+            ],
+            'email' => [
+                'sometimes',
+                'email',
+                Rule::unique('karyawan')->ignore($data->email, 'email')
+            ],
             'hire_date' => 'sometimes|date',
             'gaji' => 'sometimes|numeric|min:0',
             'bonus' => 'sometimes|numeric|min:0',

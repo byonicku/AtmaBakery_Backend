@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class PenitipController extends Controller
 {
@@ -103,10 +104,20 @@ class PenitipController extends Controller
     {
         $data = Penitip::find($id);
 
+        if (!$data) {
+            return response()->json([
+                'message' => 'Data not found',
+            ], 404);
+        }
+
         $validate = Validator::make($request->all(), [
             'nama' => 'sometimes|max:255',
-            'no_telp' => 'sometimes|unique:penitip,no_telp,except,' . $data->no_telp . '
-                |digits_between:10,13|regex:/^(?:\+?08)(?:\d{2,3})?[ -]?\d{3,4}[ -]?\d{4}$/',
+            'no_telp' => [
+                'sometimes',
+                'digits_between:10,13',
+                'regex:/^(?:\+?08)(?:\d{2,3})?[ -]?\d{3,4}[ -]?\d{4}$/',
+                Rule::unique('penitip')->ignore($data->no_telp, 'no_telp'),
+            ],
         ]);
 
         if ($validate->fails()) {

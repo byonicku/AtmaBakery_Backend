@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\API\Data\FunctionHelper;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -81,7 +82,11 @@ class UserController extends Controller
 
         $validate = Validator::make($request->all(), [
             'nama' => 'sometimes|max:255',
-            'email' => 'sometimes|email|unique:user,email,except,' . $data->email,
+            'email' => [
+                'sometimes',
+                'email',
+                Rule::unique('user')->ignore($data->email, 'email'),
+            ],
             'no_telp' => 'sometimes|digits_between:10,13|unique:user,no_telp|regex:/^(?:\+?08)(?:\d{2,3})?[ -]?\d{3,4}[ -]?\d{4}$/',
             'foto_profil' => 'sometimes|image|mimes:jpeg,png,jpg|max:1024',
         ]);

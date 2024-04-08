@@ -119,6 +119,12 @@ class HampersController extends Controller
     {
         $data = Hampers::find($id);
 
+        if (!$data) {
+            return response()->json([
+                'message' => 'Data not found',
+            ], 404);
+        }
+
         $validate = Validator::make($request->all(), [
             'nama_hampers' => 'sometimes|max:255',
             'harga' => 'sometimes|numeric|min:0',

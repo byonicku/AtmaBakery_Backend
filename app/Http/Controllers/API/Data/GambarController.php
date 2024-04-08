@@ -188,6 +188,12 @@ class GambarController extends Controller
 
         $data = Gambar::find($request->id_gambar);
 
+        if (!$data) {
+            return response()->json([
+                'message' => 'Data not found',
+            ], 404);
+        }
+
         $picture = $request->file('foto');
 
         DB::beginTransaction();
