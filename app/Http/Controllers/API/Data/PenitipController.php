@@ -35,8 +35,8 @@ class PenitipController extends Controller
     public function store(Request $request)
     {
         $validate = Validator::make($request->all(), [
-            'nama' => 'required',
-            'no_telp' => 'required|unique:penitip,no_telp|digits_between:8,13',
+            'nama' => 'required|max:255',
+            'no_telp' => 'required|unique:penitip,no_telp|digits_between:10,13|regex:/^(?:\+?08)(?:\d{2,3})?[ -]?\d{3,4}[ -]?\d{4}$/',
         ]);
 
         if ($validate->fails()) {
@@ -105,7 +105,7 @@ class PenitipController extends Controller
 
         $validate = Validator::make($request->all(), [
             'nama' => 'sometimes|max:255',
-            'no_telp' => 'sometimes|exists:penitip,no_telp',
+            'no_telp' => 'sometimes|unique:penitip,no_telp|digits_between:10,13|regex:/^(?:\+?08)(?:\d{2,3})?[ -]?\d{3,4}[ -]?\d{4}$/',
         ]);
 
         if ($validate->fails()) {
