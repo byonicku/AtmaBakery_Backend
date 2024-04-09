@@ -46,13 +46,13 @@ class PenitipController extends Controller
         ], 200);
     }
 
-    public function paginateSearch(string $data)
+    public function search(string $data)
     {
-        $data = Penitip::whereAny(['id_penitip', 'nama', 'no_telp'], 'LIKE', '%'.$data.'%')->paginate(10);
+        $data = Penitip::whereAny(['id_penitip', 'nama', 'no_telp'], 'LIKE', '%'.$data.'%')->get();
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data is not found',
             ], 404);
         }
 

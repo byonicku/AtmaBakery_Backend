@@ -71,25 +71,30 @@ Route::controller(ResepController::class)
             Route::delete('/resep', 'destroy')->name('resep.destroy');
             Route::delete('/resep/all/{id_produk}', 'destroyAll')->name('resep.destroy-all');
             Route::get('/paginate/resep', 'paginate')->name('resep.paginate');
+            Route::get('/resep/search', 'search')->name('resep.search');
        })->name('resep');
 
 Route::apiResource('karyawan', KaryawanController::class);
 Route::get('/paginate/karyawan', [KaryawanController::class, 'paginate'])->name('karyawan.paginate');
+Route::get('/karyawan/search/{data}', [KaryawanController::class, 'search'])->name('karyawan.search');
 
 Route::apiResource('produk', ProdukController::class);
 Route::get('/paginate/produk', [ProdukController::class, 'paginate'])->name('produk.paginate');
+Route::get('/produk/search/{data}', [ProdukController::class, 'search'])->name('produk.search');
 
         // Jangan lupa kasih role lagi ye :D
 
 Route::apiResource('penitip', PenitipController::class);
 Route::get('/paginate/penitip', [PenitipController::class, 'paginate'])->name('penitip.paginate');
-Route::get('/paginate/penitip/{data}', [PenitipController::class, 'paginateSearch'])->name('penitip.paginate.search');
+Route::get('/penitip/search/{data}', [PenitipController::class, 'search'])->name('penitip.search');
 
 Route::apiResource('bahan_baku', BahanBakuController::class);
 Route::get('/paginate/bahan_baku', [BahanBakuController::class, 'paginate'])->name('bahan_baku.paginate');
+Route::get('/bahan_baku/search/{data}', [BahanBakuController::class, 'search'])->name('bahan_baku.search');
 
 Route::apiResource('hampers', HampersController::class);
 Route::get('/paginate/hampers', [HampersController::class, 'paginate'])->name('hampers.paginate');
+Route::get('/hampers/search/{data}', [HampersController::class, 'search'])->name('hampers.search');
 
 Route::apiResource('detail_hampers', DetailHampersController::class);
 

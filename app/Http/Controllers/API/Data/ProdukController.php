@@ -47,6 +47,22 @@ class ProdukController extends Controller
         ], 200);
     }
 
+    public function search(string $data)
+    {
+        $data = Produk::whereAny(['id_produk', 'nama_produk', 'id_kategori', 'ukuran', 'harga', 'stok', 'limit', 'id_penitip', 'status'], 'LIKE', '%'.$data.'%')->get();
+
+        if (count($data) == 0) {
+            return response()->json([
+                'message' => 'Data is not found',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Data successfully retrieved',
+            'data' => $data,
+        ], 200);
+    }
+
     /**
      * Store a newly created resource in storage.
      */

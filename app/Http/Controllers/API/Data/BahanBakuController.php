@@ -45,6 +45,22 @@ class BahanBakuController extends Controller
         ], 200);
     }
 
+    public function search(string $data)
+    {
+        $data = BahanBaku::whereAny(['id_bahan_baku', 'nama_bahan_baku', 'satuan', 'stok'], 'LIKE', '%'.$data.'%')->get();
+
+        if (count($data) == 0) {
+            return response()->json([
+                'message' => 'Data is not found',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Data successfully retrieved',
+            'data' => $data,
+        ], 200);
+    }
+
     /**
      * Store a newly created resource in storage.
      */

@@ -46,6 +46,22 @@ class KaryawanController extends Controller
         ], 200);
     }
 
+    public function search(string $data)
+    {
+        $data = Karyawan::whereAny(['id_karyawan', 'nama', 'no_telp', 'email', 'hire_date', 'gaji', 'bonus'], 'LIKE', '%'.$data.'%')->get();
+
+        if (count($data) == 0) {
+            return response()->json([
+                'message' => 'Data is not found',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Data successfully retrieved',
+            'data' => $data,
+        ], 200);
+    }
+
     /**
      * Store a newly created resource in storage.
      */
