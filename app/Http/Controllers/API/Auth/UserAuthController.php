@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Auth;
 use App\Http\Controllers\Controller;
 use App\Notifications\EmailVerify;
 use Auth;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -182,6 +183,7 @@ class UserAuthController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'message' => $validator->errors()->first(),
+                'state' => -1
             ], 400);
         }
 
@@ -192,6 +194,15 @@ class UserAuthController extends Controller
         if (!Hash::check($request->token, $data->token)) {
             return response()->json([
                 'message' => 'Invalid token',
+                'state' => -1
+            ], 400);
+        }
+
+        $time = Carbon::parse($data->created_at);
+        $endTime = $time->addMinutes(60);
+        if (Carbon::now()->gt($endTime)) {
+            return response()->json([
+                'message' => 'Token expired',
                 'state' => -1
             ], 400);
         }
