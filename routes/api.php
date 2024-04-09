@@ -83,6 +83,7 @@ Route::get('/paginate/produk', [ProdukController::class, 'paginate'])->name('pro
 
 Route::apiResource('penitip', PenitipController::class);
 Route::get('/paginate/penitip', [PenitipController::class, 'paginate'])->name('penitip.paginate');
+Route::get('/paginate/penitip/{data}', [PenitipController::class, 'paginateSearch'])->name('penitip.paginate.search');
 
 Route::apiResource('bahan_baku', BahanBakuController::class);
 Route::get('/paginate/bahan_baku', [BahanBakuController::class, 'paginate'])->name('bahan_baku.paginate');
