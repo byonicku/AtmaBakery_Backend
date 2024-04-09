@@ -146,7 +146,7 @@ class UserAuthController extends Controller
             return response()->json([
                 'message' => 'Invalid verification key',
                 'state' => '-1'
-            ], 400);
+            ], 200);
         }
 
         $checkAlready = User::select('active')
@@ -158,7 +158,7 @@ class UserAuthController extends Controller
             return response()->json([
                 'message' => 'Account already verified',
                 'state' => '0'
-            ], 400);
+            ], 200);
         }
 
         User::where('verify_key', $verify_key)
@@ -184,7 +184,7 @@ class UserAuthController extends Controller
             return response()->json([
                 'message' => $validator->errors()->first(),
                 'state' => -1
-            ], 400);
+            ], 200);
         }
 
         $data = DB::table('password_reset_tokens')
@@ -195,7 +195,7 @@ class UserAuthController extends Controller
             return response()->json([
                 'message' => 'Invalid token',
                 'state' => -1
-            ], 400);
+            ], 200);
         }
 
         $time = Carbon::parse($data->created_at);
