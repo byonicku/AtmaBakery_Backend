@@ -32,7 +32,7 @@ class PenitipController extends Controller
 
     public function paginate()
     {
-        $data = Penitip::paginate(3);
+        $data = Penitip::paginate(1);
 
         if (count($data) == 0) {
             return response()->json([
