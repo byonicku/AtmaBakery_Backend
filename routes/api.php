@@ -32,6 +32,7 @@ Route::controller(UserController::class)
         Route::put('/users/{id}', 'update')->name('users')->middleware(['auth:sanctum', 'ability:user,admin,owner']);
         Route::delete('/users/{id}', 'destroy')->name('users')->middleware(['auth:sanctum', 'ability:admin,owner']);
         Route::get('/paginate/users', 'paginate')->name('users')->middleware(['auth:sanctum', 'ability:admin,owner']);
+        Route::get('/users/search/{data}', 'search')->name('users')->middleware(['auth:sanctum', 'ability:admin,owner']);
        })->name('users');
 
 /*

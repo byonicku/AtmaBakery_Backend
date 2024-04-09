@@ -48,6 +48,22 @@ class UserController extends Controller
         ], 200);
     }
 
+    public function search(string $data)
+    {
+        $data = User::whereAny(['id', 'nama', 'email', 'no_telp'], 'LIKE', '%'.$data.'%')->get();
+
+        if (count($data) == 0) {
+            return response()->json([
+                'message' => 'Data is not found',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Data successfully retrieved',
+            'data' => $data,
+        ], 200);
+    }
+
     public function showSelf()
     {
         $data = Auth::user();

@@ -192,11 +192,13 @@ class UserAuthController extends Controller
         if (!Hash::check($request->token, $data->token)) {
             return response()->json([
                 'message' => 'Invalid token',
+                'state' => -1
             ], 400);
         }
 
         return response()->json([
             'message' => 'Token valid',
+            'state' => 1
         ], 200);
     }
 }
