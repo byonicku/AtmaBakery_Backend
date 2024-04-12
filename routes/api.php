@@ -26,13 +26,13 @@ Route::controller(UserAuthController::class)
 
 Route::controller(UserController::class)
        ->group(function () {
-        Route::get('/users/self', 'showSelf')->name('users')->middleware('auth:sanctum');
-        Route::get('/users', 'index')->name('users')->middleware(['auth:sanctum', 'ability:admin,owner']);
-        Route::get('/users/{id}', 'show')->name('users')->middleware(['auth:sanctum', 'ability:admin,owner']);
-        Route::put('/users/{id}', 'update')->name('users')->middleware(['auth:sanctum', 'ability:user,admin,owner']);
-        Route::delete('/users/{id}', 'destroy')->name('users')->middleware(['auth:sanctum', 'ability:admin,owner']);
-        Route::get('/paginate/users', 'paginate')->name('users')->middleware(['auth:sanctum', 'ability:admin,owner']);
-        Route::get('/users/search/{data}', 'search')->name('users')->middleware(['auth:sanctum', 'ability:admin,owner']);
+        Route::get('/users/self', 'showSelf')->name('users.self')->middleware('auth:sanctum');
+        Route::get('/users', 'index')->name('users.index')->middleware(['auth:sanctum', 'ability:admin,owner']);
+        Route::get('/users/{id}', 'show')->name('users.show')->middleware(['auth:sanctum', 'ability:admin,owner']);
+        Route::put('/users/{id}', 'update')->name('users.update')->middleware(['auth:sanctum', 'ability:user,admin,owner']);
+        Route::delete('/users/{id}', 'destroy')->name('users.delete')->middleware(['auth:sanctum', 'ability:admin,owner']);
+        Route::get('/paginate/users', 'paginate')->name('users.paginate')->middleware(['auth:sanctum', 'ability:admin,owner']);
+        Route::get('/users/search/{data}', 'search')->name('users.search')->middleware(['auth:sanctum', 'ability:admin,owner']);
        })->name('users');
 
 /*
