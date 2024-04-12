@@ -49,7 +49,7 @@ class ProdukController extends Controller
 
     public function search(string $data)
     {
-        $data = Produk::whereAny(['id_produk', 'nama_produk', 'id_kategori', 'ukuran', 'harga', 'stok', 'limit', 'id_penitip', 'status'], 'LIKE', '%'.$data.'%')->get();
+        $data = Produk::whereAny(['id_produk', 'nama_produk', 'deskripsi', 'id_kategori', 'ukuran', 'harga', 'stok', 'limit', 'id_penitip', 'status'], 'LIKE', '%'.$data.'%')->get();
 
         if (count($data) == 0) {
             return response()->json([
@@ -72,6 +72,7 @@ class ProdukController extends Controller
 
         $validate = Validator::make($request->all(), ([
             'nama_produk' => 'required|max:255',
+            'deskripsi' => 'required|max:255',
             'id_kategori' => 'required|exists:kategori,id_kategori',
             'ukuran' => 'required:in:1,1/2',
             'harga' => 'required|min:0',
@@ -96,6 +97,7 @@ class ProdukController extends Controller
         try {
             $data = Produk::create([
                 'nama_produk' => $request->nama_produk,
+                'deskripsi' => $request->deskripsi,
                 'id_kategori' => strtoupper($request->id_kategori),
                 'ukuran' => $request->ukuran,
                 'harga' => $request->harga,
@@ -174,6 +176,7 @@ class ProdukController extends Controller
 
         $validate = Validator::make($request->all(), ([
             'nama_produk' => 'sometimes|max:255',
+            'deskripsi' => 'sometimes|max:255',
             'id_kategori' => 'sometimes|exists:kategori,id_kategori',
             'ukuran' => 'sometimes:in:1,1/2',
             'harga' => 'sometimes|min:0',
@@ -191,6 +194,7 @@ class ProdukController extends Controller
 
         $fillableAttributes = [
             'nama_produk',
+            'deskripsi',
             'id_kategori',
             'ukuran',
             'harga',
