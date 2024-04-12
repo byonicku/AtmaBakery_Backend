@@ -16,5 +16,6 @@ class Karyawan extends Model
         'email',
         'hire_date',
         'gaji',
+        'bonus'
     ];
 }
