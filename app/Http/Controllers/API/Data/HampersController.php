@@ -99,7 +99,7 @@ class HampersController extends Controller
                     ->uploadImage($pic, $imageName);
 
                 $data = Gambar::create([
-                    'id_produk' => $request->id_produk,
+                    'id_hampers' => $data->id_hampers,
                     'url' => $url,
                     'public_id' => $imageName,
                 ]);

@@ -116,7 +116,7 @@ class ProdukController extends Controller
                     ->uploadImage($pic, $imageName);
 
                 $data = Gambar::create([
-                    'id_produk' => $request->id_produk,
+                    'id_produk' => $data->id_produk,
                     'url' => $url,
                     'public_id' => $imageName,
                 ]);
