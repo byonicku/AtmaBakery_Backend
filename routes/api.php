@@ -50,7 +50,6 @@ Route::post('password/reset', [ResetPasswordAPIController::class, 'reset'])
        ->name('password-reset');
 
 Route::controller(GambarController::class)
-       ->middleware(['auth:sanctum', 'ability:admin,owner'])
        ->group(function () {
             Route::apiResource('gambar', GambarController::class, ['except' => ['update']]);
             Route::put('/gambar', 'update')->name('gambar.update');
