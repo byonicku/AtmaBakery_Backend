@@ -36,13 +36,11 @@ class GambarController extends Controller
      */
     public function store(Request $request)
     {
-        // Gambar wajib dikirim dengan key array 'foto[]'
-
         $validate = Validator::make($request->all(), [
             'id_produk' => 'sometimes|numeric|exists:produk,id_produk',
             'id_hampers' => 'sometimes|numeric|exists:hampers,id_hampers',
-            'url' => 'required|url',
-            'public_id' => 'required|unique:gambar,public_id',
+            'url' => 'required',
+            'public_id' => 'required',
         ]);
 
         if (!$request->id_produk && !$request->id_hampers) {
@@ -66,9 +64,9 @@ class GambarController extends Controller
         $count = 0;
 
         if ($request->id_produk) {
-            $count = Gambar::find($request->id_produk)->count();
+            $count = Gambar::find($request->id_produk) == null ? 0 : Gambar::find($request->id_produk)->count();
         } else {
-            $count = Gambar::find($request->id_hampers)->count();
+            $count = Gambar::find($request->id_hampers) == null ? 0 : Gambar::find($request->id_hampers)->count();
         }
 
         if ($count >= 5) {
