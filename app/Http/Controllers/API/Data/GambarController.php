@@ -41,8 +41,8 @@ class GambarController extends Controller
         $validate = Validator::make($request->all(), [
             'id_produk' => 'sometimes|numeric|exists:produk,id_produk',
             'id_hampers' => 'sometimes|numeric|exists:hampers,id_hampers',
-            'foto' => 'required|array|min:1',
-            'foto.*' => 'image|mimes:jpg,jpeg,png|max:1024',
+            'url' => 'required|url',
+            'public_id' => 'required|unique:gambar,public_id',
         ]);
 
         if (!$request->id_produk && !$request->id_hampers) {
@@ -78,31 +78,15 @@ class GambarController extends Controller
             ], 400);
         }
 
-        $backname = $request->id_produk ? 'produk' : 'hampers';
-
-        $picture = $request->file('foto');
-        $num_success = 0;
-
         DB::beginTransaction();
 
         try {
-            foreach ($picture as $pic) {
-                $imageName = time() . "-" . $backname;
-
-                $url = (new FunctionHelper())
-                    ->uploadImage($pic, $imageName);
-
-                $data = Gambar::create([
-                    'id_produk' => $request->id_produk ?? null,
-                    'id_hampers' => $request->id_hampers ?? null,
-                    'url' => $url,
-                    'public_id' => $imageName,
-                ]);
-
-                if ($data) {
-                    $num_success++;
-                }
-            }
+            $data = Gambar::create([
+                'id_produk' => $request->id_produk ?? null,
+                'id_hampers' => $request->id_hampers ?? null,
+                'url' => $request->url,
+                'public_id' => $request->public_id,
+            ]);
 
             DB::commit();
         } catch (\Exception $e) {
@@ -115,7 +99,7 @@ class GambarController extends Controller
 
         return response()->json([
             'message' => 'Image successfully added',
-            'img_count_success' => $num_success,
+            'data' => $data,
         ], 201);
     }
 
@@ -177,7 +161,7 @@ class GambarController extends Controller
     {
         $validate = Validator::make($request->all(), [
             'id_gambar' => 'required|numeric|exists:gambar,id_gambar',
-            'foto' => 'required|mimes:jpg,jpeg,png|max:1024',
+            'foto' => 'required',
         ]);
 
         if ($validate->fails()) {

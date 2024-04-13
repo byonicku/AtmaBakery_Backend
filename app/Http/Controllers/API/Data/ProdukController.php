@@ -78,8 +78,6 @@ class ProdukController extends Controller
             'harga' => 'required|min:0',
             'stok' => 'required|min:0',
             'limit' => 'required|min:0',
-            'foto' => 'required|array|min:1|max:5',
-            'foto.*' => 'image|mimes:jpg,jpeg,png|max:1024',
             'id_penitip' => 'nullable|exists:penitip,id_penitip',
             'status' => 'required|in:PO,READY',
         ]));
@@ -106,25 +104,6 @@ class ProdukController extends Controller
                 'id_penitip' => $request->id_penitip,
                 'status' => strtoupper($request->status),
             ]);
-
-            $picture = $request->file('foto');
-
-            foreach ($picture as $pic) {
-                $imageName = time() . "-produk";
-
-                $url = (new FunctionHelper())
-                    ->uploadImage($pic, $imageName);
-
-                $data = Gambar::create([
-                    'id_produk' => $data->id_produk,
-                    'url' => $url,
-                    'public_id' => $imageName,
-                ]);
-
-                if ($data) {
-                    $num_success++;
-                }
-            }
 
             DB::commit();
         } catch (\Exception $e) {
