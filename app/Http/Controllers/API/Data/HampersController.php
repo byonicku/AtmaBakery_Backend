@@ -16,7 +16,7 @@ class HampersController extends Controller
      */
     public function index()
     {
-        $data = Hampers::with('detail_hampers.produk')->get();
+        $data = Hampers::with('detail_hampers.produk', 'detail_hampers.bahan_baku')->get();
 
         if (count($data) == 0) {
             return response()->json([
@@ -32,7 +32,7 @@ class HampersController extends Controller
 
     public function paginate()
     {
-        $data = Hampers::with('detail_hampers.produk')->paginate(10);
+        $data = Hampers::with('detail_hampers.produk', 'detail_hampers.bahan_baku')->paginate(10);
 
         if (count($data) == 0) {
             return response()->json([
@@ -48,7 +48,7 @@ class HampersController extends Controller
 
     public function search(string $data)
     {
-        $data = Hampers::with('detail_hampers.produk')
+        $data = Hampers::with('detail_hampers.produk', 'detail_hampers.bahan_baku')
             ->whereAny(['id_hampers', 'nama_hampers', 'harga'], 'LIKE', '%'.$data.'%')
             ->get();
 
@@ -108,7 +108,7 @@ class HampersController extends Controller
      */
     public function show(string $id)
     {
-        $data = Hampers::with('detail_hampers.produk')->find($id);
+        $data = Hampers::with('detail_hampers.produk', 'detail_hampers.bahan_baku')->find($id);
 
         if (!$data) {
             return response()->json([
