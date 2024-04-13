@@ -126,7 +126,7 @@ class ProdukController extends Controller
      */
     public function show(string $id)
     {
-        $data = Produk::find($id);
+        $data = Produk::with('gambar')->find($id);
 
         if (!$data) {
             return response()->json([

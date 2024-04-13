@@ -130,7 +130,7 @@ class HampersController extends Controller
      */
     public function show(string $id)
     {
-        $data = Hampers::find($id);
+        $data = Hampers::with('gambar')->find($id);
 
         if (!$data) {
             return response()->json([
