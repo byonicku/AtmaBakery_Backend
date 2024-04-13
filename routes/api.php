@@ -71,7 +71,7 @@ Route::controller(ResepController::class)
             Route::delete('/resep', 'destroy')->name('resep.destroy');
             Route::delete('/resep/all/{id_produk}', 'destroyAll')->name('resep.destroy-all');
             Route::get('/paginate/resep', 'paginate')->name('resep.paginate');
-            Route::get('/resep/search', 'search')->name('resep.search');
+            Route::get('/resep/search/{da', 'search')->name('resep.search');
        })->name('resep');
 
 Route::apiResource('karyawan', KaryawanController::class);
@@ -97,4 +97,4 @@ Route::get('/paginate/hampers', [HampersController::class, 'paginate'])->name('h
 Route::get('/hampers/search/{data}', [HampersController::class, 'search'])->name('hampers.search');
 
 Route::apiResource('detail_hampers', DetailHampersController::class);
-
+Route::delete('/detail_hampers/all/{id_hampers}', [DetailHampersController::class, 'destroyAll'])->name('detail_hampers.destroy-all');

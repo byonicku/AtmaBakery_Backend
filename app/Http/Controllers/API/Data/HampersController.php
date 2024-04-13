@@ -16,7 +16,7 @@ class HampersController extends Controller
      */
     public function index()
     {
-        $data = Hampers::all();
+        $data = Hampers::with('detail_hampers.produk')->get();
 
         if (count($data) == 0) {
             return response()->json([
@@ -32,7 +32,7 @@ class HampersController extends Controller
 
     public function paginate()
     {
-        $data = Hampers::paginate(10);
+        $data = Hampers::with('detail_hampers.produk')->paginate(10);
 
         if (count($data) == 0) {
             return response()->json([
@@ -48,7 +48,9 @@ class HampersController extends Controller
 
     public function search(string $data)
     {
-        $data = Hampers::whereAny(['id_hampers', 'nama_hampers', 'harga'], 'LIKE', '%'.$data.'%')->get();
+        $data = Hampers::with('detail_hampers.produk')
+            ->whereAny(['id_hampers', 'nama_hampers', 'harga'], 'LIKE', '%'.$data.'%')
+            ->get();
 
         if (count($data) == 0) {
             return response()->json([
@@ -106,7 +108,7 @@ class HampersController extends Controller
      */
     public function show(string $id)
     {
-        $data = Hampers::with('gambar')->find($id);
+        $data = Hampers::with('detail_hampers.produk')->find($id);
 
         if (!$data) {
             return response()->json([
@@ -191,6 +193,9 @@ class HampersController extends Controller
                 app(GambarController::class)
                     ->destroy($gambar->id_gambar);
             }
+
+            app(DetailHampersController::class)
+                ->destroyAll($data->id_hampers);
 
             $data->delete();
             DB::commit();

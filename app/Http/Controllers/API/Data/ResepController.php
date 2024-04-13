@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\Data;
 
+use App\Models\Produk;
 use App\Models\Resep;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ class ResepController extends Controller
      */
     public function index()
     {
-        $data = Resep::all();
+        $data = Produk::with('resep')->get();
 
         if (count($data) == 0) {
             return response()->json([
@@ -31,7 +32,7 @@ class ResepController extends Controller
 
     public function paginate()
     {
-        $data = Resep::paginate(10);
+        $data = Produk::with('resep')->paginate(10);
 
         if (count($data) == 0) {
             return response()->json([
@@ -47,7 +48,7 @@ class ResepController extends Controller
 
     public function search(string $data)
     {
-        $data = Resep::whereAny(['id_produk', 'id_bahan_baku', 'kuantitas', 'satuan'], 'LIKE', '%'.$data.'%')->get();
+        $data = Produk::with('resep')->whereAny(['id_produk', 'nama_produk', 'deskripsi', 'id_kategori', 'ukuran', 'harga', 'stok', 'limit', 'id_penitip', 'status'], 'LIKE', '%'.$data.'%')->get();
 
         if (count($data) == 0) {
             return response()->json([
@@ -109,7 +110,7 @@ class ResepController extends Controller
      */
     public function show(string $id_produk)
     {
-        $data = Resep::all()->where('id_produk', $id_produk)->values();
+        $data = Produk::with('resep')->where('id_produk', $id_produk)->first();
 
         if ($data == null) {
             return response()->json([

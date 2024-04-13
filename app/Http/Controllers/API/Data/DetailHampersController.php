@@ -184,4 +184,35 @@ class DetailHampersController extends Controller
             ], 500);
         }
     }
+
+    public function destroyAll(string $id_hampers)
+    {
+        $data = DetailHampers::where('id_hampers', $id_hampers)->get();
+
+        if (count($data) == 0) {
+            return response()->json([
+                'message' => 'Data not found',
+            ], 404);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            foreach ($data as $detailHampers) {
+                $detailHampers->delete();
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Failed to delete data',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Data successfully deleted',
+        ], 200);
+    }
 }

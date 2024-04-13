@@ -226,6 +226,9 @@ class ProdukController extends Controller
                     ->destroy($gambar->id_gambar);
             }
 
+            app(ResepController::class)
+                ->destroyAll($data->id_produk);
+
             $data->delete();
 
             DB::commit();
