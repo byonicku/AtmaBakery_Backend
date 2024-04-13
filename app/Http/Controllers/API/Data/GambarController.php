@@ -64,9 +64,9 @@ class GambarController extends Controller
         $count = 0;
 
         if ($request->id_produk) {
-            $count = Gambar::find($request->id_produk) == null ? 0 : count(Gambar::find($request->id_produk));
+            $count = Gambar::all()->where('id_produk', '=', $request->id_produk)->count();
         } else {
-            $count = Gambar::find($request->id_hampers) == null ? 0 : count(Gambar::find($request->id_hampers));
+            $count = Gambar::all()->where('id_hampers', '=', $request->id_hampers)->count();
         }
 
         if ($count >= 5) {
