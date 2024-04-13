@@ -38,7 +38,7 @@ class DetailHampersController extends Controller
             'id_produk' => 'sometimes|exists:produk,id_produk',
             'id_hampers' => 'required|exists:hampers,id_hampers',
             'id_bahan_baku' => 'sometimes|exists:bahan_baku,id_bahan_baku',
-            'jumlah' => 'required|numeric|min:0',
+            'jumlah' => 'required|numeric|gte:0',
         ]);
 
         if ($validate->fails()) {
@@ -114,7 +114,7 @@ class DetailHampersController extends Controller
             'id_produk' => 'sometimes|exists:produk,id_produk',
             'id_hampers' => 'sometimes|exists:hampers,id_hampers',
             'id_bahan_baku' => 'sometimes|exists:bahan_baku,id_bahan_baku',
-            'jumlah' => 'sometimes|numeric|min:0',
+            'jumlah' => 'sometimes|numeric|gte:0',
         ]);
 
         if ($validate->fails()) {

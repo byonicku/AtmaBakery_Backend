@@ -69,9 +69,7 @@ class HampersController extends Controller
     {
         $validate = Validator::make($request->all(), [
             'nama_hampers' => 'required|max:255',
-            'harga' => 'required|numeric|min:0',
-            'foto' => 'required|array|min:1|max:5',
-            'foto.*' => 'image|mimes:jpg,jpeg,png|max:1024',
+            'harga' => 'required|numeric|gte:0',
         ]);
 
         if ($validate->fails()) {
@@ -80,8 +78,6 @@ class HampersController extends Controller
             ], 400);
         }
 
-        $num_success = 0;
-
         DB::beginTransaction();
 
         try {
@@ -89,25 +85,6 @@ class HampersController extends Controller
                 'nama_hampers' => $request->nama_hampers,
                 'harga' => $request->harga,
             ]);
-
-            $picture = $request->file('foto');
-
-            foreach ($picture as $pic) {
-                $imageName = time() . "-hampers";
-
-                $url = (new FunctionHelper())
-                    ->uploadImage($pic, $imageName);
-
-                $data = Gambar::create([
-                    'id_hampers' => $data->id_hampers,
-                    'url' => $url,
-                    'public_id' => $imageName,
-                ]);
-
-                if ($data) {
-                    $num_success++;
-                }
-            }
 
             DB::commit();
         } catch (\Exception $e) {
@@ -121,7 +98,6 @@ class HampersController extends Controller
         return response()->json([
             'message' => 'Data successfully created',
             'data' => $data,
-            'img_count_success' => $num_success,
         ], 201);
     }
 
@@ -159,7 +135,7 @@ class HampersController extends Controller
 
         $validate = Validator::make($request->all(), [
             'nama_hampers' => 'sometimes|max:255',
-            'harga' => 'sometimes|numeric|min:0',
+            'harga' => 'sometimes|numeric|gte:0',
         ]);
 
         if ($validate->fails()) {

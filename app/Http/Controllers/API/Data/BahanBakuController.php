@@ -69,7 +69,7 @@ class BahanBakuController extends Controller
         $validate = Validator::make($request->all(), [
             'nama_bahan_baku' => 'required|max:255',
             'satuan' => 'required|max:255',
-            'stok' => 'required|min:0',
+            'stok' => 'required|gte:0',
         ]);
 
         if ($validate->fails()) {
@@ -136,7 +136,7 @@ class BahanBakuController extends Controller
         $validate = Validator::make($request->all(), [
             'nama_bahan_baku' => 'sometimes|max:255',
             'satuan' => 'sometimes|max:255',
-            'stok' => 'sometimes|min:0',
+            'stok' => 'sometimes|gte:0',
         ]);
 
         if ($validate->fails()) {

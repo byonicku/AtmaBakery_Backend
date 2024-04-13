@@ -69,7 +69,7 @@ class ResepController extends Controller
         $validate = Validator::make($request->all(), [
             'id_produk' => 'required|exists:produk,id_produk',
             'id_bahan_baku' => 'required|exists:bahan_baku,id_bahan_baku',
-            'kuantitas' => 'required|numeric|min:0',
+            'kuantitas' => 'required|numeric|gte:0',
             'satuan' => 'required|max:255',
         ]);
 
@@ -131,7 +131,7 @@ class ResepController extends Controller
         $validate = Validator::make($request->all(), [
             'id_produk' => 'required|exists:produk,id_produk',
             'id_bahan_baku' => 'required|exists:bahan_baku,id_bahan_baku',
-            'kuantitas' => 'required|numeric|min:0',
+            'kuantitas' => 'required|numeric|gte:0',
             'satuan' => 'required|max:255',
         ]);
 
