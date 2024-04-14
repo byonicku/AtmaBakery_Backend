@@ -60,7 +60,7 @@ class DetailHampersController extends Controller
                 'id_produk' => $request->id_produk ?? null,
                 'id_hampers' => $request->id_hampers,
                 'id_bahan_baku' => $request->id_bahan_baku ?? null,
-                'jumlah' => $request->kuantitas,
+                'jumlah' => $request->jumlah,
             ]);
 
             DB::commit();
