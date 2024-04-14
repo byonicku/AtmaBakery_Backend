@@ -32,7 +32,7 @@ class HampersController extends Controller
 
     public function paginate()
     {
-        $data = Hampers::with('detail_hampers.produk', 'detail_hampers.bahan_baku')->paginate(10);
+        $data = Hampers::with('detail_hampers.produk:id_produk,nama_produk,ukuran')->paginate(10);
 
         if (count($data) == 0) {
             return response()->json([
@@ -48,7 +48,7 @@ class HampersController extends Controller
 
     public function search(string $data)
     {
-        $data = Hampers::with('detail_hampers.produk', 'detail_hampers.bahan_baku')
+        $data = Hampers::with('detail_hampers.produk')
             ->whereAny(['id_hampers', 'nama_hampers', 'harga'], 'LIKE', '%'.$data.'%')
             ->get();
 
