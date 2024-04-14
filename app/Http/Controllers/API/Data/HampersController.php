@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\Data;
 
+use App\Models\DetailHampers;
 use App\Models\Gambar;
 use App\Models\Hampers;
 use App\Http\Controllers\Controller;
@@ -86,6 +87,20 @@ class HampersController extends Controller
             $data = Hampers::create([
                 'nama_hampers' => $request->nama_hampers,
                 'harga' => $request->harga,
+            ]);
+
+            DetailHampers::create([
+                'id_hampers' => $data->id_hampers,
+                'id_produk' => null,
+                'id_bahan_baku' => 25,
+                'kuantitas' => 1,
+            ]);
+
+            DetailHampers::create([
+                'id_hampers' => $data->id_hampers,
+                'id_produk' => null,
+                'id_bahan_baku' => 26,
+                'kuantitas' => 1,
             ]);
 
             DB::commit();
