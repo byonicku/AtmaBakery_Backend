@@ -93,14 +93,14 @@ class HampersController extends Controller
                 'id_hampers' => $data->id_hampers,
                 'id_produk' => null,
                 'id_bahan_baku' => 25,
-                'kuantitas' => 1,
+                'jumlah' => 1,
             ]);
 
             DetailHampers::create([
                 'id_hampers' => $data->id_hampers,
                 'id_produk' => null,
                 'id_bahan_baku' => 26,
-                'kuantitas' => 1,
+                'jumlah' => 1,
             ]);
 
             DB::commit();
