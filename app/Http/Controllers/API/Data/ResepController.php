@@ -16,7 +16,7 @@ class ResepController extends Controller
      */
     public function index()
     {
-        $data = Produk::with('resep')->get();
+        $data = Produk::all()->load('resep.bahan_baku:id_bahan_baku,nama_bahan_baku');
 
         if (count($data) == 0) {
             return response()->json([
@@ -32,7 +32,7 @@ class ResepController extends Controller
 
     public function paginate()
     {
-        $data = Produk::with('resep')->paginate(10);
+        $data = Produk::with('resep.bahan_baku:id_bahan_baku,nama_bahan_baku')->paginate(10);
 
         if (count($data) == 0) {
             return response()->json([
@@ -110,7 +110,7 @@ class ResepController extends Controller
      */
     public function show(string $id_produk)
     {
-        $data = Produk::with('resep')->where('id_produk', $id_produk)->first();
+        $data = Produk::with('resep.bahan_baku:id_bahan_baku,nama_bahan_baku')->where('id_produk', $id_produk)->first();
 
         if ($data == null) {
             return response()->json([
