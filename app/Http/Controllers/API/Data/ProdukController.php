@@ -17,7 +17,7 @@ class ProdukController extends Controller
      */
     public function index()
     {
-        $data = Produk::all();
+        $data = Produk::all()->load('gambar');
 
         if (count($data) == 0) {
             return response()->json([

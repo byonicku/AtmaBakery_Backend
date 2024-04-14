@@ -20,4 +20,9 @@ class Hampers extends Model
     {
         return $this->hasMany(DetailHampers::class, 'id_hampers', 'id_hampers');
     }
+
+    public function gambar()
+    {
+        return $this->hasMany(Gambar::class, 'id_hampers', 'id_hampers');
+    }
 }

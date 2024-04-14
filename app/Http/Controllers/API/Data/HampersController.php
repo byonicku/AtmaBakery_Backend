@@ -16,7 +16,7 @@ class HampersController extends Controller
      */
     public function index()
     {
-        $data = Hampers::with('detail_hampers.produk', 'detail_hampers.bahan_baku')->get();
+        $data = Hampers::all()->load('gambar');
 
         if (count($data) == 0) {
             return response()->json([
@@ -108,7 +108,7 @@ class HampersController extends Controller
      */
     public function show(string $id)
     {
-        $data = Hampers::with('detail_hampers.produk', 'detail_hampers.bahan_baku')->find($id);
+        $data = Hampers::with('gambar')->find($id);
 
         if (!$data) {
             return response()->json([
