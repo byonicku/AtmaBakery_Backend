@@ -36,7 +36,7 @@ class HampersController extends Controller
         $data = Hampers::with(['detail_hampers' => function ($query) {
                     $query->whereNotNull('id_produk');
                 }, 'detail_hampers.produk:id_produk,id_kategori,nama_produk,ukuran', 'gambar'])
-                ->paginate(10);
+                ->paginate(5);
 
         if (count($data) == 0) {
             return response()->json([
