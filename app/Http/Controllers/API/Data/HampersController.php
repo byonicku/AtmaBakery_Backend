@@ -53,7 +53,9 @@ class HampersController extends Controller
 
     public function search(string $data)
     {
-        $data = Hampers::with('detail_hampers')
+        $data = Hampers::with(['detail_hampers' => function ($query) {
+            $query->whereNotNull('id_produk');
+        }])
             ->whereAny(['id_hampers', 'nama_hampers', 'harga'], 'LIKE', '%'.$data.'%')
             ->get();
 
