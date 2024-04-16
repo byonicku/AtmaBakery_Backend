@@ -53,7 +53,7 @@ class HampersController extends Controller
 
     public function search(string $data)
     {
-        $data = Hampers::with('detail_hampers.produk')
+        $data = Hampers::with('detail_hampers')
             ->whereAny(['id_hampers', 'nama_hampers', 'harga'], 'LIKE', '%'.$data.'%')
             ->get();
 
