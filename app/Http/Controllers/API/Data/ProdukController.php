@@ -49,7 +49,7 @@ class ProdukController extends Controller
 
     public function search(string $data)
     {
-        $data = Produk::whereAny(['id_produk', 'nama_produk', 'deskripsi', 'id_kategori', 'ukuran', 'harga', 'stok', 'limit', 'id_penitip', 'status'], 'LIKE', '%'.$data.'%')->get();
+        $data = Produk::whereAny(['id_produk', 'nama_produk', 'deskripsi', 'id_kategori', 'ukuran', 'harga', 'stok', 'limit', 'id_penitip', 'status'], 'LIKE', '%' . $data . '%')->get();
 
         if (count($data) == 0) {
             return response()->json([

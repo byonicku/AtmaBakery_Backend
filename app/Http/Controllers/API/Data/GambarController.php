@@ -222,7 +222,7 @@ class GambarController extends Controller
 
         try {
             $response = (new FunctionHelper())
-                        ->deleteImage($data->public_id);
+                ->deleteImage($data->public_id);
             $data->delete();
             DB::commit();
         } catch (\Exception $e) {

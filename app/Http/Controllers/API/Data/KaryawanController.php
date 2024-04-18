@@ -48,7 +48,7 @@ class KaryawanController extends Controller
 
     public function search(string $data)
     {
-        $data = Karyawan::whereAny(['id_karyawan', 'nama', 'no_telp', 'email', 'hire_date', 'gaji', 'bonus'], 'LIKE', '%'.$data.'%')->get();
+        $data = Karyawan::whereAny(['id_karyawan', 'nama', 'no_telp', 'email', 'hire_date', 'gaji', 'bonus'], 'LIKE', '%' . $data . '%')->get();
 
         if (count($data) == 0) {
             return response()->json([

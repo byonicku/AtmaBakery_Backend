@@ -50,7 +50,7 @@ class UserController extends Controller
 
     public function search(string $data)
     {
-        $data = User::whereAny(['id', 'nama', 'email', 'no_telp'], 'LIKE', '%'.$data.'%')->get();
+        $data = User::whereAny(['id', 'nama', 'email', 'no_telp'], 'LIKE', '%' . $data . '%')->get();
 
         if (count($data) == 0) {
             return response()->json([
@@ -136,7 +136,7 @@ class UserController extends Controller
         ];
 
         $updateData = (new FunctionHelper())
-                        ->updateDataMaker($fillableAttributes, $request);
+            ->updateDataMaker($fillableAttributes, $request);
 
         if ($request->hasFile('foto_profil')) {
             $imageName = null;
@@ -148,7 +148,7 @@ class UserController extends Controller
             }
 
             $uploadedFileUrl = (new FunctionHelper())
-                                ->uploadImage($request->file('foto_profil'), $imageName);
+                ->uploadImage($request->file('foto_profil'), $imageName);
 
             if ($data->public_id == null) {
                 $updateData['public_id'] = $imageName;
@@ -190,7 +190,7 @@ class UserController extends Controller
 
         if ($data->foto_profil != null) {
             $publicId = $data->public_id;
-            cloudinary()->destroy('atma-bakery/'. $publicId, [
+            cloudinary()->destroy('atma-bakery/' . $publicId, [
                 'invalidate' => true,
             ]);
         }

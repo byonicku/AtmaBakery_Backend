@@ -1,7 +1,9 @@
 <?php
 
 namespace App\Http\Controllers\API\Data;
+
 use Illuminate\Http\Request;
+
 class FunctionHelper
 {
     /**

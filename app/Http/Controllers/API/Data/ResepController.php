@@ -48,7 +48,19 @@ class ResepController extends Controller
 
     public function search(string $data)
     {
-        $data = Produk::with('resep.bahan_baku:id_bahan_baku,nama_bahan_baku')->whereAny(['id_produk', 'nama_produk', 'id_kategori', 'ukuran', 'harga', 'stok', 'limit', 'id_penitip', 'status'], 'LIKE', '%'.$data.'%')->get();
+        $data = Produk::with('resep.bahan_baku:id_bahan_baku,nama_bahan_baku')
+            ->whereAny([
+                'id_produk',
+                'nama_produk',
+                'id_kategori',
+                'ukuran',
+                'harga',
+                'stok',
+                'limit',
+                'id_penitip',
+                'status'
+            ], 'LIKE', '%' . $data . '%')
+            ->get();
 
         if (count($data) == 0) {
             return response()->json([

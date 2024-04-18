@@ -97,7 +97,7 @@ class UserAuthController extends Controller
 
         $abilities = [];
 
-        switch($user->id_role){
+        switch ($user->id_role) {
             case 'ADM':
                 $abilities[] = "admin";
                 break;
@@ -110,7 +110,7 @@ class UserAuthController extends Controller
             case 'CUST':
                 $abilities[] = "user";
                 break;
-            default :
+            default:
                 return response()->json([
                     'message' => 'Login Failed, Role not found',
                 ], 400);

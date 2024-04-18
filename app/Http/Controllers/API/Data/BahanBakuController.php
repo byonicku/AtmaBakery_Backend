@@ -47,7 +47,7 @@ class BahanBakuController extends Controller
 
     public function search(string $data)
     {
-        $data = BahanBaku::whereAny(['id_bahan_baku', 'nama_bahan_baku', 'satuan', 'stok'], 'LIKE', '%'.$data.'%')->get();
+        $data = BahanBaku::whereAny(['id_bahan_baku', 'nama_bahan_baku', 'satuan', 'stok'], 'LIKE', '%' . $data . '%')->get();
 
         if (count($data) == 0) {
             return response()->json([

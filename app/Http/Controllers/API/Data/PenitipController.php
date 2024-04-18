@@ -48,7 +48,7 @@ class PenitipController extends Controller
 
     public function search(string $data)
     {
-        $data = Penitip::whereAny(['id_penitip', 'nama', 'no_telp'], 'LIKE', '%'.$data.'%')->get();
+        $data = Penitip::whereAny(['id_penitip', 'nama', 'no_telp'], 'LIKE', '%' . $data . '%')->get();
 
         if (count($data) == 0) {
             return response()->json([
