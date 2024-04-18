@@ -185,6 +185,7 @@ class BahanBakuController extends Controller
 
         try {
             $data->delete();
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
