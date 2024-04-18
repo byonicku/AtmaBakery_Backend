@@ -71,7 +71,7 @@ Route::controller(ResepController::class)
             Route::delete('/resep', 'destroy')->name('resep.destroy');
             Route::delete('/resep/all/{id_produk}', 'destroyAll')->name('resep.destroy-all');
             Route::get('/paginate/resep', 'paginate')->name('resep.paginate');
-            Route::get('/resep/search/{da', 'search')->name('resep.search');
+            Route::get('/resep/search/{data}', 'search')->name('resep.search');
        })->name('resep');
 
 Route::apiResource('karyawan', KaryawanController::class);
