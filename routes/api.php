@@ -68,7 +68,7 @@ Route::controller(ResepController::class)
        ->group(function () {
             Route::apiResource('resep', ResepController::class, ['except' => ['destroy', 'update']]);
             Route::put('/resep', 'update')->name('resep.update');
-            Route::delete('/resep/{id_produk}/{id_bahan_baku}', 'destroy')->name('resep.destroy');
+            Route::delete('/resep/{id_resep}', 'destroy')->name('resep.destroy');
             Route::delete('/resep/all/{id_produk}', 'destroyAll')->name('resep.destroy-all');
             Route::get('/paginate/resep', 'paginate')->name('resep.paginate');
             Route::get('/resep/search/{data}', 'search')->name('resep.search');

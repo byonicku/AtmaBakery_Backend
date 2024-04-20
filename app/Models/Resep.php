@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Resep extends Model
 {
     protected $table = 'resep';
-    protected $primaryKey = 'id_produk';
+    protected $primaryKey = 'id_resep';
     public $timestamps = false;
     protected $fillable = [
         'id_produk',

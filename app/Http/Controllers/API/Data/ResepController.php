@@ -192,16 +192,14 @@ class ResepController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id_produk, $id_bahan_baku)
+    public function destroy($id_resep)
     {
-        $data = Resep::where('id_produk', $id_produk)
-            ->where('id_bahan_baku', $id_bahan_baku)
-            ->first();
-
-        if ($data == null) {
+        $data = Resep::find($id_resep);
+        
+        if (!$data) {
             return response()->json([
-                'message' => "id_produk atau id_bahan_baku tidak ada!",
-            ], 400);
+                'message' => 'Data not found',
+            ], 404);
         }
 
         DB::beginTransaction();
