@@ -88,6 +88,18 @@ class ProdukController extends Controller
             ], 400);
         }
 
+        if ($request->id_kategori == "TP" && $request->id_penitip == null) {
+            return response()->json([
+                'message' => 'Penitip wajib diisi ketika kategori Titipan',
+            ], 400);
+        }
+
+        if ($request->id_kategori != "TP" && $request->status == "PO") {
+            return response()->json([
+                'message' => 'Status wajib Ready Stok ketika kategori Titipan',
+            ], 400);
+        }
+
         $num_success = 0;
 
         DB::beginTransaction();
