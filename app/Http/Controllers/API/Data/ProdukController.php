@@ -177,6 +177,18 @@ class ProdukController extends Controller
             'status' => 'sometimes|in:PO,READY',
         ]));
 
+        if ($request->id_kategori == "TP" && $request->id_penitip == null) {
+            return response()->json([
+                'message' => 'Penitip wajib diisi ketika kategori Titipan',
+            ], 400);
+        }
+
+        if ($request->id_kategori != "TP" && $request->status == "PO") {
+            return response()->json([
+                'message' => 'Status wajib Ready Stok ketika kategori Titipan',
+            ], 400);
+        }
+
         if ($validate->fails()) {
             return response()->json([
                 'message' => $validate->errors()->first(),
