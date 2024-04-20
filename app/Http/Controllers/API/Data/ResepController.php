@@ -144,8 +144,8 @@ class ResepController extends Controller
         $validate = Validator::make($request->all(), [
             'id_produk' => 'required|exists:produk,id_produk',
             'id_bahan_baku' => 'required|exists:bahan_baku,id_bahan_baku',
-            'kuantitas' => 'required|numeric|gte:0',
-            'satuan' => 'required|max:255',
+            'kuantitas' => 'sometimes|numeric|gte:0',
+            'satuan' => 'sometimes|max:255',
         ]);
 
         if ($validate->fails()) {
@@ -192,27 +192,16 @@ class ResepController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request)
+    public function destroy($id_produk, $id_bahan_baku)
     {
-        $validate = Validator::make($request->all(), [
-            'id_produk' => 'required|exists:produk,id_produk',
-            'id_bahan_baku' => 'required|exists:bahan_baku,id_bahan_baku',
-        ]);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'message' => $validate->errors()->first(),
-            ], 400);
-        }
-
-        $data = Resep::where('id_produk', $request->id_produk)
-            ->where('id_bahan_baku', $request->id_bahan_baku)
+        $data = Resep::where('id_produk', $id_produk)
+            ->where('id_bahan_baku', $id_bahan_baku)
             ->first();
 
-        if (!$data) {
+        if ($data == null) {
             return response()->json([
-                'message' => 'Data not found',
-            ], 404);
+                'message' => "id_produk atau id_bahan_baku tidak ada!",
+            ], 400);
         }
 
         DB::beginTransaction();
