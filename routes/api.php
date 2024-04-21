@@ -16,85 +16,108 @@ use App\Http\Controllers\API\Data\ProdukController;
 use App\Http\Controllers\API\Procedure\ProcedureController;
 
 Route::controller(UserAuthController::class)
-       ->group(function () {
+    ->group(function () {
         Route::post('/login', 'login')->name('login');
         Route::post('/register', 'register')->name('register');
-        Route::post('/logout',  'logout')->name('logout')->middleware('auth:sanctum');
+        Route::post('/logout', 'logout')->name('logout')->middleware('auth:sanctum');
         Route::post('/verify/{verify_key}', 'verify')->name('verify');
         Route::post('/password/verify', 'verifyPassword')->name('verify-password');
-       })->name('authentications');
+    })->name('authentications');
 
-Route::controller(UserController::class)
-       ->group(function () {
-        Route::get('/users/self', 'showSelf')->name('users.self')->middleware('auth:sanctum');
-        Route::get('/users', 'index')->name('users.index')->middleware(['auth:sanctum', 'ability:admin,owner']);
-        Route::get('/users/{id}', 'show')->name('users.show')->middleware(['auth:sanctum', 'ability:admin,owner']);
-        Route::put('/users/{id}', 'update')->name('users.update')->middleware(['auth:sanctum', 'ability:user,admin,owner']);
-        Route::delete('/users/{id}', 'destroy')->name('users.delete')->middleware(['auth:sanctum', 'ability:admin,owner']);
-        Route::get('/paginate/users', 'paginate')->name('users.paginate')->middleware(['auth:sanctum', 'ability:admin,owner']);
-        Route::get('/users/search/{data}', 'search')->name('users.search')->middleware(['auth:sanctum', 'ability:admin,owner']);
-       })->name('users');
+Route::get('/users/self', [UserController::class, 'showSelf'])->name('users.self')->middleware('auth:sanctum');
 
 /*
     Post dari front-end
     api/password/email?email={email}
 */
 Route::post('password/email', [ForgotPasswordAPIController::class, 'sendResetLinkEmail'])
-       ->name('sent-reset-link-email');
+    ->name('sent-reset-link-email');
 
 /*
     Post dari front-end
     api/password/reset?token={token}&password={pass}&password_confirmation={pass_conf}
 */
 Route::post('password/reset', [ResetPasswordAPIController::class, 'reset'])
-       ->name('password-reset');
+    ->name('password-reset');
 
-Route::controller(GambarController::class)
-       ->group(function () {
-            Route::apiResource('gambar', GambarController::class, ['except' => ['update']]);
-            Route::put('/gambar', 'update')->name('gambar.update');
-            Route::get('/gambar/produk/{id}', 'showProduk')->name('gambar.produk');
-            Route::get('/gambar/hampers/{id}', 'showHampers')->name('gambar.hampers');
-       })->name('gambar');
-
-Route::controller(ProcedureController::class)
-       ->middleware(['auth:sanctum', 'ability:mo,owner'])
-       ->group(function () {
+Route::middleware(['auth:sanctum', 'ability:mo,owner'])
+    ->group(function () {
+        // ProcedureController routes
+        Route::controller(ProcedureController::class)->group(function () {
             Route::post('/get-nota', 'getNotaPemesanan')->name('get-nota');
+        })->name('laporan');
 
-       })->name('laporan');
+        // KaryawanController routes
+        Route::controller(KaryawanController::class)->group(function () {
+            Route::apiResource('karyawan', KaryawanController::class);
+            Route::get('/paginate/karyawan', 'paginate')->name('karyawan.paginate');
+            Route::get('/karyawan/search/{data}', 'search')->name('karyawan.search');
+        })->name('karyawan');
+    });
 
-Route::controller(ResepController::class)
-       ->group(function () {
+Route::get('/penitip', [PenitipController::class, 'index'])->name('penitip.index')->middleware(['auth:sanctum', 'ability:mo,admin']);
+Route::controller(PenitipController::class)
+    ->middleware(['auth:sanctum', 'ability:mo'])
+    ->group(function () {
+        Route::apiResource('penitip', PenitipController::class, ['except' => ['index']]);
+        Route::get('/paginate/penitip', 'paginate')->name('penitip.paginate');
+        Route::get('/penitip/search/{data}', 'search')->name('penitip.search');
+    })->name('penitip');
+
+Route::middleware(['auth:sanctum', 'ability:admin'])
+    ->group(function () {
+        // ResepController routes
+        Route::controller(ResepController::class)->group(function () {
+            Route::get('/paginate/resep', 'paginate')->name('resep.paginate');
+            Route::get('/resep/search/{data}', 'search')->name('resep.search');
             Route::apiResource('resep', ResepController::class, ['except' => ['destroy', 'update']]);
             Route::put('/resep', 'update')->name('resep.update');
             Route::delete('/resep/{id_resep}', 'destroy')->name('resep.destroy');
             Route::delete('/resep/all/{id_produk}', 'destroyAll')->name('resep.destroy-all');
-            Route::get('/paginate/resep', 'paginate')->name('resep.paginate');
-            Route::get('/resep/search/{data}', 'search')->name('resep.search');
-       })->name('resep');
+        });
 
-Route::apiResource('karyawan', KaryawanController::class);
-Route::get('/paginate/karyawan', [KaryawanController::class, 'paginate'])->name('karyawan.paginate');
-Route::get('/karyawan/search/{data}', [KaryawanController::class, 'search'])->name('karyawan.search');
+        // GambarController routes
+        Route::controller(GambarController::class)->group(function () {
+            Route::apiResource('gambar', GambarController::class, ['except' => ['update']]);
+            Route::put('/gambar', 'update')->name('gambar.update');
+            Route::get('/gambar/produk/{id}', 'showProduk')->name('gambar.produk');
+            Route::get('/gambar/hampers/{id}', 'showHampers')->name('gambar.hampers');
+        });
 
-Route::apiResource('produk', ProdukController::class);
-Route::get('/paginate/produk', [ProdukController::class, 'paginate'])->name('produk.paginate');
-Route::get('/produk/search/{data}', [ProdukController::class, 'search'])->name('produk.search');
+        // ProdukController routes
+        Route::controller(ProdukController::class)->group(function () {
+            Route::apiResource('produk', ProdukController::class);
+            Route::get('/paginate/produk', 'paginate')->name('produk.paginate');
+            Route::get('/produk/search/{data}', 'search')->name('produk.search');
+        });
 
-        // Jangan lupa kasih role lagi ye :D
+        // BahanBakuController routes
+        Route::controller(BahanBakuController::class)->group(function () {
+            Route::apiResource('bahan_baku', BahanBakuController::class);
+            Route::get('/paginate/bahan_baku', 'paginate')->name('bahan_baku.paginate');
+            Route::get('/bahan_baku/search/{data}', 'search')->name('bahan_baku.search');
+        });
 
-Route::apiResource('penitip', PenitipController::class);
-Route::get('/paginate/penitip', [PenitipController::class, 'paginate'])->name('penitip.paginate');
-Route::get('/penitip/search/{data}', [PenitipController::class, 'search'])->name('penitip.search');
+        // HampersController routes
+        Route::controller(HampersController::class)->group(function () {
+            Route::apiResource('hampers', HampersController::class);
+            Route::get('/paginate/hampers', 'paginate')->name('hampers.paginate');
+            Route::get('/hampers/search/{data}', 'search')->name('hampers.search');
+        });
 
-Route::apiResource('bahan_baku', BahanBakuController::class);
-Route::get('/paginate/bahan_baku', [BahanBakuController::class, 'paginate'])->name('bahan_baku.paginate');
-Route::get('/bahan_baku/search/{data}', [BahanBakuController::class, 'search'])->name('bahan_baku.search');
+        // DetailHampersController routes
+        Route::controller(DetailHampersController::class)->group(function () {
+            Route::apiResource('detail_hampers', DetailHampersController::class);
+            Route::delete('/detail_hampers/all/{id_hampers}', 'destroyAll')->name('detail_hampers.destroy-all');
+        });
 
-Route::apiResource('hampers', HampersController::class);
-Route::get('/paginate/hampers', [HampersController::class, 'paginate'])->name('hampers.paginate');
-Route::get('/hampers/search/{data}', [HampersController::class, 'search'])->name('hampers.search');
-
-Route::apiResource('detail_hampers', DetailHampersController::class);
-Route::delete('/detail_hampers/all/{id_hampers}', [DetailHampersController::class, 'destroyAll'])->name('detail_hampers.destroy-all');
+        // UserController routes
+        Route::controller(UserController::class)->group(function () {
+            Route::get('/users', 'index')->name('users.index');
+            Route::get('/users/{id}', 'show')->name('users.show');
+            Route::put('/users/{id}', 'update')->name('users.update');
+            Route::delete('/users/{id}', 'destroy')->name('users.delete');
+            Route::get('/paginate/users', 'paginate')->name('users.paginate');
+            Route::get('/users/search/{data}', 'search')->name('users.search');
+        });
+    });
