@@ -32,7 +32,7 @@ class ResepController extends Controller
 
     public function paginate()
     {
-        $data = Produk::with('resep.bahan_baku:id_bahan_baku,nama_bahan_baku')->paginate(10);
+        $data = Produk::with('resep.bahan_baku:id_bahan_baku,nama_bahan_baku')->paginate(5);
 
         if (count($data) == 0) {
             return response()->json([
@@ -142,6 +142,7 @@ class ResepController extends Controller
     public function update(Request $request)
     {
         $validate = Validator::make($request->all(), [
+            'id_resep' => 'required|exists:resep,id_resep',
             'id_produk' => 'required|exists:produk,id_produk',
             'id_bahan_baku' => 'required|exists:bahan_baku,id_bahan_baku',
             'kuantitas' => 'sometimes|numeric|gte:0',
@@ -154,9 +155,7 @@ class ResepController extends Controller
             ], 400);
         }
 
-        $data = Resep::where('id_produk', $request->id_produk)
-            ->where('id_bahan_baku', $request->id_bahan_baku)
-            ->first();
+        $data = Resep::find($request->id_resep);
 
         if (!$data) {
             return response()->json([
