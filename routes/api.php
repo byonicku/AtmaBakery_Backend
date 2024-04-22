@@ -24,7 +24,14 @@ Route::controller(UserAuthController::class)
         Route::post('/password/verify', 'verifyPassword')->name('verify-password');
     })->name('authentications');
 
-Route::get('/users/self', [UserController::class, 'showSelf'])->name('users.self')->middleware('auth:sanctum');
+// Self User - Digunakan untuk user yang sedang login
+Route::get('/users/self', [UserController::class, 'showSelf'])->name('users.self')
+    ->middleware('auth:sanctum');
+Route::post('/users/self', [UserController::class, 'updateSelf'])->name('users.update-self')
+    ->middleware('auth:sanctum');
+
+Route::post('/users/self/password', [UserController::class, 'updateSelfPassword'])->name('users.update-self-password')
+    ->middleware(['auth:sanctum', 'ability:mo,owner,admin']);
 
 /*
     Post dari front-end
@@ -55,7 +62,9 @@ Route::middleware(['auth:sanctum', 'ability:mo,owner'])
         })->name('karyawan');
     });
 
-Route::get('/penitip', [PenitipController::class, 'index'])->name('penitip.index')->middleware(['auth:sanctum', 'ability:mo,admin']);
+Route::get('/penitip', [PenitipController::class, 'index'])->name('penitip.index')
+    ->middleware(['auth:sanctum', 'ability:mo,admin']);
+
 Route::controller(PenitipController::class)
     ->middleware(['auth:sanctum', 'ability:mo'])
     ->group(function () {

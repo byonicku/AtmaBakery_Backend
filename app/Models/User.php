@@ -26,6 +26,7 @@ class User extends Authenticatable
         'password',
         'no_telp',
         'tanggal_lahir',
+        'jenis_kelamin',
         'foto_profil',
         'public_id',
         'verify_key',
