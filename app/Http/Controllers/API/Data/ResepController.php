@@ -16,7 +16,7 @@ class ResepController extends Controller
      */
     public function index()
     {
-        $data = Produk::all()->load('resep.bahan_baku:id_bahan_baku,nama_bahan_baku');
+        $data = Produk::all()->load('resep.bahan_baku:id_bahan_baku,nama_bahan_baku')->where('id_kategori', '<>', 'TP');
 
         if (count($data) == 0) {
             return response()->json([
@@ -32,7 +32,9 @@ class ResepController extends Controller
 
     public function paginate()
     {
-        $data = Produk::with('resep.bahan_baku:id_bahan_baku,nama_bahan_baku')->paginate(5);
+        $data = Produk::with('resep.bahan_baku:id_bahan_baku,nama_bahan_baku')
+            ->where('id_kategori', '<>', 'TP')
+            ->paginate(5);
 
         if (count($data) == 0) {
             return response()->json([
@@ -52,14 +54,13 @@ class ResepController extends Controller
             ->whereAny([
                 'id_produk',
                 'nama_produk',
-                'id_kategori',
                 'ukuran',
                 'harga',
                 'stok',
                 'limit',
-                'id_penitip',
                 'status'
             ], 'LIKE', '%' . $data . '%')
+            ->where('id_kategori', '<>', 'TP')
             ->get();
 
         if (count($data) == 0) {
@@ -194,7 +195,7 @@ class ResepController extends Controller
     public function destroy($id_resep)
     {
         $data = Resep::find($id_resep);
-        
+
         if (!$data) {
             return response()->json([
                 'message' => 'Data not found',
