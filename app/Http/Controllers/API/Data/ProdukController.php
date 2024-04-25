@@ -94,7 +94,7 @@ class ProdukController extends Controller
             ], 400);
         }
 
-        if ($request->id_kategori != "TP" && $request->status == "PO") {
+        if ($request->id_kategori == "TP" && $request->status == "PO") {
             return response()->json([
                 'message' => 'Status wajib Ready Stok ketika kategori Titipan',
             ], 400);
