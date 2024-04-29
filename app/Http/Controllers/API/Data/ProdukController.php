@@ -85,8 +85,8 @@ class ProdukController extends Controller
             'id_kategori' => 'required|exists:kategori,id_kategori',
             'ukuran' => 'required:in:1,1/2',
             'harga' => 'required|gte:0',
-            'stok' => 'required|gte:0',
-            'limit' => 'required|gte:0',
+            'stok' => 'sometimes|gte:0',
+            'limit' => 'sometimes|gte:0',
             'id_penitip' => 'nullable|exists:penitip,id_penitip',
             'status' => 'required|in:PO,READY',
         ]));
