@@ -47,8 +47,16 @@ class ProdukController extends Controller
         ], 200);
     }
 
-    public function search(string $data)
+    public function search(Request $request)
     {
+        $data = $request->data;
+
+        if ($data == null) {
+            return response()->json([
+                'message' => 'Data is empty',
+            ], 404);
+        }
+
         $data = Produk::join('kategori', 'produk.id_kategori', '=', 'kategori.id_kategori')->
             whereAny(['id_produk', 'nama_produk', 'deskripsi', 'nama_kategori', 'ukuran', 'harga', 'stok', 'limit', 'id_penitip', 'status'], 'LIKE', '%' . $data . '%')->get();
 

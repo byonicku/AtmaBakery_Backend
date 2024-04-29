@@ -97,7 +97,7 @@ Route::middleware(['auth:sanctum', 'ability:admin'])
         Route::controller(ProdukController::class)->group(function () {
             Route::apiResource('produk', ProdukController::class);
             Route::get('/paginate/produk', 'paginate')->name('produk.paginate');
-            Route::get('/produk/search/{data}', 'search')->name('produk.search');
+            Route::post('/produk/search', 'search')->name('produk.search');
         });
 
         // BahanBakuController routes
