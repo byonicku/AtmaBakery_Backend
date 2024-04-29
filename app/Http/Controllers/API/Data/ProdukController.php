@@ -109,6 +109,26 @@ class ProdukController extends Controller
             ], 400);
         }
 
+        if ($request->status == "READY" && $request->stok == null) {
+            return response()->json([
+                'message' => 'Stok wajib diisi ketika status READY',
+            ], 400);
+        }
+
+        if ($request->status == "PO" && $request->limit == null) {
+            return response()->json([
+                'message' => 'Limit wajib diisi ketika status PO',
+            ], 400);
+        }
+
+        if ($request->status == "PO" && $request->stok != null) {
+            $request->stok = 0;
+        }
+
+        if ($request->status == "READY" && $request->limit != null) {
+            $request->limit = 0;
+        }
+
         $num_success = 0;
 
         DB::beginTransaction();
