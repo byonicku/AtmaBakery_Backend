@@ -35,7 +35,7 @@ class UserController extends Controller
 
     public function paginate()
     {
-        $data = User::paginate(10);
+        $data = User::where('id_role', '=', 'CUST')->paginate(10);
 
         if (count($data) == 0) {
             return response()->json([
@@ -51,7 +51,8 @@ class UserController extends Controller
 
     public function search(string $data)
     {
-        $data = User::whereAny(['id', 'nama', 'email', 'no_telp'], 'LIKE', '%' . $data . '%')->get();
+        $data = User::where('id_role', '=', 'CUST')
+            ->whereAny(['nama', 'email', 'no_telp'], 'LIKE', '%' . $data . '%')->get();
 
         if (count($data) == 0) {
             return response()->json([
