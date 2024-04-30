@@ -163,3 +163,13 @@ Route::middleware(['auth:sanctum', 'ability:admin'])
         });
 
     });
+
+Route::get('/cron', function () {
+    $res = Artisan::call('schedule:run');
+
+    if ($res === 0) {
+        return 'Success cron job';
+    }
+
+    return 'Failed cron job';
+});
