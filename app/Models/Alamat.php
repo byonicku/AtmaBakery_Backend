@@ -10,9 +10,9 @@ class Alamat extends Model
     protected $primaryKey = 'id_alamat';
     public $timestamps = false;
     protected $fillable = [
-        'id_alamat',
         'id_user',
         'nama_lengkap',
+        'no_telp',
         'lokasi',
         'keterangan'
     ];

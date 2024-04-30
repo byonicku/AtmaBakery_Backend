@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\Data\AlamatController;
 use App\Http\Controllers\API\Data\BahanBakuController;
 use App\Http\Controllers\API\Data\DetailHampersController;
 use App\Http\Controllers\API\Data\GambarController;
@@ -30,6 +31,18 @@ Route::get('/users/self', [UserController::class, 'showSelf'])->name('users.self
     ->middleware('auth:sanctum');
 Route::post('/users/self', [UserController::class, 'updateSelf'])->name('users.update-self')
     ->middleware('auth:sanctum');
+
+// Self Alamat - Digunakan untuk CRUDS alamat user yang sedang login
+Route::controller(AlamatController::class)
+    ->middleware('auth:sanctum')
+    ->group(function () {
+        Route::get('/alamat/self', 'showSelf')->name('alamat-self.show-self');
+        Route::post('/alamat/self/search', 'searchSelf')->name('alamat-self.search');
+        Route::get('/paginate/alamat/self', 'paginateSelf')->name('alamat-self.paginate');
+        Route::post('/alamat/self', 'storeSelf')->name('alamat-self.store');
+        Route::put('/alamat/self/{id}', 'updateSelf')->name('alamat-self.update');
+        Route::delete('/alamat/self/{id}', 'destroySelf')->name('alamat-self.destroy');
+    })->name('alamat-self');
 
 Route::post('/users/self/password', [UserController::class, 'updateSelfPassword'])->name('users.update-self-password')
     ->middleware(['auth:sanctum', 'ability:mo,owner,admin']);
@@ -141,4 +154,12 @@ Route::middleware(['auth:sanctum', 'ability:admin'])
             Route::get('/paginate/users', 'paginate')->name('users.paginate');
             Route::get('/users/search/{data}', 'search')->name('users.search');
         });
+
+        // AlamatController routes - Admin (berbeda dari user only)
+        Route::controller(AlamatController::class)->group(function () {
+            Route::apiResource('alamat', AlamatController::class);
+            Route::get('/paginate/alamat', 'paginate')->name('alamat.paginate');
+            Route::post('/alamat/search', 'search')->name('alamat.search');
+        });
+
     });

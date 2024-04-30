@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\API\Data;
 
 use App\Http\Controllers\Controller;
+use App\Models\Presensi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class PresensiController extends Controller
 {
@@ -12,7 +16,18 @@ class PresensiController extends Controller
      */
     public function index()
     {
-        //
+        $data = Presensi::all();
+
+        if (count($data) == 0) {
+            return response()->json([
+                'message' => 'Data is empty',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Data successfully retrieved',
+            'data' => $data,
+        ], 200);
     }
 
     /**
@@ -20,7 +35,47 @@ class PresensiController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'id_karyawan' => 'required|exists:karyawan,id_karyawan',
+            'tanggal' => 'required|date',
+            'alasan' => 'sometimes|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => $validator->errors()->first(),
+            ], 400);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            if ($request->alasan) {
+                $data = Presensi::create([
+                    'id_karyawan' => $request->id_karyawan,
+                    'tanggal' => $request->tanggal,
+                    'alasan' => $request->alasan,
+                ]);
+            } else {
+                $data = Presensi::create([
+                    'id_karyawan' => $request->id_karyawan,
+                    'tanggal' => $request->tanggal,
+                ]);
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Data successfully created',
+            'data' => $data,
+        ], 201);
     }
 
     /**
@@ -28,7 +83,18 @@ class PresensiController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $data = Presensi::find($id);
+
+        if (!$data) {
+            return response()->json([
+                'message' => 'Data not found',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Data successfully retrieved',
+            'data' => $data,
+        ], 200);
     }
 
     /**
@@ -36,7 +102,52 @@ class PresensiController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $data = Presensi::find($id);
+
+        if (!$data) {
+            return response()->json([
+                'message' => 'Data not found',
+            ], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'id_karyawan' => 'sometimes|exists:karyawan,id_karyawan',
+            'tanggal' => 'sometimes|date',
+            'alasan' => 'sometimes|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => $validator->errors()->first(),
+            ], 400);
+        }
+
+        $fillableAttributes = [
+            'id_karyawan',
+            'tanggal',
+            'alasan',
+        ];
+
+        $updateData = (new FunctionHelper())
+            ->updateDataMaker($fillableAttributes, $request);
+
+        DB::beginTransaction();
+
+        try {
+            $data->update($updateData);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Data successfully updated',
+            'data' => $data,
+        ], 200);
     }
 
     /**
@@ -44,6 +155,29 @@ class PresensiController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $data = Presensi::find($id);
+
+        if (!$data) {
+            return response()->json([
+                'message' => 'Data not found',
+            ], 404);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $data->delete();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Data successfully deleted',
+        ], 200);
     }
 }
