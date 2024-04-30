@@ -14,7 +14,8 @@ class Presensi extends Model
         'id_presensi',
         'id_karyawan',
         'tanggal',
-        'alasan'
+        'alasan',
+        'status'
     ];
 
     public function karyawan()

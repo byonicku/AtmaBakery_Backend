@@ -39,6 +39,7 @@ class PresensiController extends Controller
             'id_karyawan' => 'required|exists:karyawan,id_karyawan',
             'tanggal' => 'required|date',
             'alasan' => 'sometimes|string',
+            'status' => 'required|in:1,0'
         ]);
 
         if ($validator->fails()) {
@@ -114,6 +115,7 @@ class PresensiController extends Controller
             'id_karyawan' => 'sometimes|exists:karyawan,id_karyawan',
             'tanggal' => 'sometimes|date',
             'alasan' => 'sometimes|string',
+            'status' => 'sometimes|in:1,0'
         ]);
 
         if ($validator->fails()) {
@@ -126,6 +128,7 @@ class PresensiController extends Controller
             'id_karyawan',
             'tanggal',
             'alasan',
+            'status'
         ];
 
         $updateData = (new FunctionHelper())
