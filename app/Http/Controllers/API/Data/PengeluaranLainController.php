@@ -122,7 +122,12 @@ class PengeluaranLainController extends Controller
         DB::beginTransaction();
 
         try {
-            $data = Pengeluaran::create($request->all());
+            $data = Pengeluaran::create([
+                'nama' => $request->nama,
+                'satuan' => $request->satuan,
+                'total' => $request->total,
+                'tanggal_pengeluaran' => $request->tanggal_pengeluaran,
+            ]);
 
             DB::commit();
         } catch (\Exception $e) {

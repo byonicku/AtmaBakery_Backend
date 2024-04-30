@@ -4,16 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class HistoriBahanBaku extends Model
+class PengadaanBahanBaku extends Model
 {
-    protected $table = 'histori_bahanbaku';
-    protected $primaryKey = 'id_histori_bahanbaku';
+    protected $table = 'pengadaan_bahanbaku';
+
+    protected $primaryKey = 'id_pengadaan';
+
     public $timestamps = false;
+
     protected $fillable = [
-        'id_histori_bahanbaku',
+        'id_pengadaan',
         'id_bahan_baku',
-        'jumlah',
-        'tanggal_pakai',
+        'stok',
+        'tanggal_pembelian',
+        'harga',
     ];
 
     public function bahan_baku()

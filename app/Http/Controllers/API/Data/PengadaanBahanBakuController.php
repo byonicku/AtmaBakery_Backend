@@ -3,21 +3,20 @@
 namespace App\Http\Controllers\API\Data;
 
 use App\Http\Controllers\Controller;
-use App\Models\HistoriBahanBaku;
+use App\Models\PengadaanBahanBaku;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-
-class HistoriBahanBakuController extends Controller
+class PengadaanBahanBakuController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $data = HistoriBahanBaku::all();
+        $data = PengadaanBahanBaku::all();
 
         if (count($data) == 0) {
             return response()->json([
@@ -38,8 +37,9 @@ class HistoriBahanBakuController extends Controller
     {
         $validate = Validator::make($request->all(), [
             'id_bahan_baku' => 'required|exists:bahan_baku,id_bahan_baku',
-            'jumlah' => 'required|gte:0|numeric',
-            'tanggal_pakai' => 'required|date',
+            'stok' => 'required|gte:0|numeric',
+            'harga' => 'required|gte:0|numeric',
+            'tanggal_pembelian' => 'required|date',
         ]);
 
         if ($validate->fails()) {
@@ -48,13 +48,14 @@ class HistoriBahanBakuController extends Controller
             ], 400);
         }
 
-        DB::beginTransaction();
-
         try {
-            $data = HistoriBahanBaku::create([
+            DB::beginTransaction();
+
+            $data = PengadaanBahanBaku::create([
                 'id_bahan_baku' => $request->id_bahan_baku,
-                'jumlah' => $request->jumlah,
-                'tanggal_pakai' => $request->tanggal_pakai,
+                'stok' => $request->stok,
+                'harga' => $request->harga,
+                'tanggal_pembelian' => $request->tanggal_pembelian,
             ]);
 
             DB::commit();
@@ -77,11 +78,11 @@ class HistoriBahanBakuController extends Controller
      */
     public function show(string $id)
     {
-        $data = HistoriBahanBaku::find($id);
+        $data = PengadaanBahanBaku::find($id);
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data is not found',
+                'message' => 'Data not found',
             ], 404);
         }
 
@@ -96,18 +97,22 @@ class HistoriBahanBakuController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $data = HistoriBahanBaku::find($id);
+        $data = PengadaanBahanBaku::find($id);
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data is not found',
+                'message' => 'Data not found',
             ], 404);
         }
 
         $validate = Validator::make($request->all(), [
-            'id_bahan_baku' => 'sometimes|exists:bahan_baku,id_bahan_baku',
-            'jumlah' => 'sometimes|gte:0|numeric',
-            'tanggal_pakai' => 'sometimes|date',
+            'id_bahan_baku' => [
+                'sometimes',
+                'exists:bahan_baku,id_bahan_baku',
+            ],
+            'stok' => 'sometimes|gte:0|numeric',
+            'harga' => 'sometimes|gte:0|numeric',
+            'tanggal_pembelian' => 'sometimes|date',
         ]);
 
         if ($validate->fails()) {
@@ -118,16 +123,17 @@ class HistoriBahanBakuController extends Controller
 
         $fillableAttributes = [
             'id_bahan_baku',
-            'jumlah',
-            'tanggal_pakai',
+            'stok',
+            'harga',
+            'tanggal_pembelian',
         ];
 
         $updateData = (new FunctionHelper())
             ->updateDataMaker($fillableAttributes, $request);
 
-        DB::beginTransaction();
-
         try {
+            DB::beginTransaction();
+
             $data->update($updateData);
 
             DB::commit();
@@ -150,11 +156,11 @@ class HistoriBahanBakuController extends Controller
      */
     public function destroy(string $id)
     {
-        $data = HistoriBahanBaku::find($id);
+        $data = PengadaanBahanBaku::find($id);
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data is not found',
+                'message' => 'Data not found',
             ], 404);
         }
 
