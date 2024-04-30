@@ -5,6 +5,7 @@ use App\Http\Controllers\API\Data\DetailHampersController;
 use App\Http\Controllers\API\Data\GambarController;
 use App\Http\Controllers\API\Data\HampersController;
 use App\Http\Controllers\API\Data\KaryawanController;
+use App\Http\Controllers\API\Data\PengeluaranLainController;
 use App\Http\Controllers\API\Data\PenitipController;
 use App\Http\Controllers\API\Data\ResepController;
 use App\Http\Controllers\API\Data\UserController;
@@ -65,13 +66,24 @@ Route::middleware(['auth:sanctum', 'ability:mo,owner'])
 Route::get('/penitip', [PenitipController::class, 'index'])->name('penitip.index')
     ->middleware(['auth:sanctum', 'ability:mo,admin']);
 
-Route::controller(PenitipController::class)
-    ->middleware(['auth:sanctum', 'ability:mo'])
+Route::middleware(['auth:sanctum', 'ability:mo'])
     ->group(function () {
-        Route::apiResource('penitip', PenitipController::class, ['except' => ['index']]);
-        Route::get('/paginate/penitip', 'paginate')->name('penitip.paginate');
-        Route::get('/penitip/search/{data}', 'search')->name('penitip.search');
-    })->name('penitip');
+        // PenitipController routes
+        Route::controller(PenitipController::class)->group(function () {
+            Route::apiResource('penitip', PenitipController::class, ['except' => ['index']]);
+            Route::get('/paginate/penitip', 'paginate')->name('penitip.paginate');
+            Route::get('/penitip/search/{data}', 'search')->name('penitip.search');
+        });
+
+        // PengeluaranLain routes
+        Route::controller(PengeluaranLainController::class)->group(function () {
+            Route::apiResource('pengeluaran_lain', PengeluaranLainController::class);
+            Route::get('/paginate/pengeluaran_lain', 'paginate')->name('pengeluaran_lain.paginate');
+            Route::get('/pengeluaran_lain/search/{data}', 'search')->name('pengeluaran_lain.search');
+            Route::get('/pengeluaran_lain/filter/{month}/{year}', 'filter')->name('pengeluaran_lain.filter');
+        });
+
+    });
 
 Route::middleware(['auth:sanctum', 'ability:admin'])
     ->group(function () {

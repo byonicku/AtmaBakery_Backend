@@ -15,6 +15,6 @@ class Pengeluaran extends Model
         'nama',
         'satuan',
         'total',
-        'tanggal_pengeuaran',
+        'tanggal_pengeluaran',
     ];
 }
