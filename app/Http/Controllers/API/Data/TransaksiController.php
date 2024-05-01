@@ -21,7 +21,7 @@ class TransaksiController extends Controller
     {
         $data = Auth::user();
 
-        $transaksi = Transaksi::where('id_user', '=', $data->id_user)
+        $transaksi = Transaksi::with('detail_transaksi')->where('id_user', '=', $data->id_user)
             ->get();
 
         if (count($transaksi) == 0) {
@@ -40,7 +40,7 @@ class TransaksiController extends Controller
     {
         $data = Auth::user();
 
-        $transaksi = Transaksi::where('id_user', '=', $data->id_user)
+        $transaksi = Transaksi::with('detail_transaksi')->where('id_user', '=', $data->id_user)
             ->paginate(10);
 
         if (count($transaksi) == 0) {
@@ -57,7 +57,7 @@ class TransaksiController extends Controller
 
     public function indexHistoryPaginate(string $id_user)
     {
-        $transaksi = Transaksi::where('id_user', '=', $id_user)
+        $transaksi = Transaksi::with('detail_transaksi')->where('id_user', '=', $id_user)
             ->paginate(10);
 
         if (count($transaksi) == 0) {

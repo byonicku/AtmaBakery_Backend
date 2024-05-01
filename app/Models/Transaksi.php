@@ -37,4 +37,9 @@ class Transaksi extends Model
     {
         return $this->belongsTo(Alamat::class, 'id_alamat', 'id_alamat');
     }
+
+    public function detail_transaksi()
+    {
+        return $this->hasMany(DetailTransaksi::class, 'no_nota', 'no_nota');
+    }
 }
