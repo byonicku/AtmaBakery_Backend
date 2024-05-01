@@ -16,7 +16,7 @@ use App\Http\Controllers\API\Auth\ForgotPasswordAPIController;
 use App\Http\Controllers\API\Auth\ResetPasswordAPIController;
 use App\Http\Controllers\API\Data\ProdukController;
 use App\Http\Controllers\API\Procedure\ProcedureController;
-use Symfony\Component\Mailer\Messenger\SendEmailMessage;
+use App\Http\Controllers\API\Data\PengadaanBahanBakuController;
 
 Route::controller(UserAuthController::class)
     ->group(function () {
@@ -97,6 +97,12 @@ Route::middleware(['auth:sanctum', 'ability:mo'])
             Route::get('/pengeluaran_lain/filter/{month}/{year}', 'filter')->name('pengeluaran_lain.filter');
         });
 
+        // PembelianBahanBaku routes
+        Route::controller(PengadaanBahanBakuController::class)->group(function () {
+            Route::apiResource('pembelian_bahan_baku', PengadaanBahanBakuController::class);
+            Route::get('/paginate/pembelian_bahan_baku', 'paginate')->name('pembelian_bahan_baku.paginate');
+            Route::get('/pembelian_bahan_baku/search/{data}', 'search')->name('pembelian_bahan_baku.search');
+        });
     });
 
 Route::middleware(['auth:sanctum', 'ability:admin'])
