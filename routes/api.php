@@ -16,6 +16,7 @@ use App\Http\Controllers\API\Auth\ForgotPasswordAPIController;
 use App\Http\Controllers\API\Auth\ResetPasswordAPIController;
 use App\Http\Controllers\API\Data\ProdukController;
 use App\Http\Controllers\API\Procedure\ProcedureController;
+use Symfony\Component\Mailer\Messenger\SendEmailMessage;
 
 Route::controller(UserAuthController::class)
     ->group(function () {
@@ -165,6 +166,9 @@ Route::middleware(['auth:sanctum', 'ability:admin'])
     });
 
 Route::get('/cron', function () {
-    Artisan::call('schedule:run');
+    Artisan::call('add-presensi');
+    Mail::raw(Artisan::output(), function ($message) {
+        $message->to('nicoherlim2003@gmail.com')->subject('Presensi Karyawan');
+    });
     return Artisan::output();
 });
