@@ -80,6 +80,9 @@ Route::middleware(['auth:sanctum', 'ability:mo,owner'])
 Route::get('/penitip', [PenitipController::class, 'index'])->name('penitip.index')
     ->middleware(['auth:sanctum', 'ability:mo,admin']);
 
+Route::get('/bahan_baku', [PengeluaranLainController::class, 'index'])->name('bahan_baku.index')
+    ->middleware(['auth:sanctum', 'ability:mo,admin']);
+
 Route::middleware(['auth:sanctum', 'ability:mo'])
     ->group(function () {
         // PenitipController routes
@@ -134,7 +137,7 @@ Route::middleware(['auth:sanctum', 'ability:admin'])
 
         // BahanBakuController routes
         Route::controller(BahanBakuController::class)->group(function () {
-            Route::apiResource('bahan_baku', BahanBakuController::class);
+            Route::apiResource('bahan_baku', BahanBakuController::class, ['except' => ['index']]);
             Route::get('/paginate/bahan_baku', 'paginate')->name('bahan_baku.paginate');
             Route::get('/bahan_baku/search/{data}', 'search')->name('bahan_baku.search');
         });
