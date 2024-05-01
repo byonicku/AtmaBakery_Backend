@@ -167,8 +167,9 @@ Route::middleware(['auth:sanctum', 'ability:admin'])
 
 Route::get('/cron', function () {
     Artisan::call('add-presensi');
-    Mail::raw(Artisan::output(), function ($message) {
+    $output = Artisan::output();
+    Mail::raw($output, function ($message) {
         $message->to('nicoherlim2003@gmail.com')->subject('Presensi Karyawan');
     });
-    return Artisan::output();
+    return $output;
 });
