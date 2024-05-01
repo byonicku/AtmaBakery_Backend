@@ -43,7 +43,7 @@ Route::get('/paginate/transaksi/self/history', [TransaksiController::class, 'ind
 Route::get('/paginate/transaksi/history/{id_user}', [TransaksiController::class, 'indexHistoryPaginate'])->name('users.paginate-self')
     ->middleware(['auth:sanctum', 'ability:admin']);
 Route::post('/transaksi/search/{id_user}', [TransaksiController::class, 'search'])->name('users.show-self')
-    ->middleware(['auth:sanctum']);
+    ->middleware(['auth:sanctum', 'ability:admin']);
 
 // Self Alamat - Digunakan untuk CRUDS alamat user yang sedang login
 Route::controller(AlamatController::class)
