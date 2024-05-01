@@ -99,7 +99,12 @@ class UserController extends Controller
                 'email',
                 Rule::unique('user')->ignore($data->email, 'email'),
             ],
-            'no_telp' => 'sometimes|digits_between:10,13|unique:user,no_telp|regex:/^(?:\+?08)(?:\d{2,3})?[ -]?\d{3,4}[ -]?\d{4}$/',
+            'no_telp' => [
+                'sometimes',
+                'digits_between:10,13',
+                Rule::unique('user')->ignore($data->no_telp, 'no_telp'),
+                'regex:/^(?:\+?08)(?:\d{2,3})?[ -]?\d{3,4}[ -]?\d{4}$/',
+            ],
             'foto_profil' => 'sometimes|image|mimes:jpeg,png,jpg|max:1024',
             'jenis_kelamin' => 'sometimes|in:L,P',
         ]);
