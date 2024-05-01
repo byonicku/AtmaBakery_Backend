@@ -12,7 +12,7 @@ Artisan::command('add-presensi', function () {
 
     if (count($presensi) > 0) {
         $this->info('Presensi hari ini sudah ditambahkan');
-        return;
+        return 0;
     }
 
     for ($i = 0; $i < count($karyawan); $i++) {
@@ -24,4 +24,7 @@ Artisan::command('add-presensi', function () {
         $this->info('Presensi karyawan ' . $karyawan[$i]->nama . ' berhasil ditambahkan');
     }
 
-})->purpose('Menambahkan presensi karyawan');
+    return 1;
+})->purpose('Menambahkan presensi karyawan')
+    ->weekdays()
+    ->emailOutputTo('nicoherlim2003@gmail.com');

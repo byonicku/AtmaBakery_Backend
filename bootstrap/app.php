@@ -19,13 +19,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'ability' => CheckForAnyAbility::class,
         ]);
     })
-    ->withSchedule(function (Schedule $schedule) {
-        $schedule->command('add-presensi')
-            ->weekdays()
-            ->at('00:00')
-            ->timezone('Asia/Jakarta')
-            ->emailOutputTo('nicoherlim@gmail.com');
-    })
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
