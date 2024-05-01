@@ -16,7 +16,7 @@ class PengadaanBahanBakuController extends Controller
      */
     public function index()
     {
-        $data = PengadaanBahanBaku::join('bahan_baku', 'pengadaan_bahanbaku.id_bahan_baku', '=', 'bahan_baku.id_bahan_baku')
+        $data = PengadaanBahanBaku::with('bahan_baku')
             ->get();
 
         if (count($data) == 0) {
@@ -33,7 +33,7 @@ class PengadaanBahanBakuController extends Controller
 
     public function paginate()
     {
-        $data = PengadaanBahanBaku::join('bahan_baku', 'pengadaan_bahanbaku.id_bahan_baku', '=', 'bahan_baku.id_bahan_baku')
+        $data = PengadaanBahanBaku::with('bahan_baku')
             ->paginate(10);
 
         if (count($data) == 0) {
@@ -50,7 +50,7 @@ class PengadaanBahanBakuController extends Controller
 
     public function search(string $data)
     {
-        $data = PengadaanBahanBaku::join('bahan_baku', 'pengadaan_bahanbaku.id_bahan_baku', '=', 'bahan_baku.id_bahan_baku')
+        $data = PengadaanBahanBaku::with('bahan_baku')
             ->whereAny(['id_bahan_baku', 'stok', 'harga', 'tanggal_pembelian'], 'LIKE', '%' . $data . '%')->get();
 
         if (count($data) == 0) {
