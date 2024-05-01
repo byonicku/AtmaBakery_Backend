@@ -166,10 +166,10 @@ Route::middleware(['auth:sanctum', 'ability:admin'])
     });
 
 Route::get('/cron', function () {
-    $providedToken = request()->header('authorization');
-    $expectedToken = 'Bearer ' . env('CRON_SECRET');
+    $providedToken = request()->header('cron-secret');
+    $expectedToken = env('CRON_SECRET');
 
-    if ($providedToken !== $expectedToken || !$expectedToken) {
+    if ($providedToken !== $expectedToken) {
         return response()->json(['message' => 'Unauthorized'], 401);
     }
 
