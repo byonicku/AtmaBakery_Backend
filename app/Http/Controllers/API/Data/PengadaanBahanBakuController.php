@@ -16,7 +16,8 @@ class PengadaanBahanBakuController extends Controller
      */
     public function index()
     {
-        $data = PengadaanBahanBaku::with('bahan_baku')->all();
+        $data = PengadaanBahanBaku::join('bahan_baku', 'pengadaan_bahanbaku.id_bahan_baku', '=', 'bahan_baku.id_bahan_baku')
+            ->get();
 
         if (count($data) == 0) {
             return response()->json([
@@ -32,7 +33,8 @@ class PengadaanBahanBakuController extends Controller
 
     public function paginate()
     {
-        $data = PengadaanBahanBaku::with('bahan_baku')->paginate(10);
+        $data = PengadaanBahanBaku::join('bahan_baku', 'pengadaan_bahanbaku.id_bahan_baku', '=', 'bahan_baku.id_bahan_baku')
+            ->paginate(10);
 
         if (count($data) == 0) {
             return response()->json([
@@ -48,7 +50,8 @@ class PengadaanBahanBakuController extends Controller
 
     public function search(string $data)
     {
-        $data = PengadaanBahanBaku::with('bahan_baku')->whereAny(['id_bahan_baku', 'stok', 'harga', 'tanggal_pembelian'], 'LIKE', '%' . $data . '%')->get();
+        $data = PengadaanBahanBaku::join('bahan_baku', 'pengadaan_bahanbaku.id_bahan_baku', '=', 'bahan_baku.id_bahan_baku')
+            ->whereAny(['id_bahan_baku', 'stok', 'harga', 'tanggal_pembelian'], 'LIKE', '%' . $data . '%')->get();
 
         if (count($data) == 0) {
             return response()->json([
@@ -80,9 +83,9 @@ class PengadaanBahanBakuController extends Controller
             ], 400);
         }
 
-        try {
-            DB::beginTransaction();
+        DB::beginTransaction();
 
+        try {
             $data = PengadaanBahanBaku::create([
                 'id_bahan_baku' => $request->id_bahan_baku,
                 'stok' => $request->stok,
@@ -163,9 +166,8 @@ class PengadaanBahanBakuController extends Controller
         $updateData = (new FunctionHelper())
             ->updateDataMaker($fillableAttributes, $request);
 
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
-
             $data->update($updateData);
 
             DB::commit();
