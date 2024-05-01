@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Data;
 
 use App\Http\Controllers\Controller;
+use App\Models\BahanBaku;
 use App\Models\PengadaanBahanBaku;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -98,6 +99,12 @@ class PengadaanBahanBakuController extends Controller
                 'tanggal_pembelian' => $request->tanggal_pembelian,
             ]);
 
+            $bahan_baku = BahanBaku::find($request->id_bahan_baku);
+
+            $bahan_baku->update([
+                'stok' => $bahan_baku->stok + $request->stok,
+            ]);
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -173,8 +180,19 @@ class PengadaanBahanBakuController extends Controller
 
         DB::beginTransaction();
         try {
+            $oldBahanBaku = BahanBaku::find($data->id_bahan_baku);
+
+            $oldBahanBaku->update([
+                'stok' => $oldBahanBaku->stok - $data->stok,
+            ]);
+
             $data->update($updateData);
 
+            $bahan_baku = BahanBaku::find($request->id_bahan_baku);
+
+            $bahan_baku->update([
+                'stok' => $bahan_baku->stok + $request->stok,
+            ]);
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -206,6 +224,12 @@ class PengadaanBahanBakuController extends Controller
         DB::beginTransaction();
 
         try {
+            $bahan_baku = BahanBaku::find($data->id_bahan_baku);
+
+            $bahan_baku->update([
+                'stok' => $bahan_baku->stok - $data->stok,
+            ]);
+
             $data->delete();
 
             DB::commit();
