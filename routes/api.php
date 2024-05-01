@@ -80,7 +80,7 @@ Route::middleware(['auth:sanctum', 'ability:mo,owner'])
 Route::get('/penitip', [PenitipController::class, 'index'])->name('penitip.index')
     ->middleware(['auth:sanctum', 'ability:mo,admin']);
 
-Route::get('/bahan_baku', [PengeluaranLainController::class, 'index'])->name('bahan_baku.index')
+Route::get('/bahan_baku', [BahanBakuController::class, 'index'])->name('bahan_baku.index')
     ->middleware(['auth:sanctum', 'ability:mo,admin']);
 
 Route::middleware(['auth:sanctum', 'ability:mo'])
