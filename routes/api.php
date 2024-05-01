@@ -17,6 +17,7 @@ use App\Http\Controllers\API\Auth\ResetPasswordAPIController;
 use App\Http\Controllers\API\Data\ProdukController;
 use App\Http\Controllers\API\Procedure\ProcedureController;
 use App\Http\Controllers\API\Data\PengadaanBahanBakuController;
+use App\Http\Controllers\API\Data\TransaksiController;
 
 Route::controller(UserAuthController::class)
     ->group(function () {
@@ -32,6 +33,17 @@ Route::get('/users/self', [UserController::class, 'showSelf'])->name('users.self
     ->middleware('auth:sanctum');
 Route::post('/users/self', [UserController::class, 'updateSelf'])->name('users.update-self')
     ->middleware('auth:sanctum');
+Route::delete('/users/self/pfp', [UserController::class, 'destroyProfilePicSelf'])->name('users.destroy-self')
+    ->middleware('auth:sanctum');
+Route::get('/transaksi/self/history', [TransaksiController::class, 'indexHistorySelf'])->name('users.show-self')
+    ->middleware('auth:sanctum');
+Route::get('/paginate/transaksi/self/history', [TransaksiController::class, 'indexHistoryPaginateSelf'])->name('users.paginate-self')
+    ->middleware('auth:sanctum');
+
+Route::get('/paginate/transaksi/history/{id_user}', [TransaksiController::class, 'indexHistoryPaginate'])->name('users.paginate-self')
+    ->middleware(['auth:sanctum', 'ability:admin']);
+Route::post('/transaksi/search/{id_user}', [TransaksiController::class, 'search'])->name('users.show-self')
+    ->middleware(['auth:sanctum']);
 
 // Self Alamat - Digunakan untuk CRUDS alamat user yang sedang login
 Route::controller(AlamatController::class)

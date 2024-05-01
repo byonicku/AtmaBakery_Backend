@@ -31,6 +31,43 @@ class HistoriBahanBakuController extends Controller
         ], 200);
     }
 
+    public function paginate()
+    {
+        $data = HistoriBahanBaku::paginate(10);
+
+        if (count($data) == 0) {
+            return response()->json([
+                'message' => 'Data is empty',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Data successfully retrieved',
+            'data' => $data,
+        ], 200);
+    }
+
+    public function search(string $data)
+    {
+        $data = HistoriBahanBaku::whereHas('bahan_baku', function ($query) use ($data) {
+            $query->where('nama_bahan_baku', 'LIKE', '%' . $data . '%');
+        })->orWhere('jumlah', 'LIKE', '%' . $data . '%')
+            ->orWhere('tanggal_pakai', 'LIKE', '%' . $data . '%')
+            ->with('bahan_baku')
+            ->get();
+
+        if (count($data) == 0) {
+            return response()->json([
+                'message' => 'Data is empty',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Data successfully retrieved',
+            'data' => $data,
+        ], 200);
+    }
+
     /**
      * Store a newly created resource in storage.
      */

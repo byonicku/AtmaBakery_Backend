@@ -343,4 +343,45 @@ class UserController extends Controller
             'message' => 'Data successfully deleted',
         ], 200);
     }
+
+    public function destroyProfilePicSelf()
+    {
+        $data = Auth::user();
+
+        if (!$data) {
+            return response()->json([
+                'message' => 'Unauthenticated',
+            ], 404);
+        }
+
+        if ($data->foto_profil == null) {
+            return response()->json([
+                'message' => 'Profile picture is not found',
+            ], 404);
+        }
+
+        $publicId = $data->public_id;
+        cloudinary()->destroy('atma-bakery/' . $publicId, [
+            'invalidate' => true,
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $data->update([
+                'foto_profil' => null,
+                'public_id' => null,
+            ]);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Failed to delete profile picture',
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Profile picture successfully deleted',
+        ], 200);
+    }
 }

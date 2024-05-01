@@ -23,6 +23,8 @@ class Transaksi extends Model
         'radius',
         'tip',
         'tipe_delivery',
+        'bukti_pembayaran',
+        'public_id',
         'status',
     ];
 
