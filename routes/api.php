@@ -166,6 +166,13 @@ Route::middleware(['auth:sanctum', 'ability:admin'])
     });
 
 Route::get('/cron', function () {
+    $providedToken = request()->header('cron-secret');
+    $expectedToken = env('CRON_SECRET');
+
+    if ($providedToken !== $expectedToken) {
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }
+
     Artisan::call('add-presensi');
     $output = Artisan::output();
     Mail::raw($output, function ($message) {
