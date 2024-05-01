@@ -50,8 +50,13 @@ class PengadaanBahanBakuController extends Controller
 
     public function search(string $data)
     {
-        $data = PengadaanBahanBaku::with('bahan_baku')
-            ->whereAny(['id_bahan_baku', 'stok', 'harga', 'tanggal_pembelian'], 'LIKE', '%' . $data . '%')->get();
+        $data = PengadaanBahanBaku::whereHas('bahan_baku', function ($query) use ($data) {
+            $query->where('nama_bahan_baku', 'LIKE', '%' . $data . '%');
+        })->orWhere('stok', 'LIKE', '%' . $data . '%')
+            ->orWhere('harga', 'LIKE', '%' . $data . '%')
+            ->orWhere('tanggal_pembelian', 'LIKE', '%' . $data . '%')
+            ->with('bahan_baku')
+            ->get();
 
         if (count($data) == 0) {
             return response()->json([
