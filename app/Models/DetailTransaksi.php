@@ -15,12 +15,18 @@ class DetailTransaksi extends Model
         'no_nota',
         'id_produk',
         'id_hampers',
+        'harga_saat_beli',
         'jumlah',
     ];
 
     public function transaksi()
     {
         return $this->belongsTo(Transaksi::class, 'no_nota', 'no_nota');
+    }
+
+    public function hampers()
+    {
+        return $this->belongsTo(Hampers::class, 'id_hampers', 'id_hampers');
     }
 
     public function produk()

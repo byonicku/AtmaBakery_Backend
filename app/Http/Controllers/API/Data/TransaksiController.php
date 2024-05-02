@@ -40,7 +40,8 @@ class TransaksiController extends Controller
     {
         $data = Auth::user();
 
-        $transaksi = Transaksi::with('detail_transaksi')->where('id_user', '=', $data->id_user)
+        $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
+            ->where('id_user', '=', $data->id_user)
             ->paginate(10);
 
         if (count($transaksi) == 0) {
@@ -49,15 +50,39 @@ class TransaksiController extends Controller
             ], 404);
         }
 
+        $data = $transaksi->map(function ($trans) {
+            $trans->detail_transaksi = $trans->detail_transaksi->map(function ($detail) {
+                if ($detail->produk !== null) {
+                    $detail->subtotal = $detail->jumlah * $detail->harga_saat_beli;
+                    $detail->nama_produk = $detail->produk->nama_produk;
+                } else if ($detail->hampers !== null) {
+                    $detail->subtotal = $detail->jumlah * $detail->harga_saat_beli;
+                    $detail->nama_produk = $detail->hampers->nama_hampers;
+                } else {
+                    $detail->subtotal = null;
+                    $detail->nama_produk = null;
+                }
+
+                unset ($detail->produk);
+                unset ($detail->hampers);
+
+                return $detail;
+            });
+
+            return $trans;
+        });
+
         return response()->json([
             'message' => 'Data successfully retrieved',
-            'data' => $transaksi,
+            'data' => $data,
         ], 200);
     }
 
     public function indexHistoryPaginate(string $id_user)
     {
-        $transaksi = Transaksi::with('detail_transaksi')->where('id_user', '=', $id_user)
+        // Fetch transactions with their detail transactions including product info
+        $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
+            ->where('id_user', '=', $id_user)
             ->paginate(10);
 
         if (count($transaksi) == 0) {
@@ -66,11 +91,36 @@ class TransaksiController extends Controller
             ], 404);
         }
 
+        $data = $transaksi->map(function ($trans) {
+            $trans->detail_transaksi = $trans->detail_transaksi->map(function ($detail) {
+                if ($detail->produk !== null) {
+                    $detail->subtotal = $detail->jumlah * $detail->harga_saat_beli;
+                    $detail->nama_produk = $detail->produk->nama_produk;
+                } else if ($detail->hampers !== null) {
+                    $detail->subtotal = $detail->jumlah * $detail->harga_saat_beli;
+                    $detail->nama_produk = $detail->hampers->nama_hampers;
+                } else {
+                    $detail->subtotal = null;
+                    $detail->nama_produk = null;
+                }
+
+                unset ($detail->produk);
+                unset ($detail->hampers);
+
+                return $detail;
+            });
+
+            return $trans;
+        });
+
+        // Return the data
         return response()->json([
             'message' => 'Data successfully retrieved',
-            'data' => $transaksi,
+            'data' => $data,
         ], 200);
     }
+
+
 
     public function search(Request $request, string $id_user)
     {
