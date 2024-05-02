@@ -39,6 +39,8 @@ Route::get('/transaksi/self/history', [TransaksiController::class, 'indexHistory
     ->middleware('auth:sanctum');
 Route::get('/paginate/transaksi/self/history', [TransaksiController::class, 'paginateHistorySelf'])->name('users.paginate-self')
     ->middleware('auth:sanctum');
+Route::post('/transaksi/search/self', [TransaksiController::class, 'searchSelf'])->name('users.search-self')
+    ->middleware('auth:sanctum');
 
 Route::get('/paginate/transaksi/history/{id_user}', [TransaksiController::class, 'paginateHistory'])->name('users.paginate-self')
     ->middleware(['auth:sanctum', 'ability:admin']);

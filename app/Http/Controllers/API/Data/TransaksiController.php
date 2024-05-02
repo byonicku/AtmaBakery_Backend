@@ -21,7 +21,14 @@ class TransaksiController extends Controller
     {
         $data = Auth::user();
 
-        $transaksi = Transaksi::with('detail_transaksi')->where('id_user', '=', $data->id_user)
+        if ($data == null) {
+            return response()->json([
+                'message' => 'User not found',
+            ], 404);
+        }
+
+        $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
+            ->where('id_user', '=', $data->id_user)
             ->get();
 
         if (count($transaksi) == 0) {
@@ -30,9 +37,31 @@ class TransaksiController extends Controller
             ], 404);
         }
 
+        $data = $transaksi->map(function ($trans) {
+            $trans->detail_transaksi = $trans->detail_transaksi->map(function ($detail) {
+                if ($detail->produk !== null) {
+                    $detail->subtotal = $detail->jumlah * $detail->harga_saat_beli;
+                    $detail->nama_produk = $detail->produk->nama_produk;
+                } else if ($detail->hampers !== null) {
+                    $detail->subtotal = $detail->jumlah * $detail->harga_saat_beli;
+                    $detail->nama_produk = $detail->hampers->nama_hampers;
+                } else {
+                    $detail->subtotal = null;
+                    $detail->nama_produk = null;
+                }
+
+                unset ($detail->produk);
+                unset ($detail->hampers);
+
+                return $detail;
+            });
+
+            return $trans;
+        });
+
         return response()->json([
             'message' => 'Data successfully retrieved',
-            'data' => $transaksi,
+            'data' => $data,
         ], 200);
     }
 
@@ -159,6 +188,69 @@ class TransaksiController extends Controller
         return response()->json([
             'message' => 'Data successfully retrieved',
             'data' => $transaksi,
+        ], 200);
+    }
+
+    public function searchSelf(Request $request)
+    {
+        $user = Auth::user();
+
+        if ($user == null) {
+            return response()->json([
+                'message' => 'User not found',
+            ], 404);
+        }
+
+        $data = $request->data;
+
+        if ($data == null) {
+            return response()->json([
+                'message' => 'Data is empty',
+            ], 404);
+        }
+
+        $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
+            ->where('id_user', '=', $user->id_user)
+            ->whereHas('detail_transaksi', function ($query) use ($data) {
+                $query->whereHas('produk', function ($query) use ($data) {
+                    $query->where('nama_produk', 'LIKE', '%' . $data . '%');
+                })->orWhereHas('hampers', function ($query) use ($data) {
+                    $query->where('nama_hampers', 'LIKE', '%' . $data . '%');
+                });
+            })
+            ->get();
+
+        if (count($transaksi) == 0) {
+            return response()->json([
+                'message' => 'Data not found',
+            ], 404);
+        }
+
+        $data = $transaksi->map(function ($trans) {
+            $trans->detail_transaksi = $trans->detail_transaksi->map(function ($detail) {
+                if ($detail->produk !== null) {
+                    $detail->subtotal = $detail->jumlah * $detail->harga_saat_beli;
+                    $detail->nama_produk = $detail->produk->nama_produk;
+                } else if ($detail->hampers !== null) {
+                    $detail->subtotal = $detail->jumlah * $detail->harga_saat_beli;
+                    $detail->nama_produk = $detail->hampers->nama_hampers;
+                } else {
+                    $detail->subtotal = null;
+                    $detail->nama_produk = null;
+                }
+
+                unset ($detail->produk);
+                unset ($detail->hampers);
+
+                return $detail;
+            });
+
+            return $trans;
+        });
+
+        return response()->json([
+            'message' => 'Data successfully retrieved',
+            'data' => $data,
         ], 200);
     }
 
