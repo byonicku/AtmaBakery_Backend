@@ -37,10 +37,10 @@ Route::delete('/users/self/pfp', [UserController::class, 'destroyProfilePicSelf'
     ->middleware('auth:sanctum');
 Route::get('/transaksi/self/history', [TransaksiController::class, 'indexHistorySelf'])->name('users.show-self')
     ->middleware('auth:sanctum');
-Route::get('/paginate/transaksi/self/history', [TransaksiController::class, 'indexHistoryPaginateSelf'])->name('users.paginate-self')
+Route::get('/paginate/transaksi/self/history', [TransaksiController::class, 'paginateHistorySelf'])->name('users.paginate-self')
     ->middleware('auth:sanctum');
 
-Route::get('/paginate/transaksi/history/{id_user}', [TransaksiController::class, 'indexHistoryPaginate'])->name('users.paginate-self')
+Route::get('/paginate/transaksi/history/{id_user}', [TransaksiController::class, 'paginateHistory'])->name('users.paginate-self')
     ->middleware(['auth:sanctum', 'ability:admin']);
 Route::post('/transaksi/search/{id_user}', [TransaksiController::class, 'search'])->name('users.show-self')
     ->middleware(['auth:sanctum', 'ability:admin']);

@@ -36,7 +36,7 @@ class TransaksiController extends Controller
         ], 200);
     }
 
-    public function indexHistoryPaginateSelf()
+    public function paginateHistorySelf()
     {
         $data = Auth::user();
 
@@ -78,7 +78,7 @@ class TransaksiController extends Controller
         ], 200);
     }
 
-    public function indexHistoryPaginate(string $id_user)
+    public function paginateHistory(string $id_user)
     {
         // Fetch transactions with their detail transactions including product info
         $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
