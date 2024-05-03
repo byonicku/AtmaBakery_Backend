@@ -101,9 +101,11 @@ class TransaksiController extends Controller
             return $trans;
         });
 
+        $transaksi->data = $data;
+
         return response()->json([
             'message' => 'Data successfully retrieved',
-            'data' => $data,
+            'data' => $transaksi,
         ], 200);
     }
 
@@ -141,6 +143,8 @@ class TransaksiController extends Controller
 
             return $trans;
         });
+
+        $transaksi->data = $data;
 
         // Return the data
         return response()->json([
