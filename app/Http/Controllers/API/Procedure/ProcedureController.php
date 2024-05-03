@@ -34,6 +34,7 @@ class ProcedureController extends Controller
             'no_nota' => $nota[0]->data_pemesanan,
             'nama' => $nota[4]->data_pemesanan,
             'email' => $nota[5]->data_pemesanan,
+            'no_telp' => $nota[16]->data_pemesanan,
             'lokasi' => $nota[6]->data_pemesanan,
             'keterangan' => $nota[7]->data_pemesanan,
             'tanggal_pesan' => $nota[1]->data_pemesanan,
@@ -44,6 +45,7 @@ class ProcedureController extends Controller
             'total_harga' => $nota[10]->data_pemesanan,
             'radius' => $nota[11]->data_pemesanan,
             'ongkir' => $nota[12]->data_pemesanan,
+            'status' => $nota[15]->data_pemesanan,
             'penambahan_poin' => $nota[13]->data_pemesanan,
             'poin_user_setelah_penambahan' => $nota[14]->data_pemesanan,
             'produk' => []
