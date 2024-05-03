@@ -31,28 +31,31 @@ class ProcedureController extends Controller
         }
 
         $result = [
-            'id_nota' => $nota[0]->data_pemesanan,
+            'no_nota' => $nota[0]->data_pemesanan,
             'nama' => $nota[4]->data_pemesanan,
             'email' => $nota[5]->data_pemesanan,
             'lokasi' => $nota[6]->data_pemesanan,
+            'keterangan' => $nota[7]->data_pemesanan,
             'tanggal_pesan' => $nota[1]->data_pemesanan,
             'tanggal_lunas' => $nota[2]->data_pemesanan,
             'tanggal_ambil' => $nota[3]->data_pemesanan,
-            'tipe_delivery' => $nota[7]->data_pemesanan,
-            'penggunaan_poin' => $nota[8]->data_pemesanan,
-            'total_harga' => $nota[9]->data_pemesanan,
-            'radius' => $nota[10]->data_pemesanan,
-            'ongkir' => $nota[11]->data_pemesanan,
-            'pendapatan_poin' => $nota[12]->data_pemesanan,
-            'barang' => []
+            'tipe_delivery' => $nota[8]->data_pemesanan,
+            'penggunaan_poin' => $nota[9]->data_pemesanan,
+            'total_harga' => $nota[10]->data_pemesanan,
+            'radius' => $nota[11]->data_pemesanan,
+            'ongkir' => $nota[12]->data_pemesanan,
+            'penambahan_poin' => $nota[13]->data_pemesanan,
+            'poin_user_setelah_penambahan' => $nota[14]->data_pemesanan,
+            'produk' => []
         ];
 
         foreach ($barang as $item) {
-            $result['barang'][] = [
-                'nama' => $item->nama,
+            $result['produk'][] = [
+                'nama_produk' => $item->nama,
                 'ukuran' => $item->ukuran,
-                'total_harga' => $item->total_harga,
+                'harga_saat_beli' => $item->harga_saat_beli,
                 'jumlah' => $item->jumlah,
+                'subtotal' => $item->total_harga,
             ];
         }
 
