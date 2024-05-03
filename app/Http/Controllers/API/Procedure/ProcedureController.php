@@ -52,6 +52,7 @@ class ProcedureController extends Controller
                 'nama' => $item->nama,
                 'ukuran' => $item->ukuran,
                 'total_harga' => $item->total_harga,
+                'jumlah' => $item->jumlah,
             ];
         }
 
