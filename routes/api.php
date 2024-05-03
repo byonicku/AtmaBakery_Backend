@@ -76,13 +76,15 @@ Route::post('password/email', [ForgotPasswordAPIController::class, 'sendResetLin
 Route::post('password/reset', [ResetPasswordAPIController::class, 'reset'])
     ->name('password-reset');
 
+// ProcedureController routes
+Route::middleware(['auth:sanctum', 'ability:mo,owner,admin'])
+    ->controller(ProcedureController::class)
+    ->group(function () {
+        Route::post('/get-nota', 'getNotaPemesanan')->name('get-nota');
+    })->name('laporan');
+
 Route::middleware(['auth:sanctum', 'ability:mo,owner'])
     ->group(function () {
-        // ProcedureController routes
-        Route::controller(ProcedureController::class)->group(function () {
-            Route::post('/get-nota', 'getNotaPemesanan')->name('get-nota');
-        })->name('laporan');
-
         // KaryawanController routes
         Route::controller(KaryawanController::class)->group(function () {
             Route::apiResource('karyawan', KaryawanController::class);
