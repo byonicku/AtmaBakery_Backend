@@ -8,6 +8,7 @@ use App\Http\Controllers\API\Data\HampersController;
 use App\Http\Controllers\API\Data\KaryawanController;
 use App\Http\Controllers\API\Data\PengeluaranLainController;
 use App\Http\Controllers\API\Data\PenitipController;
+use App\Http\Controllers\API\Data\PresensiController;
 use App\Http\Controllers\API\Data\ResepController;
 use App\Http\Controllers\API\Data\UserController;
 use Illuminate\Support\Facades\Route;
@@ -124,6 +125,13 @@ Route::middleware(['auth:sanctum', 'ability:mo'])
             Route::apiResource('pembelian_bahan_baku', PengadaanBahanBakuController::class);
             Route::get('/paginate/pembelian_bahan_baku', 'paginate')->name('pembelian_bahan_baku.paginate');
             Route::get('/pembelian_bahan_baku/search/{data}', 'search')->name('pembelian_bahan_baku.search');
+        });
+
+        // Presensi routes
+        Route::controller(PresensiController::class)->group(function () {
+            Route::apiResource('presensi', PresensiController::class);
+            Route::get('/presensi/date/{date}', 'indexByDate')->name('presensi.date');
+            Route::get('/presensi/search/{data}/{date}', 'search')->name('presensi.search');
         });
     });
 

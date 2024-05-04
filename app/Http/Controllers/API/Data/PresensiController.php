@@ -16,11 +16,75 @@ class PresensiController extends Controller
      */
     public function index()
     {
-        $data = Presensi::all();
+        $data = Presensi::join('karyawan', 'karyawan.id_karyawan', '=', 'presensi.id_karyawan')->get();
 
         if (count($data) == 0) {
             return response()->json([
                 'message' => 'Data is empty',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Data successfully retrieved',
+            'data' => $data,
+        ], 200);
+    }
+
+    public function indexByDate(string $date)
+    {
+        $validate = Validator::make(['date' => $date], [
+            'date' => [
+                'required',
+                'date',
+                Rule::exists('presensi', 'tanggal')
+            ]
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'message' => $validate->errors()->first(),
+            ], 404);
+        }
+
+        $data = Presensi::join('karyawan', 'karyawan.id_karyawan', '=', 'presensi.id_karyawan')
+            ->where('tanggal', "=", $date)->get();
+
+        if (count($data) == 0) {
+            return response()->json([
+                'message' => 'Data is empty',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Data successfully retrieved',
+            'data' => $data,
+        ], 200);
+    }
+
+    public function search(string $data, string $date)
+    {
+        $validate = Validator::make(['date' => $date], [
+            'date' => [
+                'required',
+                'date',
+                Rule::exists('presensi', 'tanggal')
+            ]
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'message' => $validate->errors()->first(),
+            ], 404);
+        }
+
+        $data = Presensi::join('karyawan', 'karyawan.id_karyawan', '=', 'presensi.id_karyawan')
+            ->whereAny(['nama', 'no_telp', 'email'], 'LIKE', '%' . $data . '%')
+            ->where('tanggal', "=", $date)
+            ->get();
+
+        if (count($data) == 0) {
+            return response()->json([
+                'message' => 'Data is not found',
             ], 404);
         }
 
@@ -84,7 +148,8 @@ class PresensiController extends Controller
      */
     public function show(string $id)
     {
-        $data = Presensi::find($id);
+        $data = Presensi::join('karyawan', 'karyawan.id_karyawan', '=', 'presensi.id_karyawan')
+            ->find($id);
 
         if (!$data) {
             return response()->json([
@@ -112,8 +177,6 @@ class PresensiController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'id_karyawan' => 'sometimes|exists:karyawan,id_karyawan',
-            'tanggal' => 'sometimes|date',
             'alasan' => 'sometimes|string',
             'status' => 'sometimes|in:1,0'
         ]);
@@ -125,8 +188,6 @@ class PresensiController extends Controller
         }
 
         $fillableAttributes = [
-            'id_karyawan',
-            'tanggal',
             'alasan',
             'status'
         ];
