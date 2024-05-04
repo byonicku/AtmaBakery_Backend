@@ -42,13 +42,13 @@ class ProcedureController extends Controller
             'tanggal_lunas' => $nota[2]->data_pemesanan,
             'tanggal_ambil' => $nota[3]->data_pemesanan,
             'tipe_delivery' => $nota[8]->data_pemesanan,
-            'penggunaan_poin' => $nota[9]->data_pemesanan,
-            'total_harga' => $nota[10]->data_pemesanan,
-            'radius' => $nota[11]->data_pemesanan,
-            'ongkir' => $nota[12]->data_pemesanan,
+            'penggunaan_poin' => (int) $nota[9]->data_pemesanan,
+            'total' => (double) $nota[10]->data_pemesanan,
+            'radius' => (int) $nota[11]->data_pemesanan,
+            'ongkir' => (int) $nota[12]->data_pemesanan,
             'status' => $nota[15]->data_pemesanan,
-            'penambahan_poin' => $nota[13]->data_pemesanan,
-            'poin_user_setelah_penambahan' => $nota[14]->data_pemesanan,
+            'penambahan_poin' => (int) $nota[13]->data_pemesanan,
+            'poin_user_setelah_penambahan' => (int) $nota[14]->data_pemesanan,
             'produk' => []
         ];
 
@@ -108,13 +108,13 @@ class ProcedureController extends Controller
             'tanggal_lunas' => $nota[2]->data_pemesanan,
             'tanggal_ambil' => $nota[3]->data_pemesanan,
             'tipe_delivery' => $nota[8]->data_pemesanan,
-            'penggunaan_poin' => $nota[9]->data_pemesanan,
-            'total_harga' => $nota[10]->data_pemesanan,
-            'radius' => $nota[11]->data_pemesanan,
-            'ongkir' => $nota[12]->data_pemesanan,
+            'penggunaan_poin' => (int) $nota[9]->data_pemesanan,
+            'total' => (double) $nota[10]->data_pemesanan,
+            'radius' => (int) $nota[11]->data_pemesanan,
+            'ongkir' => (int) $nota[12]->data_pemesanan,
             'status' => $nota[15]->data_pemesanan,
-            'penambahan_poin' => $nota[13]->data_pemesanan,
-            'poin_user_setelah_penambahan' => $nota[14]->data_pemesanan,
+            'penambahan_poin' => (int) $nota[13]->data_pemesanan,
+            'poin_user_setelah_penambahan' => (int) $nota[14]->data_pemesanan,
             'produk' => []
         ];
 
