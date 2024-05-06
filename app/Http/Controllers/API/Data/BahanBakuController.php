@@ -19,12 +19,12 @@ class BahanBakuController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -35,12 +35,12 @@ class BahanBakuController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -51,12 +51,12 @@ class BahanBakuController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -70,6 +70,9 @@ class BahanBakuController extends Controller
             'nama_bahan_baku' => 'required|max:255',
             'satuan' => 'required|max:255',
             'stok' => 'required|gte:0',
+        ], [
+            'required' => ':attribute harus diisi',
+            'gte' => ':attribute harus lebih dari atau sama dengan 0',
         ]);
 
         if ($validate->fails()) {
@@ -96,7 +99,7 @@ class BahanBakuController extends Controller
         }
 
         return response()->json([
-            'message' => 'Data successfully created',
+            'message' => 'Data berhasil dibuat',
             'data' => $data,
         ], 201);
     }
@@ -110,12 +113,12 @@ class BahanBakuController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -129,7 +132,7 @@ class BahanBakuController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -137,6 +140,8 @@ class BahanBakuController extends Controller
             'nama_bahan_baku' => 'sometimes|max:255',
             'satuan' => 'sometimes|max:255',
             'stok' => 'sometimes|gte:0',
+        ], [
+            'gte' => ':attribute harus lebih dari atau sama dengan 0',
         ]);
 
         if ($validate->fails()) {
@@ -163,7 +168,7 @@ class BahanBakuController extends Controller
         }
 
         return response()->json([
-            'message' => 'Data successfully updated',
+            'message' => 'Data berhasil diupdate',
             'data' => $data,
         ], 200);
     }
@@ -177,7 +182,7 @@ class BahanBakuController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -195,7 +200,7 @@ class BahanBakuController extends Controller
         }
 
         return response()->json([
-            'message' => 'Data successfully deleted',
+            'message' => 'Data berhasil dihapus',
         ], 200);
     }
 }

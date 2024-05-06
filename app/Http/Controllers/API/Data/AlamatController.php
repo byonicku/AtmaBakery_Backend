@@ -21,12 +21,12 @@ class AlamatController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -37,12 +37,12 @@ class AlamatController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -63,12 +63,12 @@ class AlamatController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -77,6 +77,9 @@ class AlamatController extends Controller
     {
         $validate = Validator::make($request->all(), [
             'data' => 'required|string',
+        ], [
+            'data.required' => 'Search harus diisi',
+            'data.string' => 'Search harus berupa text',
         ]);
 
         if ($validate->fails()) {
@@ -91,12 +94,12 @@ class AlamatController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -113,6 +116,9 @@ class AlamatController extends Controller
 
         $validate = Validator::make($request->all(), [
             'data' => 'required|string',
+        ], [
+            'data.required' => 'Search harus diisi',
+            'data.string' => 'Search harus berupa text',
         ]);
 
         if ($validate->fails()) {
@@ -129,12 +135,12 @@ class AlamatController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -150,6 +156,15 @@ class AlamatController extends Controller
             'no_telp' => 'required|digits_between:10,13|regex:/^(?:\+?08)(?:\d{2,3})?[ -]?\d{3,4}[ -]?\d{4}$/',
             'lokasi' => 'required|string',
             'keterangan' => 'required|string',
+        ], [
+            'required' => ':attribute harus diisi',
+            'no_telp.regex' => 'Nomor telepon tidak valid, pastikan mulai dari 08',
+            'no_telp.digits_between' => 'Nomor telepon harus berisi 10-13 digit',
+            'nama_lengkap.string' => 'Nama lengkap harus berupa text',
+            'lokasi.string' => 'Lokasi harus berupa text',
+            'keterangan.string' => 'Keterangan harus berupa text',
+            'id_user.exists' => 'User tidak ditemukan',
+
         ]);
 
         if ($validate->fails()) {
@@ -169,18 +184,19 @@ class AlamatController extends Controller
             ]);
 
             DB::commit();
-
-            return response()->json([
-                'message' => 'Data successfully created',
-                'data' => $data,
-            ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
 
             return response()->json([
-                'message' => $e->getMessage(),
+                'message' => 'Data gagal dibuat',
+                'error' => $e->getMessage(),
             ], 500);
         }
+
+        return response()->json([
+            'message' => 'Data berhasil dibuat',
+            'data' => $data,
+        ], 201);
     }
 
     public function storeSelf(Request $request)
@@ -198,6 +214,13 @@ class AlamatController extends Controller
             'no_telp' => 'required|digits_between:10,13|regex:/^(?:\+?08)(?:\d{2,3})?[ -]?\d{3,4}[ -]?\d{4}$/',
             'lokasi' => 'required|string',
             'keterangan' => 'required|string',
+        ], [
+            'required' => ':attribute harus diisi',
+            'no_telp.regex' => 'Nomor telepon tidak valid, pastikan mulai dari 08',
+            'no_telp.digits_between' => 'Nomor telepon harus berisi 10-13 digit',
+            'nama_lengkap.string' => 'Nama lengkap harus berupa text',
+            'lokasi.string' => 'Lokasi harus berupa text',
+            'keterangan.string' => 'Keterangan harus berupa text',
         ]);
 
         if ($validate->fails()) {
@@ -217,18 +240,19 @@ class AlamatController extends Controller
             ]);
 
             DB::commit();
-
-            return response()->json([
-                'message' => 'Data successfully created',
-                'data' => $data,
-            ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
 
             return response()->json([
-                'message' => $e->getMessage(),
+                'message' => 'Data gagal dibuat',
+                'error' => $e->getMessage(),
             ], 500);
         }
+
+        return response()->json([
+            'message' => 'Data berhasil dibuat',
+            'data' => $data,
+        ], 201);
     }
 
     /**
@@ -240,12 +264,12 @@ class AlamatController extends Controller
 
         if ($data == null) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -266,12 +290,12 @@ class AlamatController extends Controller
 
         if ($data == null) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -285,7 +309,7 @@ class AlamatController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -295,6 +319,14 @@ class AlamatController extends Controller
             'no_telp' => 'sometimes|digits_between:10,13|regex:/^(?:\+?08)(?:\d{2,3})?[ -]?\d{3,4}[ -]?\d{4}$/',
             'lokasi' => 'sometimes|string',
             'keterangan' => 'sometimes|string',
+        ], [
+            'required' => ':attribute harus diisi',
+            'no_telp.regex' => 'Nomor telepon tidak valid, pastikan mulai dari 08',
+            'no_telp.digits_between' => 'Nomor telepon harus berisi 10-13 digit',
+            'nama_lengkap.string' => 'Nama lengkap harus berupa text',
+            'lokasi.string' => 'Lokasi harus berupa text',
+            'keterangan.string' => 'Keterangan harus berupa text',
+            'id_user.exists' => 'User tidak ditemukan',
         ]);
 
         if ($validate->fails()) {
@@ -324,12 +356,13 @@ class AlamatController extends Controller
             DB::rollBack();
 
             return response()->json([
-                'message' => $e->getMessage(),
+                'message' => 'Gagal melakukan update',
+                'error' => $e->getMessage(),
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Data successfully updated',
+            'message' => 'Data berhasil diupdate',
             'data' => $data,
         ], 200);
     }
@@ -348,7 +381,7 @@ class AlamatController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -363,6 +396,13 @@ class AlamatController extends Controller
             'no_telp' => 'sometimes|digits_between:10,13|regex:/^(?:\+?08)(?:\d{2,3})?[ -]?\d{3,4}[ -]?\d{4}$/',
             'lokasi' => 'sometimes|string',
             'keterangan' => 'sometimes|string',
+        ], [
+            'required' => ':attribute harus diisi',
+            'no_telp.regex' => 'Nomor telepon tidak valid, pastikan mulai dari 08',
+            'no_telp.digits_between' => 'Nomor telepon harus berisi 10-13 digit',
+            'nama_lengkap.string' => 'Nama lengkap harus berupa text',
+            'lokasi.string' => 'Lokasi harus berupa text',
+            'keterangan.string' => 'Keterangan harus berupa text',
         ]);
 
         if ($validate->fails()) {
@@ -391,12 +431,13 @@ class AlamatController extends Controller
             DB::rollBack();
 
             return response()->json([
-                'message' => $e->getMessage(),
+                'message' => 'Gagal melakukan update',
+                'error' => $e->getMessage(),
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Data successfully updated',
+            'message' => 'Data berhasil diupdate',
             'data' => $data,
         ], 200);
     }
@@ -410,7 +451,7 @@ class AlamatController extends Controller
 
         if ($data == null) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -428,7 +469,7 @@ class AlamatController extends Controller
         }
 
         return response()->json([
-            'message' => 'Data successfully deleted',
+            'message' => 'Data berhasil dihapus',
         ], 200);
     }
 
@@ -446,7 +487,7 @@ class AlamatController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -465,12 +506,13 @@ class AlamatController extends Controller
             DB::rollBack();
 
             return response()->json([
-                'message' => $e->getMessage(),
+                'message' => 'Data tidak berhasil dihapus',
+                'error' => $e->getMessage(),
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Data successfully deleted',
+            'message' => 'Data berhasil dihapus',
         ], 200);
     }
 }

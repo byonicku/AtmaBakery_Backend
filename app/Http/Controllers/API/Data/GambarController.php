@@ -21,12 +21,12 @@ class GambarController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -41,17 +41,21 @@ class GambarController extends Controller
             'id_hampers' => 'sometimes|numeric|exists:hampers,id_hampers',
             'url' => 'required',
             'public_id' => 'required',
+        ], [
+            'required' => ':attribute harus diisi',
+            'numeric' => ':attribute harus berupa angka',
+            'exists' => ':attribute tidak ditemukan',
         ]);
 
         if (!$request->id_produk && !$request->id_hampers) {
             return response()->json([
-                'message' => 'id_produk or id_hampers is required',
+                'message' => 'id_produk atau id_hampers harus diisi',
             ], 400);
         }
 
         if ($request->id_produk && $request->id_hampers) {
             return response()->json([
-                'message' => 'id_produk and id_hampers cannot be sent together',
+                'message' => 'id_produk dan id_hampers tidak boleh diisi bersamaan',
             ], 400);
         }
 
@@ -71,7 +75,7 @@ class GambarController extends Controller
 
         if ($count >= 5) {
             return response()->json([
-                'message' => 'Maximum image is 5, you can add only ' . (5 - $count) . ' image(s) left',
+                'message' => 'Maksimal 5 gambar',
                 'left' => (5 - $count),
             ], 400);
         }
@@ -90,7 +94,7 @@ class GambarController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Failed to create data',
+                'message' => 'Data gagal dibuat',
                 'error' => $e->getMessage(),
             ], 500);
         }
@@ -110,12 +114,12 @@ class GambarController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -125,12 +129,12 @@ class GambarController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -141,12 +145,12 @@ class GambarController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -160,6 +164,10 @@ class GambarController extends Controller
         $validate = Validator::make($request->all(), [
             'id_gambar' => 'required|numeric|exists:gambar,id_gambar',
             'foto' => 'required',
+        ], [
+            'required' => ':attribute harus diisi',
+            'numeric' => ':attribute harus berupa angka',
+            'exists' => ':attribute tidak ditemukan',
         ]);
 
         if ($validate->fails()) {
@@ -172,7 +180,7 @@ class GambarController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -194,13 +202,13 @@ class GambarController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Failed to create data',
+                'message' => 'Gagal melakukan update',
                 'error' => $e->getMessage(),
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Image successfully updated',
+            'message' => 'Data berhasil diupdate',
         ], 200);
     }
 
@@ -213,7 +221,7 @@ class GambarController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -228,13 +236,13 @@ class GambarController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Failed to delete data',
+                'message' => 'Data tidak berhasil dihapus',
                 'error' => $e->getMessage(),
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Data successfully deleted',
+            'message' => 'Data berhasil dihapus',
             'response' => $response,
         ], 200);
     }

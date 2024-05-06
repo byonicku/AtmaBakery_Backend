@@ -23,12 +23,12 @@ class UserController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -39,12 +39,12 @@ class UserController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -56,12 +56,12 @@ class UserController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -77,7 +77,7 @@ class UserController extends Controller
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -107,6 +107,17 @@ class UserController extends Controller
             ],
             'foto_profil' => 'sometimes|image|mimes:jpeg,png,jpg|max:1024',
             'jenis_kelamin' => 'sometimes|in:L,P',
+        ], [
+            'required' => ':attribute harus diisi',
+            'no_telp.regex' => 'Nomor telepon tidak valid, pastikan mulai dari 08',
+            'no_telp.digits_between' => 'Nomor telepon harus berisi 10-13 digit',
+            'email.unique' => 'Email sudah terdaftar',
+            'no_telp.unique' => 'Nomor telepon sudah terdaftar',
+            'email.email' => 'Email tidak valid',
+            'foto_profil.image' => 'Foto profil harus berupa gambar',
+            'foto_profil.mimes' => 'Foto profil harus berformat jpeg, png, jpg',
+            'foto_profil.max' => 'Ukuran foto profil maksimal 1 MB',
+            'jenis_kelamin.in' => 'Jenis kelamin harus L atau P',
         ]);
 
         if ($validate->fails()) {
@@ -152,12 +163,12 @@ class UserController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Failed to update data',
+                'message' => 'Gagal melakukan update',
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Data successfully updated',
+            'message' => 'Data berhasil diupdate',
             'data' => $data,
         ], 200);
     }
@@ -176,6 +187,10 @@ class UserController extends Controller
         $validate = Validator::make($request->all(), [
             'old_password' => 'required',
             'password' => 'required|min:8|confirmed', // pas post tambahin password_confirmation di formdata
+        ], [
+            'required' => ':attribute harus diisi',
+            'password.confirmed' => 'Konfirmasi password tidak sesuai',
+            'password.min' => 'Password minimal 8 karakter',
         ]);
 
         if ($validate->fails()) {
@@ -186,13 +201,13 @@ class UserController extends Controller
 
         if (!Hash::check($request->old_password, $data->password)) {
             return response()->json([
-                'message' => 'Old password is incorrect',
+                'message' => 'Password lama tidak sesuai',
             ], 400);
         }
 
         if (Hash::check($request->password, $data->password)) {
             return response()->json([
-                'message' => 'New password cannot be the same as old password',
+                'message' => 'Password baru tidak boleh sama dengan password lama',
             ], 400);
         }
 
@@ -206,12 +221,12 @@ class UserController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Failed to update data',
+                'message' => 'Gagal melakukan update',
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Password successfully updated',
+            'message' => 'Password berhasil diupdate',
         ], 200);
     }
 
@@ -224,12 +239,12 @@ class UserController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -243,7 +258,7 @@ class UserController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -257,6 +272,17 @@ class UserController extends Controller
             'no_telp' => 'sometimes|digits_between:10,13|unique:user,no_telp|regex:/^(?:\+?08)(?:\d{2,3})?[ -]?\d{3,4}[ -]?\d{4}$/',
             'foto_profil' => 'sometimes|image|mimes:jpeg,png,jpg|max:1024',
             'jenis_kelamin' => 'sometimes|in:L,P',
+        ], [
+            'required' => ':attribute harus diisi',
+            'no_telp.regex' => 'Nomor telepon tidak valid, pastikan mulai dari 08',
+            'no_telp.digits_between' => 'Nomor telepon harus berisi 10-13 digit',
+            'email.unique' => 'Email sudah terdaftar',
+            'no_telp.unique' => 'Nomor telepon sudah terdaftar',
+            'email.email' => 'Email tidak valid',
+            'foto_profil.image' => 'Foto profil harus berupa gambar',
+            'foto_profil.mimes' => 'Foto profil harus berformat jpeg, png, jpg',
+            'foto_profil.max' => 'Ukuran foto profil maksimal 1 MB',
+            'jenis_kelamin.in' => 'Jenis kelamin harus L atau P',
         ]);
 
         if ($validate->fails()) {
@@ -302,12 +328,12 @@ class UserController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Failed to update data',
+                'message' => 'Gagal melakukan update',
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Data successfully updated',
+            'message' => 'Data berhasil diupdate',
             'data' => $data,
         ], 200);
     }
@@ -321,7 +347,7 @@ class UserController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -340,12 +366,12 @@ class UserController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Failed to delete data',
+                'message' => 'Data tidak berhasil dihapus',
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Data successfully deleted',
+            'message' => 'Data berhasil dihapus',
         ], 200);
     }
 
@@ -361,7 +387,7 @@ class UserController extends Controller
 
         if ($data->foto_profil == null) {
             return response()->json([
-                'message' => 'Profile picture is not found',
+                'message' => 'Tidak ada foto profil yang dihapus',
             ], 404);
         }
 
@@ -381,12 +407,12 @@ class UserController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Failed to delete profile picture',
+                'message' => 'Gagal menghapus foto profil',
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Profile picture successfully deleted',
+            'message' => 'Foto profil berhasil dihapus',
         ], 200);
     }
 }

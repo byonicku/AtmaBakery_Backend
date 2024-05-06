@@ -23,7 +23,7 @@ class TransaksiController extends Controller
 
         if ($data == null) {
             return response()->json([
-                'message' => 'User not found',
+                'message' => 'Unauthenticated',
             ], 404);
         }
 
@@ -33,7 +33,7 @@ class TransaksiController extends Controller
 
         if (count($transaksi) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
@@ -60,7 +60,7 @@ class TransaksiController extends Controller
         });
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -75,7 +75,7 @@ class TransaksiController extends Controller
 
         if (count($transaksi) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
@@ -104,7 +104,7 @@ class TransaksiController extends Controller
         $transaksi->data = $data;
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $transaksi,
         ], 200);
     }
@@ -118,7 +118,7 @@ class TransaksiController extends Controller
 
         if (count($transaksi) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
@@ -148,7 +148,7 @@ class TransaksiController extends Controller
 
         // Return the data
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -161,7 +161,7 @@ class TransaksiController extends Controller
 
         if ($data == null) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
@@ -185,12 +185,12 @@ class TransaksiController extends Controller
 
         if (count($transaksi) == 0) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $transaksi,
         ], 200);
     }
@@ -201,7 +201,7 @@ class TransaksiController extends Controller
 
         if ($user == null) {
             return response()->json([
-                'message' => 'User not found',
+                'message' => 'Unauthenticated',
             ], 404);
         }
 
@@ -209,7 +209,7 @@ class TransaksiController extends Controller
 
         if ($data == null) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
@@ -226,7 +226,7 @@ class TransaksiController extends Controller
 
         if (count($transaksi) == 0) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -253,7 +253,7 @@ class TransaksiController extends Controller
         });
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }

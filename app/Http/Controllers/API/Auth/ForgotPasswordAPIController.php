@@ -1,11 +1,13 @@
 <?php
 
 namespace App\Http\Controllers\API\Auth;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
+
 class ForgotPasswordAPIController extends Controller
 {
     use SendsPasswordResetEmails;
@@ -20,6 +22,9 @@ class ForgotPasswordAPIController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email|max:255',
+        ], [
+            'required' => ':attribute harus diisi',
+            'email' => 'Email tidak valid',
         ]);
 
         if ($validator->fails()) {
@@ -33,8 +38,8 @@ class ForgotPasswordAPIController extends Controller
         );
 
         return $response == Password::RESET_LINK_SENT
-                    ? $this->sendResetLinkResponse($request, $response)
-                    : $this->sendResetLinkFailedResponse($request, $response);
+            ? $this->sendResetLinkResponse($request, $response)
+            : $this->sendResetLinkFailedResponse($request, $response);
     }
     /**
      * Send the response for a successful password reset link.
@@ -46,8 +51,8 @@ class ForgotPasswordAPIController extends Controller
     protected function sendResetLinkResponse(Request $request, $response)
     {
         return response()->json([
-            "message" => trans($response)]
-        , 200);
+            "message" => trans($response)
+        ], 200);
     }
     /**
      * Send the response for a failed password reset link.
@@ -59,7 +64,7 @@ class ForgotPasswordAPIController extends Controller
     protected function sendResetLinkFailedResponse(Request $request, $response)
     {
         return response()->json([
-            "message" => trans($response)]
-        , 422);
+            "message" => trans($response)
+        ], 422);
     }
 }

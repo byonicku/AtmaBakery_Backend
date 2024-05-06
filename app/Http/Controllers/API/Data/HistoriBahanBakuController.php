@@ -21,12 +21,12 @@ class HistoriBahanBakuController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -37,12 +37,12 @@ class HistoriBahanBakuController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -58,12 +58,12 @@ class HistoriBahanBakuController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -77,6 +77,12 @@ class HistoriBahanBakuController extends Controller
             'id_bahan_baku' => 'required|exists:bahan_baku,id_bahan_baku',
             'jumlah' => 'required|gte:0|numeric',
             'tanggal_pakai' => 'required|date',
+        ], [
+            'required' => ':attribute harus diisi',
+            'exists' => ':attribute tidak ditemukan',
+            'gte' => ':attribute harus lebih besar atau sama dengan 0',
+            'numeric' => ':attribute harus berupa angka',
+            'date' => ':attribute harus berupa tanggal',
         ]);
 
         if ($validate->fails()) {
@@ -104,7 +110,7 @@ class HistoriBahanBakuController extends Controller
         }
 
         return response()->json([
-            'message' => 'Data successfully created',
+            'message' => 'Data berhasil dibuat',
             'data' => $data,
         ], 201);
     }
@@ -118,12 +124,12 @@ class HistoriBahanBakuController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data is not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -137,7 +143,7 @@ class HistoriBahanBakuController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data is not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -145,6 +151,11 @@ class HistoriBahanBakuController extends Controller
             'id_bahan_baku' => 'sometimes|exists:bahan_baku,id_bahan_baku',
             'jumlah' => 'sometimes|gte:0|numeric',
             'tanggal_pakai' => 'sometimes|date',
+        ], [
+            'exists' => ':attribute tidak ditemukan',
+            'gte' => ':attribute harus lebih besar atau sama dengan 0',
+            'numeric' => ':attribute harus berupa angka',
+            'date' => ':attribute harus berupa tanggal',
         ]);
 
         if ($validate->fails()) {
@@ -177,7 +188,7 @@ class HistoriBahanBakuController extends Controller
         }
 
         return response()->json([
-            'message' => 'Data successfully updated',
+            'message' => 'Data berhasil diupdate',
             'data' => $data,
         ], 200);
     }
@@ -191,7 +202,7 @@ class HistoriBahanBakuController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data is not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -210,7 +221,7 @@ class HistoriBahanBakuController extends Controller
         }
 
         return response()->json([
-            'message' => 'Data successfully deleted',
+            'message' => 'Data berhasil dihapus',
         ], 200);
     }
 }

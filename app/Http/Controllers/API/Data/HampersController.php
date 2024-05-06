@@ -21,12 +21,12 @@ class HampersController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -44,12 +44,12 @@ class HampersController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -68,12 +68,12 @@ class HampersController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -120,13 +120,13 @@ class HampersController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Failed to create data',
+                'message' => 'Data gagal dibuat',
                 'error' => $e->getMessage(),
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Data successfully created',
+            'message' => 'Data berhasil dibuat',
             'data' => $data,
         ], 201);
     }
@@ -140,12 +140,12 @@ class HampersController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -159,7 +159,7 @@ class HampersController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -190,13 +190,13 @@ class HampersController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Failed to create data',
+                'message' => 'Data gagal dibuat',
                 'error' => $e->getMessage(),
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Data successfully created',
+            'message' => 'Data berhasil dibuat',
             'data' => $data,
         ], 200);
     }
@@ -210,7 +210,7 @@ class HampersController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -230,13 +230,13 @@ class HampersController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Failed to delete data',
+                'message' => 'Data tidak berhasil dihapus',
                 'error' => $e->getMessage(),
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Data successfully deleted',
+            'message' => 'Data berhasil dihapus',
         ], 200);
     }
 }

@@ -20,12 +20,12 @@ class PenitipController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -36,12 +36,12 @@ class PenitipController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -52,12 +52,12 @@ class PenitipController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -70,6 +70,12 @@ class PenitipController extends Controller
         $validate = Validator::make($request->all(), [
             'nama' => 'required|max:255',
             'no_telp' => 'required|unique:penitip,no_telp|digits_between:10,13|regex:/^(?:\+?08)(?:\d{2,3})?[ -]?\d{3,4}[ -]?\d{4}$/',
+        ], [
+            'no_telp.unique' => 'Nomor telepon sudah terdaftar',
+            'no_telp.regex' => 'Nomor telepon tidak valid, pastikan mulai dari 08',
+            'no_telp.digits_between' => 'Nomor telepon harus berjumlah 10-13 digit',
+            'no_telp.required' => 'Nomor telepon harus diisi',
+            'required' => ':attribute harus diisi',
         ]);
 
         if ($validate->fails()) {
@@ -85,7 +91,7 @@ class PenitipController extends Controller
             $latestNumericPart++;
             $latestId = 'penitip' . str_pad($latestNumericPart, 3, '0', STR_PAD_LEFT);
         } else {
-            $latestId = 'penitip01'; // Initialize with leading zero
+            $latestId = 'penitip001';
         }
 
         DB::beginTransaction();
@@ -105,7 +111,7 @@ class PenitipController extends Controller
         }
 
         return response()->json([
-            'message' => 'Data successfully created',
+            'message' => 'Data berhasil dibuat',
             'data' => $data,
         ], 201);
     }
@@ -119,12 +125,12 @@ class PenitipController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -138,7 +144,7 @@ class PenitipController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -150,6 +156,11 @@ class PenitipController extends Controller
                 'regex:/^(?:\+?08)(?:\d{2,3})?[ -]?\d{3,4}[ -]?\d{4}$/',
                 Rule::unique('penitip')->ignore($data->no_telp, 'no_telp'),
             ],
+        ], [
+            'no_telp.unique' => 'Nomor telepon sudah terdaftar',
+            'no_telp.regex' => 'Nomor telepon tidak valid, pastikan mulai dari 08',
+            'no_telp.digits_between' => 'Nomor telepon harus berjumlah 10-13 digit',
+            'required' => ':attribute harus diisi',
         ]);
 
         if ($validate->fails()) {
@@ -174,13 +185,13 @@ class PenitipController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Failed to update data',
+                'message' => 'Gagal melakukan update',
                 'error' => $e->getMessage(),
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Data successfully updated',
+            'message' => 'Data berhasil diupdate',
             'data' => $data,
         ], 200);
     }
@@ -194,7 +205,7 @@ class PenitipController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -206,12 +217,12 @@ class PenitipController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Failed to delete data',
+                'message' => 'Data tidak berhasil dihapus',
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Data successfully deleted',
+            'message' => 'Data berhasil dihapus',
         ], 200);
     }
 }

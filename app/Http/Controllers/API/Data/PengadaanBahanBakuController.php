@@ -22,12 +22,12 @@ class PengadaanBahanBakuController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -39,12 +39,12 @@ class PengadaanBahanBakuController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -61,12 +61,12 @@ class PengadaanBahanBakuController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -81,6 +81,12 @@ class PengadaanBahanBakuController extends Controller
             'stok' => 'required|gte:0|numeric',
             'harga' => 'required|gte:0|numeric',
             'tanggal_pembelian' => 'required|date',
+        ], [
+            'id_bahan_baku.exists' => 'ID bahan baku tidak ditemukan',
+            'stok.gte' => 'Stok tidak boleh kurang dari 0',
+            'stok.numeric' => 'Stok harus berupa angka',
+            'harga.gte' => 'Harga tidak boleh kurang dari 0',
+            'harga.numeric' => 'Harga harus berupa angka',
         ]);
 
         if ($validate->fails()) {
@@ -115,7 +121,7 @@ class PengadaanBahanBakuController extends Controller
         }
 
         return response()->json([
-            'message' => 'Data successfully created',
+            'message' => 'Data berhasil dibuat',
             'data' => $data,
         ], 201);
     }
@@ -129,12 +135,12 @@ class PengadaanBahanBakuController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -148,7 +154,7 @@ class PengadaanBahanBakuController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -160,6 +166,13 @@ class PengadaanBahanBakuController extends Controller
             'stok' => 'sometimes|gte:0|numeric',
             'harga' => 'sometimes|gte:0|numeric',
             'tanggal_pembelian' => 'sometimes|date',
+        ], [
+            'id_bahan_baku.exists' => 'ID bahan baku tidak ditemukan',
+            'stok.gte' => 'Stok tidak boleh kurang dari 0',
+            'stok.numeric' => 'Stok harus berupa angka',
+            'harga.gte' => 'Harga tidak boleh kurang dari 0',
+            'harga.numeric' => 'Harga harus berupa angka',
+            'tanggal_pembelian.date' => 'Tanggal pembelian harus berupa tanggal',
         ]);
 
         if ($validate->fails()) {
@@ -203,7 +216,7 @@ class PengadaanBahanBakuController extends Controller
         }
 
         return response()->json([
-            'message' => 'Data successfully updated',
+            'message' => 'Data berhasil diupdate',
             'data' => $data,
         ], 200);
     }
@@ -217,7 +230,7 @@ class PengadaanBahanBakuController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -242,7 +255,7 @@ class PengadaanBahanBakuController extends Controller
         }
 
         return response()->json([
-            'message' => 'Data successfully deleted',
+            'message' => 'Data berhasil dihapus',
         ], 200);
     }
 }

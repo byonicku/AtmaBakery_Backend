@@ -25,6 +25,15 @@ class UserAuthController extends Controller
             'password' => 'required|min:8|confirmed', // pas post tambahin password_confirmation di formdata
             'no_telp' => 'required|digits_between:10,13|unique:user,no_telp|regex:/^(?:\+?08)(?:\d{2,3})?[ -]?\d{3,4}[ -]?\d{4}$/',
             'tanggal_lahir' => 'required|date',
+        ], [
+            'no_telp.regex' => 'Nomor telepon tidak valid, pastikan mulai dari 08',
+            'no_telp.digits_between' => 'Nomor telepon harus berisi 10-13 digit',
+            'password.confirmed' => 'Konfirmasi password tidak sesuai',
+            'password.min' => 'Password minimal 8 karakter',
+            'email.unique' => 'Email sudah terdaftar',
+            'no_telp.unique' => 'Nomor telepon sudah terdaftar',
+            'email.email' => 'Email tidak valid',
+            'required' => ':attribute harus diisi',
         ]);
 
         if ($validator->fails()) {
@@ -57,7 +66,7 @@ class UserAuthController extends Controller
             ->notify(new EmailVerify($details));
 
         return response()->json([
-            'message' => 'Successfully registered. Please check your email to verify your account',
+            'message' => 'Registrasi berhasil, silahkan cek Email Anda untuk verifikasi akun',
             'data' => $user,
         ], 200);
     }
@@ -66,6 +75,8 @@ class UserAuthController extends Controller
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required',
+        ], [
+            'required' => ':attribute harus diisi',
         ]);
 
         if ($validator->fails()) {
@@ -79,9 +90,15 @@ class UserAuthController extends Controller
             'password' => $request->password,
         ];
 
+        if (User::where('email', $request->email)->doesntExist()) {
+            return response()->json([
+                'message' => 'Login gagal, Email tidak terdaftar',
+            ], 400);
+        }
+
         if (!Auth::attempt($user)) {
             return response()->json([
-                'message' => 'Login Failed, Email or Password is wrong',
+                'message' => 'Login gagal, Email atau Password salah',
             ], 400);
         }
 
@@ -91,7 +108,7 @@ class UserAuthController extends Controller
             Auth::logout();
 
             return response()->json([
-                'message' => 'Login Failed, Account not verified',
+                'message' => 'Login gagal, Akun belum diverifikasi, silahkan cek Email Anda',
             ], 400);
         }
 
@@ -112,12 +129,12 @@ class UserAuthController extends Controller
                 break;
             default:
                 return response()->json([
-                    'message' => 'Login Failed, Role not found',
+                    'message' => 'Login gagal, Role tidak ditemukan',
                 ], 400);
         }
 
         return response()->json([
-            'message' => 'Successfully logged in',
+            'message' => 'Berhasil login',
             'data' => $user,
             'token' => $user->createToken('login', $abilities)->plainTextToken
         ], 200);
@@ -127,12 +144,12 @@ class UserAuthController extends Controller
     {
         if ($request->user()->currentAccessToken()->delete()) {
             return response()->json([
-                'message' => 'Successfully logged out',
+                'message' => 'Berhasil logout',
             ], 200);
         }
 
         return response()->json([
-            'message' => 'Failed to log out',
+            'message' => 'Gagal logout',
         ], 400);
     }
 
@@ -144,7 +161,7 @@ class UserAuthController extends Controller
 
         if (!$keyCheck) {
             return response()->json([
-                'message' => 'Invalid verification key',
+                'message' => 'Invalid',
                 'state' => '-1'
             ], 200);
         }
@@ -156,7 +173,7 @@ class UserAuthController extends Controller
 
         if ($checkAlready) {
             return response()->json([
-                'message' => 'Account already verified',
+                'message' => 'Akun sudah diverifikasi',
                 'state' => '0'
             ], 200);
         }
@@ -168,7 +185,7 @@ class UserAuthController extends Controller
             ]);
 
         return response()->json([
-            'message' => 'Account successfully verified',
+            'message' => 'Akun berhasil diverifikasi',
             'state' => '1'
         ], 200);
     }
@@ -178,6 +195,10 @@ class UserAuthController extends Controller
         $validator = Validator::make($request->all(), [
             'email' => 'required|email|exists:password_reset_tokens,email',
             'token' => 'required',
+        ], [
+            'required' => ':attribute harus diisi',
+            'email.exists' => 'Email tidak terdaftar',
+            'email.email' => 'Email tidak valid',
         ]);
 
         if ($validator->fails()) {
@@ -193,7 +214,7 @@ class UserAuthController extends Controller
 
         if (!Hash::check($request->token, $data->token)) {
             return response()->json([
-                'message' => 'Invalid token',
+                'message' => 'Invalid',
                 'state' => -1
             ], 200);
         }

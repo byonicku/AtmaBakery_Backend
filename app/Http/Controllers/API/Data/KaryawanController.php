@@ -20,12 +20,12 @@ class KaryawanController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -36,12 +36,12 @@ class KaryawanController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -52,12 +52,12 @@ class KaryawanController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -72,6 +72,14 @@ class KaryawanController extends Controller
             'no_telp' => 'required|digits_between:10,13|unique:karyawan,no_telp|regex:/^(?:\+?08)(?:\d{2,3})?[ -]?\d{3,4}[ -]?\d{4}$/',
             'email' => 'required|email|unique:karyawan,email',
             'hire_date' => 'required|date',
+        ], [
+            'required' => ':attribute harus diisi',
+            'max' => ':attribute maksimal 255 karakter',
+            'digits_between' => ':attribute harus berupa angka dan panjang karakter antara 10 sampai 13',
+            'unique' => ':attribute sudah terdaftar',
+            'no_telp.regex' => 'Nomor telepon tidak valid, pastikan mulai dari 08',
+            'email' => ':attribute harus berupa email',
+            'date' => ':attribute harus berupa tanggal',
         ]);
 
         if ($validate->fails()) {
@@ -101,7 +109,7 @@ class KaryawanController extends Controller
 
 
         return response()->json([
-            'message' => 'Data successfully created',
+            'message' => 'Data berhasil dibuat',
             'data' => $data,
         ], 201);
     }
@@ -115,12 +123,12 @@ class KaryawanController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -134,7 +142,7 @@ class KaryawanController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -154,6 +162,15 @@ class KaryawanController extends Controller
             'hire_date' => 'sometimes|date',
             'gaji' => 'sometimes|numeric|min:0',
             'bonus' => 'sometimes|numeric|min:0',
+        ], [
+            'max' => ':attribute maksimal 255 karakter',
+            'digits_between' => ':attribute harus berupa angka dan panjang karakter antara 10 sampai 13',
+            'unique' => ':attribute sudah terdaftar',
+            'no_telp.regex' => 'Nomor telepon tidak valid, pastikan mulai dari 08',
+            'email' => ':attribute harus berupa email',
+            'date' => ':attribute harus berupa tanggal',
+            'numeric' => ':attribute harus berupa angka',
+            'min' => ':attribute minimal 0',
         ]);
 
         if ($validate->fails()) {
@@ -182,13 +199,13 @@ class KaryawanController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Failed to create data',
+                'message' => 'Data gagal dibuat',
                 'error' => $e->getMessage(),
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Data successfully created',
+            'message' => 'Data berhasil dibuat',
             'data' => $data,
         ], 200);
     }
@@ -202,7 +219,7 @@ class KaryawanController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -214,12 +231,12 @@ class KaryawanController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Failed to delete data',
+                'message' => 'Data tidak berhasil dihapus',
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Data successfully deleted',
+            'message' => 'Data berhasil dihapus',
         ], 200);
     }
 }

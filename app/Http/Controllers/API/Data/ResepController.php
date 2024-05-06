@@ -20,12 +20,12 @@ class ResepController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -38,12 +38,12 @@ class ResepController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -65,12 +65,12 @@ class ResepController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -85,6 +85,16 @@ class ResepController extends Controller
             'id_bahan_baku' => 'required|exists:bahan_baku,id_bahan_baku',
             'kuantitas' => 'required|numeric|gte:0',
             'satuan' => 'required|max:255',
+        ], [
+            'id_produk.required' => 'Produk harus diisi',
+            'id_produk.exists' => 'Produk tidak ditemukan',
+            'id_bahan_baku.required' => 'Bahan baku harus diisi',
+            'id_bahan_baku.exists' => 'Bahan baku tidak ditemukan',
+            'kuantitas.required' => 'Kuantitas harus diisi',
+            'kuantitas.numeric' => 'Kuantitas harus berupa angka',
+            'kuantitas.gte' => 'Kuantitas harus lebih dari 0',
+            'satuan.required' => 'Satuan harus diisi',
+            'satuan.max' => 'Satuan maksimal 255 karakter',
         ]);
 
         if ($validate->fails()) {
@@ -127,12 +137,12 @@ class ResepController extends Controller
 
         if ($data == null) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -148,6 +158,16 @@ class ResepController extends Controller
             'id_bahan_baku' => 'required|exists:bahan_baku,id_bahan_baku',
             'kuantitas' => 'sometimes|numeric|gte:0',
             'satuan' => 'sometimes|max:255',
+        ], [
+            'id_resep.required' => 'ID resep harus diisi',
+            'id_resep.exists' => 'ID resep tidak ditemukan',
+            'id_produk.required' => 'Produk harus diisi',
+            'id_produk.exists' => 'Produk tidak ditemukan',
+            'id_bahan_baku.required' => 'Bahan baku harus diisi',
+            'id_bahan_baku.exists' => 'Bahan baku tidak ditemukan',
+            'kuantitas.numeric' => 'Kuantitas harus berupa angka',
+            'kuantitas.gte' => 'Kuantitas harus lebih dari 0',
+            'satuan.max' => 'Satuan maksimal 255 karakter',
         ]);
 
         if ($validate->fails()) {
@@ -160,7 +180,7 @@ class ResepController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -178,13 +198,13 @@ class ResepController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Failed to update data',
+                'message' => 'Gagal melakukan update',
                 'error' => $e->getMessage(),
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Data successfully updated',
+            'message' => 'Data berhasil diupdate',
             'data' => $data,
         ], 200);
     }
@@ -198,7 +218,7 @@ class ResepController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -210,13 +230,13 @@ class ResepController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Failed to delete data',
+                'message' => 'Data tidak berhasil dihapus',
                 'error' => $e->getMessage(),
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Data successfully deleted',
+            'message' => 'Data berhasil dihapus',
         ], 200);
     }
 
@@ -226,7 +246,7 @@ class ResepController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -241,13 +261,13 @@ class ResepController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Failed to delete data',
+                'message' => 'Data tidak berhasil dihapus',
                 'error' => $e->getMessage(),
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Data successfully deleted',
+            'message' => 'Data berhasil dihapus',
         ], 200);
     }
 }

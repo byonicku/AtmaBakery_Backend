@@ -21,12 +21,12 @@ class ProdukController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -37,37 +37,44 @@ class ProdukController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
 
     public function search(Request $request)
     {
-        $data = $request->data;
+        $validate = Validator::make($request->all(), [
+            'data' => 'required|string',
+        ], [
+            'data.required' => 'Search harus diisi',
+            'data.string' => 'Search harus berupa text',
+        ]);
 
-        if ($data == null) {
+        if ($validate->fails()) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => $validate->errors()->first(),
             ], 404);
         }
+
+        $data = $request->data;
 
         $data = Produk::join('kategori', 'produk.id_kategori', '=', 'kategori.id_kategori')->
             whereAny(['id_produk', 'nama_produk', 'deskripsi', 'nama_kategori', 'ukuran', 'harga', 'stok', 'limit', 'id_penitip', 'status'], 'LIKE', '%' . $data . '%')->get();
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -79,7 +86,7 @@ class ProdukController extends Controller
     {
         // Gambar wajib dikirim dengan key 'foto[]'
 
-        $validate = Validator::make($request->all(), ([
+        $validate = Validator::make($request->all(), [
             'nama_produk' => 'required|max:255',
             'deskripsi' => 'required|max:255',
             'id_kategori' => 'required|exists:kategori,id_kategori',
@@ -89,7 +96,16 @@ class ProdukController extends Controller
             'limit' => 'sometimes|gte:0',
             'id_penitip' => 'nullable|exists:penitip,id_penitip',
             'status' => 'required|in:PO,READY',
-        ]));
+        ], [
+            'id_kategori.exists' => 'Kategori tidak ditemukan',
+            'ukuran.in' => 'Ukuran harus 1 atau 1/2',
+            'status.in' => 'Status harus PO atau READY',
+            'id_penitip.exists' => 'Penitip tidak ditemukan',
+            'harga.gte' => 'Harga harus lebih dari atau sama dengan 0',
+            'stok.gte' => 'Stok harus lebih dari atau sama dengan 0',
+            'limit.gte' => 'Limit harus lebih dari atau sama dengan 0',
+            'required' => ':attribute harus diisi',
+        ]);
 
         if ($validate->fails()) {
             return response()->json([
@@ -129,8 +145,6 @@ class ProdukController extends Controller
             $request->limit = 0;
         }
 
-        $num_success = 0;
-
         DB::beginTransaction();
 
         try {
@@ -150,15 +164,14 @@ class ProdukController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Failed to create data',
+                'message' => 'Data gagal dibuat',
                 'error' => $e->getMessage(),
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Data successfully created',
+            'message' => 'Data berhasil dibuat',
             'data' => $data,
-            'img_count_success' => $num_success,
         ], 201);
     }
 
@@ -171,12 +184,12 @@ class ProdukController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -190,11 +203,11 @@ class ProdukController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
-        $validate = Validator::make($request->all(), ([
+        $validate = Validator::make($request->all(), [
             'nama_produk' => 'sometimes|max:255',
             'deskripsi' => 'sometimes|max:255',
             'id_kategori' => 'sometimes|exists:kategori,id_kategori',
@@ -204,7 +217,16 @@ class ProdukController extends Controller
             'limit' => 'sometimes|gte:0',
             'id_penitip' => 'nullable|exists:penitip,id_penitip',
             'status' => 'sometimes|in:PO,READY',
-        ]));
+        ], [
+            'id_kategori.exists' => 'Kategori tidak ditemukan',
+            'ukuran.in' => 'Ukuran harus 1 atau 1/2',
+            'status.in' => 'Status harus PO atau READY',
+            'id_penitip.exists' => 'Penitip tidak ditemukan',
+            'harga.gte' => 'Harga harus lebih dari atau sama dengan 0',
+            'stok.gte' => 'Stok harus lebih dari atau sama dengan 0',
+            'limit.gte' => 'Limit harus lebih dari atau sama dengan 0',
+            'required' => ':attribute harus diisi',
+        ]);
 
         if ($request->id_kategori == "TP" && $request->id_penitip == null) {
             return response()->json([
@@ -247,13 +269,13 @@ class ProdukController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Failed to update data',
+                'message' => 'Gagal melakukan update',
                 'error' => $e->getMessage(),
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Data successfully updated',
+            'message' => 'Data berhasil diupdate',
             'data' => $data,
         ], 200);
     }
@@ -267,7 +289,7 @@ class ProdukController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -288,13 +310,13 @@ class ProdukController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Failed to delete data',
+                'message' => 'Data tidak berhasil dihapus',
                 'error' => $e->getMessage(),
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Data successfully deleted',
+            'message' => 'Data berhasil dihapus',
         ], 200);
     }
 }

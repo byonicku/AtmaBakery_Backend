@@ -86,7 +86,7 @@ class ProcedureController extends Controller
 
             if ($user->id_user != $nota[17]->data_pemesanan) {
                 return response()->json([
-                    'message' => 'Unauthorized Not Your Order',
+                    'message' => 'Unauthorized Bukan Pemesan Anda',
                 ], 401);
             }
 

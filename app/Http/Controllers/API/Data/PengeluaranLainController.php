@@ -20,12 +20,12 @@ class PengeluaranLainController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -36,12 +36,12 @@ class PengeluaranLainController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -52,12 +52,12 @@ class PengeluaranLainController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -66,19 +66,19 @@ class PengeluaranLainController extends Controller
     {
         if (!$year || !$month) {
             return response()->json([
-                'message' => 'Year and month parameters are required',
+                'message' => 'Tahun dan bulan harus diisi',
             ], 400);
         }
 
         if ($year < 2000 || $year > 2100) {
             return response()->json([
-                'message' => 'Year must be between 2000 and 2100',
+                'message' => 'Tanggal harus diantara tahun 2000 dan 2100',
             ], 400);
         }
 
         if ($month < 1 || $month > 12) {
             return response()->json([
-                'message' => 'Month must be between 1 and 12',
+                'message' => 'Bulan harus diantara 1 dan 12',
             ], 400);
         }
 
@@ -90,12 +90,12 @@ class PengeluaranLainController extends Controller
 
         if ($data->isEmpty()) {
             return response()->json([
-                'message' => 'Data is not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -111,6 +111,12 @@ class PengeluaranLainController extends Controller
             'satuan' => 'required|max:255',
             'total' => 'required|numeric|gte:0',
             'tanggal_pengeluaran' => 'required|date',
+        ], [
+            'required' => ':attribute harus diisi',
+            'gte' => ':attribute harus lebih dari atau sama dengan 0',
+            'numeric' => ':attribute harus berupa angka',
+            'date' => ':attribute harus berupa tanggal',
+            'max' => ':attribute maksimal 255 karakter',
         ]);
 
         if ($validate->fails()) {
@@ -139,7 +145,7 @@ class PengeluaranLainController extends Controller
         }
 
         return response()->json([
-            'message' => 'Data successfully created',
+            'message' => 'Data berhasil dibuat',
             'data' => $data,
         ], 201);
     }
@@ -153,12 +159,12 @@ class PengeluaranLainController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -172,7 +178,7 @@ class PengeluaranLainController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -181,6 +187,11 @@ class PengeluaranLainController extends Controller
             'satuan' => 'sometimes|max:255',
             'total' => 'sometimes|numeric|gte:0',
             'tanggal_pengeluaran' => 'sometimes|date',
+        ], [
+            'gte' => ':attribute harus lebih dari atau sama dengan 0',
+            'numeric' => ':attribute harus berupa angka',
+            'date' => ':attribute harus berupa tanggal',
+            'max' => ':attribute maksimal 255 karakter',
         ]);
 
         if ($validate->fails()) {
@@ -212,7 +223,7 @@ class PengeluaranLainController extends Controller
         }
 
         return response()->json([
-            'message' => 'Data successfully updated',
+            'message' => 'Data berhasil diupdate',
             'data' => $data,
         ], 200);
     }
@@ -226,7 +237,7 @@ class PengeluaranLainController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -245,7 +256,7 @@ class PengeluaranLainController extends Controller
         }
 
         return response()->json([
-            'message' => 'Data successfully deleted',
+            'message' => 'Data berhasil dihapus',
         ], 200);
     }
 }

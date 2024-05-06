@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Foundation\Auth\ResetsPasswords;
+
 class ResetPasswordAPIController extends Controller
 {
     use ResetsPasswords;
@@ -26,23 +27,31 @@ class ResetPasswordAPIController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'token' => ['required', 'max:255'],
-            'email' => ['required', 'email', 'max:255' ],
+            'email' => ['required', 'email', 'max:255'],
             'password' => ['required', 'confirmed', 'min:8'],
+        ], [
+            'required' => ':attribute harus diisi',
+            'email' => 'Email tidak valid',
+            'password.confirmed' => 'Konfirmasi password tidak sesuai',
+            'password.min' => 'Password minimal 8 karakter',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()->first()], 422);
+            return response()->json([
+                'error' => $validator->errors()->first()
+            ], 422);
         }
 
         $response = $this->broker()->reset(
-            $this->credentials($request), function ($user, $password) {
+            $this->credentials($request),
+            function ($user, $password) {
                 $this->resetPassword($user, $password);
             }
         );
 
         return $response == Password::PASSWORD_RESET
-                    ? $this->sendResetResponse($request, $response)
-                    : $this->sendResetFailedResponse($request, $response);
+            ? $this->sendResetResponse($request, $response)
+            : $this->sendResetFailedResponse($request, $response);
     }
     /**
      * Reset the given user's password.
@@ -68,8 +77,8 @@ class ResetPasswordAPIController extends Controller
     protected function sendResetResponse(Request $request, $response)
     {
         return response()->json([
-            "message" => trans($response)],
-        200);
+            "message" => trans($response)
+        ], 200);
     }
 
     /**
@@ -82,7 +91,7 @@ class ResetPasswordAPIController extends Controller
     protected function sendResetFailedResponse(Request $request, $response)
     {
         return response()->json([
-            "message" => trans($response)]
-        , 422);
+            "message" => trans($response)
+        ], 422);
     }
 }

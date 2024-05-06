@@ -20,12 +20,12 @@ class PresensiController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -38,6 +38,8 @@ class PresensiController extends Controller
                 'date',
                 Rule::exists('presensi', 'tanggal')
             ]
+        ], [
+            'date.exists' => 'Data tidak ditemukan'
         ]);
 
         if ($validate->fails()) {
@@ -51,12 +53,12 @@ class PresensiController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is empty',
+                'message' => 'Data kosong',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -69,6 +71,8 @@ class PresensiController extends Controller
                 'date',
                 Rule::exists('presensi', 'tanggal')
             ]
+        ], [
+            'date.exists' => 'Data tidak ditemukan'
         ]);
 
         if ($validate->fails()) {
@@ -84,12 +88,12 @@ class PresensiController extends Controller
 
         if (count($data) == 0) {
             return response()->json([
-                'message' => 'Data is not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -104,6 +108,11 @@ class PresensiController extends Controller
             'tanggal' => 'required|date',
             'alasan' => 'sometimes|string',
             'status' => 'required|in:1,0'
+        ], [
+            'status.required' => 'Status harus diisi',
+            'status.in' => 'Status harus berisi 1 (Hadir) atau 0 (Tidak Hadir)',
+            'required' => ':attribute harus diisi',
+            'exists' => ':attribute tidak ditemukan',
         ]);
 
         if ($validator->fails()) {
@@ -138,7 +147,7 @@ class PresensiController extends Controller
         }
 
         return response()->json([
-            'message' => 'Data successfully created',
+            'message' => 'Data berhasil dibuat',
             'data' => $data,
         ], 201);
     }
@@ -153,12 +162,12 @@ class PresensiController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Data successfully retrieved',
+            'message' => 'Data berhasil diterima',
             'data' => $data,
         ], 200);
     }
@@ -172,13 +181,16 @@ class PresensiController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
         $validator = Validator::make($request->all(), [
             'alasan' => 'sometimes|string',
             'status' => 'sometimes|in:1,0'
+        ], [
+            'status.in' => 'Status harus berisi 1 (Hadir) atau 0 (Tidak Hadir)',
+            'exists' => ':attribute tidak ditemukan',
         ]);
 
         if ($validator->fails()) {
@@ -209,7 +221,7 @@ class PresensiController extends Controller
         }
 
         return response()->json([
-            'message' => 'Data successfully updated',
+            'message' => 'Data berhasil diupdate',
             'data' => $data,
         ], 200);
     }
@@ -223,7 +235,7 @@ class PresensiController extends Controller
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data not found',
+                'message' => 'Data tidak ditemukan',
             ], 404);
         }
 
@@ -241,7 +253,7 @@ class PresensiController extends Controller
         }
 
         return response()->json([
-            'message' => 'Data successfully deleted',
+            'message' => 'Data berhasil dihapus',
         ], 200);
     }
 }
