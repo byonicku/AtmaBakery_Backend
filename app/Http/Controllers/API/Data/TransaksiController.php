@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class TransaksiController extends Controller
 {
@@ -205,13 +206,20 @@ class TransaksiController extends Controller
             ], 404);
         }
 
-        $data = $request->data;
+        $validate = Validator::make($request->all(), [
+            'data' => 'required|string',
+        ], [
+            'data.required' => 'Data tidak boleh kosong',
+            'data.string' => 'Data harus berupa teks',
+        ]);
 
-        if ($data == null) {
+        if ($validate->fails()) {
             return response()->json([
-                'message' => 'Data kosong',
-            ], 404);
+                'message' => $validate->errors()->first(),
+            ], 400);
         }
+
+        $data = $request->data;
 
         $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
             ->where('id_user', '=', $user->id_user)
