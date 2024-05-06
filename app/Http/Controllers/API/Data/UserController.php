@@ -94,11 +94,6 @@ class UserController extends Controller
 
         $validate = Validator::make($request->all(), [
             'nama' => 'sometimes|max:255',
-            'email' => [
-                'sometimes',
-                'email',
-                Rule::unique('user')->ignore($data->email, 'email'),
-            ],
             'no_telp' => [
                 'sometimes',
                 'digits_between:10,13',
@@ -111,9 +106,7 @@ class UserController extends Controller
             'required' => ':attribute harus diisi',
             'no_telp.regex' => 'Nomor telepon tidak valid, pastikan mulai dari 08',
             'no_telp.digits_between' => 'Nomor telepon harus berisi 10-13 digit',
-            'email.unique' => 'Email sudah terdaftar',
             'no_telp.unique' => 'Nomor telepon sudah terdaftar',
-            'email.email' => 'Email tidak valid',
             'foto_profil.image' => 'Foto profil harus berupa gambar',
             'foto_profil.mimes' => 'Foto profil harus berformat jpeg, png, jpg',
             'foto_profil.max' => 'Ukuran foto profil maksimal 1 MB',
@@ -128,7 +121,6 @@ class UserController extends Controller
 
         $fillableAttributes = [
             'nama',
-            'email',
             'no_telp',
             'jenis_kelamin',
         ];
@@ -264,11 +256,6 @@ class UserController extends Controller
 
         $validate = Validator::make($request->all(), [
             'nama' => 'sometimes|max:255',
-            'email' => [
-                'sometimes',
-                'email',
-                Rule::unique('user')->ignore($data->email, 'email'),
-            ],
             'no_telp' => 'sometimes|digits_between:10,13|unique:user,no_telp|regex:/^(?:\+?08)(?:\d{2,3})?[ -]?\d{3,4}[ -]?\d{4}$/',
             'foto_profil' => 'sometimes|image|mimes:jpeg,png,jpg|max:1024',
             'jenis_kelamin' => 'sometimes|in:L,P',
@@ -276,9 +263,7 @@ class UserController extends Controller
             'required' => ':attribute harus diisi',
             'no_telp.regex' => 'Nomor telepon tidak valid, pastikan mulai dari 08',
             'no_telp.digits_between' => 'Nomor telepon harus berisi 10-13 digit',
-            'email.unique' => 'Email sudah terdaftar',
             'no_telp.unique' => 'Nomor telepon sudah terdaftar',
-            'email.email' => 'Email tidak valid',
             'foto_profil.image' => 'Foto profil harus berupa gambar',
             'foto_profil.mimes' => 'Foto profil harus berformat jpeg, png, jpg',
             'foto_profil.max' => 'Ukuran foto profil maksimal 1 MB',
