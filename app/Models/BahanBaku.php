@@ -20,4 +20,14 @@ class BahanBaku extends Model
     {
         return $this->hasMany(Resep::class, 'id_bahan_baku', 'id_bahan_baku');
     }
+
+    public function pengadaan_bahan_baku()
+    {
+        return $this->hasMany(PengadaanBahanBaku::class, 'id_bahan_baku', 'id_bahan_baku');
+    }
+
+    public function histori_bahan_baku()
+    {
+        return $this->hasMany(HistoriBahanBaku::class, 'id_bahan_baku', 'id_bahan_baku');
+    }
 }
