@@ -31,7 +31,7 @@ class ProdukController extends Controller
         ], 200);
     }
 
-    public function indexTrashed()
+    public function indexOnlyTrashed()
     {
         $data = Produk::onlyTrashed()->get();
 

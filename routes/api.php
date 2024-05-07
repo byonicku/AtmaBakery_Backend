@@ -160,7 +160,8 @@ Route::middleware(['auth:sanctum', 'ability:admin'])
             Route::apiResource('produk', ProdukController::class);
             Route::get('/paginate/produk', 'paginate')->name('produk.paginate');
             Route::post('/produk/search', 'search')->name('produk.search');
-            Route::get('/trash/produk', 'indexTrash')->name('produk.trash');
+            Route::get('/trash/produk', 'indexOnlyTrashed')->name('produk.trash');
+            Route::get('/produk/restore/{id}', 'restore')->name('produk.restore');
         });
 
         // BahanBakuController routes
