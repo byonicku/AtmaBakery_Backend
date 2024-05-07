@@ -31,6 +31,22 @@ class ProdukController extends Controller
         ], 200);
     }
 
+    public function indexTrashed()
+    {
+        $data = Produk::onlyTrashed()->get();
+
+        if (count($data) == 0) {
+            return response()->json([
+                'message' => 'Data kosong',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Data berhasil diterima',
+            'data' => $data,
+        ], 200);
+    }
+
     public function paginate()
     {
         $data = Produk::paginate(10);
@@ -76,6 +92,34 @@ class ProdukController extends Controller
         return response()->json([
             'message' => 'Data berhasil diterima',
             'data' => $data,
+        ], 200);
+    }
+
+    public function restore(string $id)
+    {
+        $data = Produk::withTrashed()->find($id);
+
+        if (!$data) {
+            return response()->json([
+                'message' => 'Data tidak ditemukan',
+            ], 404);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $data->restore();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Data tidak berhasil direstore',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Data berhasil direstore',
         ], 200);
     }
 
@@ -302,14 +346,6 @@ class ProdukController extends Controller
         DB::beginTransaction();
 
         try {
-            foreach ($data->gambar as $gambar) {
-                app(GambarController::class)
-                    ->destroy($gambar->id_gambar);
-            }
-
-            app(ResepController::class)
-                ->destroyAll($data->id_produk);
-
             $data->delete();
 
             DB::commit();
