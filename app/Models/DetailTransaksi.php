@@ -26,11 +26,11 @@ class DetailTransaksi extends Model
 
     public function hampers()
     {
-        return $this->belongsTo(Hampers::class, 'id_hampers', 'id_hampers');
+        return $this->belongsTo(Hampers::class, 'id_hampers', 'id_hampers')->withTrashed();
     }
 
     public function produk()
     {
-        return $this->belongsTo(Produk::class, 'id_produk', 'id_produk');
+        return $this->belongsTo(Produk::class, 'id_produk', 'id_produk')->withTrashed();
     }
 }
