@@ -137,6 +137,12 @@ class ProdukController extends Controller
             ], 400);
         }
 
+        if (($request->id_kategori == "MNM" || $request->id_kategori == "RT") && $request->ukuran == "1/2") {
+            return response()->json([
+                'message' => 'Ukuran 1/2 tidak dapat digunakan untuk kategori Minuman dan Roti',
+            ], 400);
+        }
+
         if ($request->status == "PO" && $request->stok != null) {
             $request->stok = 0;
         }
