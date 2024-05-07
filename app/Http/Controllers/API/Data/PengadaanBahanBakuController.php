@@ -199,9 +199,9 @@ class PengadaanBahanBakuController extends Controller
                 $bahan_baku->update([
                     'stok' => $bahan_baku->stok - $data->stok + $request->stok,
                 ]);
-
-                $data->update($updateData);
             }
+
+            $data->update($updateData);
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
