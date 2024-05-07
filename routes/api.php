@@ -165,7 +165,7 @@ Route::middleware(['auth:sanctum', 'ability:admin'])
         // BahanBakuController routes
         Route::controller(BahanBakuController::class)->group(function () {
             Route::apiResource('bahan_baku', BahanBakuController::class, ['except' => ['index']]);
-            Route::get('/bahan_baku/trash', 'indexOnlyTrashed')->name('bahan_baku.trash');
+            Route::get('/trash/bahan_baku', 'indexOnlyTrashed')->name('bahan_baku.trash');
             Route::get('/bahan_baku/restore/{id}', 'restore')->name('bahan_baku.restore');
             Route::get('/paginate/bahan_baku', 'paginate')->name('bahan_baku.paginate');
             Route::get('/bahan_baku/search/{data}', 'search')->name('bahan_baku.search');
