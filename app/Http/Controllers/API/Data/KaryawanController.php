@@ -30,6 +30,22 @@ class KaryawanController extends Controller
         ], 200);
     }
 
+    public function indexOnlyTrashed()
+    {
+        $data = Karyawan::onlyTrashed()->get();
+
+        if (count($data) == 0) {
+            return response()->json([
+                'message' => 'Data kosong',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Data berhasil diterima',
+            'data' => $data,
+        ], 200);
+    }
+
     public function paginate()
     {
         $data = Karyawan::paginate(10);
@@ -59,6 +75,33 @@ class KaryawanController extends Controller
         return response()->json([
             'message' => 'Data berhasil diterima',
             'data' => $data,
+        ], 200);
+    }
+
+    public function restore(string $id)
+    {
+        $data = Karyawan::onlyTrashed()->find($id);
+
+        if (!$data) {
+            return response()->json([
+                'message' => 'Data tidak ditemukan',
+            ], 404);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $data->restore();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Data tidak berhasil direstore',
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Data berhasil direstore',
         ], 200);
     }
 

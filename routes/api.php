@@ -94,6 +94,8 @@ Route::middleware(['auth:sanctum', 'ability:mo,owner'])
             Route::apiResource('karyawan', KaryawanController::class);
             Route::get('/paginate/karyawan', 'paginate')->name('karyawan.paginate');
             Route::get('/karyawan/search/{data}', 'search')->name('karyawan.search');
+            Route::get('/trash/karyawan', 'indexOnlyTrashed')->name('karyawan.trash');
+            Route::get('/karyawan/restore/{id}', 'restore')->name('karyawan.restore');
         })->name('karyawan');
     });
 
@@ -178,6 +180,8 @@ Route::middleware(['auth:sanctum', 'ability:admin'])
             Route::apiResource('hampers', HampersController::class);
             Route::get('/paginate/hampers', 'paginate')->name('hampers.paginate');
             Route::get('/hampers/search/{data}', 'search')->name('hampers.search');
+            Route::get('/trash/hampers', 'indexOnlyTrashed')->name('hampers.trash');
+            Route::get('/hampers/restore/{id}', 'restore')->name('hampers.restore');
         });
 
         // DetailHampersController routes

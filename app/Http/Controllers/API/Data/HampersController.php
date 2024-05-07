@@ -31,6 +31,22 @@ class HampersController extends Controller
         ], 200);
     }
 
+    public function indexOnlyTrashed()
+    {
+        $data = Hampers::onlyTrashed()->get();
+
+        if (count($data) == 0) {
+            return response()->json([
+                'message' => 'Data kosong',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Data berhasil diterima',
+            'data' => $data,
+        ], 200);
+    }
+
     public function paginate()
     {
         $data = Hampers::with([
@@ -75,6 +91,34 @@ class HampersController extends Controller
         return response()->json([
             'message' => 'Data berhasil diterima',
             'data' => $data,
+        ], 200);
+    }
+
+    public function restore(string $id)
+    {
+        $data = Hampers::onlyTrashed()->find($id);
+
+        if (!$data) {
+            return response()->json([
+                'message' => 'Data tidak ditemukan',
+            ], 404);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $data->restore();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Data tidak berhasil direstore',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Data berhasil direstore',
         ], 200);
     }
 
@@ -217,14 +261,6 @@ class HampersController extends Controller
         DB::beginTransaction();
 
         try {
-            foreach ($data->gambar as $gambar) {
-                app(GambarController::class)
-                    ->destroy($gambar->id_gambar);
-            }
-
-            app(DetailHampersController::class)
-                ->destroyAll($data->id_hampers);
-
             $data->delete();
             DB::commit();
         } catch (\Exception $e) {
