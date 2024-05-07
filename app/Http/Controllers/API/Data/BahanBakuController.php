@@ -73,6 +73,7 @@ class BahanBakuController extends Controller
         ], [
             'required' => ':attribute harus diisi',
             'gte' => ':attribute harus lebih dari atau sama dengan 0',
+            'exists' => ':attribute tidak ditemukan',
         ]);
 
         if ($validate->fails()) {
@@ -82,6 +83,8 @@ class BahanBakuController extends Controller
         }
 
         DB::beginTransaction();
+
+        $message = 'Data berhasil dibuat';
 
         try {
             $data = BahanBaku::create([
@@ -99,9 +102,38 @@ class BahanBakuController extends Controller
         }
 
         return response()->json([
-            'message' => 'Data berhasil dibuat',
+            'message' => $message,
             'data' => $data,
         ], 201);
+    }
+
+    public function restore(string $id)
+    {
+        $data = BahanBaku::onlyTrashed()->find($id);
+
+        if (!$data) {
+            return response()->json([
+                'message' => 'Data tidak ditemukan',
+            ], 404);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $data->restore();
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Data berhasil direstore',
+            'data' => $data,
+        ], 200);
     }
 
     /**

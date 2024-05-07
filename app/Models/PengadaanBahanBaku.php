@@ -22,6 +22,6 @@ class PengadaanBahanBaku extends Model
 
     public function bahan_baku()
     {
-        return $this->belongsTo(BahanBaku::class, 'id_bahan_baku', 'id_bahan_baku');
+        return $this->belongsTo(BahanBaku::class, 'id_bahan_baku', 'id_bahan_baku')->withTrashed();
     }
 }
