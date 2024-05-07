@@ -29,6 +29,22 @@ class BahanBakuController extends Controller
         ], 200);
     }
 
+    public function indexOnlyTrashed()
+    {
+        $data = BahanBaku::onlyTrashed()->get();
+
+        if (count($data) == 0) {
+            return response()->json([
+                'message' => 'Data kosong',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Data berhasil diterima',
+            'data' => $data,
+        ], 200);
+    }
+
     public function paginate()
     {
         $data = BahanBaku::paginate(10);
