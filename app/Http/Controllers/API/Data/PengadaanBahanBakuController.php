@@ -193,19 +193,15 @@ class PengadaanBahanBakuController extends Controller
 
         DB::beginTransaction();
         try {
-            $oldBahanBaku = BahanBaku::find($data->id_bahan_baku);
+            $bahan_baku = BahanBaku::find($data->id_bahan_baku);
 
-            $oldBahanBaku->update([
-                'stok' => $oldBahanBaku->stok - $data->stok,
-            ]);
+            if ($bahan_baku) {
+                $bahan_baku->update([
+                    'stok' => $bahan_baku->stok - $data->stok + $request->stok,
+                ]);
 
-            $data->update($updateData);
-
-            $bahan_baku = BahanBaku::find($request->id_bahan_baku);
-
-            $bahan_baku->update([
-                'stok' => $bahan_baku->stok + $request->stok,
-            ]);
+                $data->update($updateData);
+            }
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -237,12 +233,6 @@ class PengadaanBahanBakuController extends Controller
         DB::beginTransaction();
 
         try {
-            $bahan_baku = BahanBaku::find($data->id_bahan_baku);
-
-            $bahan_baku->update([
-                'stok' => $bahan_baku->stok - $data->stok,
-            ]);
-
             $data->delete();
 
             DB::commit();
