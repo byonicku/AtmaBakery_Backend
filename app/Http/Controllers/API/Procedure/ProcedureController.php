@@ -59,6 +59,7 @@ class ProcedureController extends Controller
                 'harga_saat_beli' => $item->harga_saat_beli,
                 'jumlah' => $item->jumlah,
                 'subtotal' => $item->total_harga,
+                'id_kategori' => $item->id_kategori,
             ];
         }
 
@@ -125,6 +126,7 @@ class ProcedureController extends Controller
                 'harga_saat_beli' => $item->harga_saat_beli,
                 'jumlah' => $item->jumlah,
                 'subtotal' => $item->total_harga,
+                'id_kategori' => $item->id_kategori,
             ];
         }
 
