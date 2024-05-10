@@ -132,6 +132,62 @@ class CartController extends Controller
         ], 200);
     }
 
+    public function updateWhenLogout(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            'cart' => 'required|array',
+            'cart.*.id_cart' => 'required|integer',
+            'cart.*.jumlah' => 'required|integer|min:1',
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'message' => $validate->errors()->first(),
+            ], 404);
+        }
+
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthenticated',
+            ], 404);
+        }
+
+        $data = Cart::where('id_user', '=', $user->id_user)
+            ->whereIn('id_cart', array_column($request->cart, 'id_cart'))
+            ->get();
+
+        if (!$data) {
+            return response()->json([
+                'message' => 'Data tidak ditemukan',
+            ], 404);
+        }
+
+        try {
+            DB::beginTransaction();
+            foreach ($data as $key => $cart) {
+                if ($cart->jumlah == $request->cart[$key]['jumlah']) {
+                    continue;
+                }
+
+                $cart->update([
+                    'jumlah' => $request->cart[$key]['jumlah'],
+                ]);
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+        return response()->json([
+            'message' => 'Data berhasil diubah',
+            'data' => $data,
+        ], 200);
+    }
+
     public function destroy(string $id)
     {
         $user = Auth::user();

@@ -34,6 +34,7 @@ Route::controller(CartController::class)
     ->middleware('auth:sanctum')
     ->group(function () {
         Route::apiResource('cart', CartController::class);
+        Route::put('/cart/logout', 'updateWhenLogout')->name('cart.update-logout');
         Route::delete('/cart/all', 'destroyAll')->name('cart.destroy-all');
     })->name('cart');
 
