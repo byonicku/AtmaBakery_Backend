@@ -48,7 +48,7 @@ class PengeluaranLainController extends Controller
 
     public function search(string $data)
     {
-        $data = Pengeluaran::whereAny(['id_pengeluaran', 'nama', 'satuan', 'total', 'tanggal_pengeluaran'], 'LIKE', '%' . $data . '%')->get();
+        $data = Pengeluaran::whereAny(['nama', 'satuan', 'total', 'tanggal_pengeluaran'], 'LIKE', '%' . $data . '%')->get();
 
         if (count($data) == 0) {
             return response()->json([

@@ -35,6 +35,7 @@ class PengadaanBahanBakuController extends Controller
     public function paginate()
     {
         $data = PengadaanBahanBaku::with('bahan_baku')
+            ->orderByDesc('id_pengadaan_bahan_baku')
             ->paginate(10);
 
         if (count($data) == 0) {

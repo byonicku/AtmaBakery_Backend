@@ -81,7 +81,7 @@ class ProdukController extends Controller
         $data = $request->data;
 
         $data = Produk::join('kategori', 'produk.id_kategori', '=', 'kategori.id_kategori')->
-            whereAny(['id_produk', 'nama_produk', 'deskripsi', 'nama_kategori', 'ukuran', 'harga', 'stok', 'limit', 'id_penitip', 'status'], 'LIKE', '%' . $data . '%')->get();
+            whereAny(['nama_produk', 'deskripsi', 'nama_kategori', 'ukuran', 'harga', 'stok', 'limit', 'id_penitip', 'status'], 'LIKE', '%' . $data . '%')->get();
 
         if (count($data) == 0) {
             return response()->json([

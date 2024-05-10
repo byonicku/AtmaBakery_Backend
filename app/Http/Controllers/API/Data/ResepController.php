@@ -52,7 +52,6 @@ class ResepController extends Controller
     {
         $data = Produk::with('resep.bahan_baku:id_bahan_baku,nama_bahan_baku')
             ->whereAny([
-                'id_produk',
                 'nama_produk',
                 'ukuran',
                 'harga',

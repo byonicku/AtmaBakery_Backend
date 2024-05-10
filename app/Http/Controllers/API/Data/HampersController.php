@@ -79,7 +79,7 @@ class HampersController extends Controller
             },
             'detail_hampers.produk:id_produk,id_kategori,nama_produk,ukuran'
         ])
-            ->whereAny(['id_hampers', 'nama_hampers', 'harga'], 'LIKE', '%' . $data . '%')
+            ->whereAny(['nama_hampers', 'harga'], 'LIKE', '%' . $data . '%')
             ->get();
 
         if (count($data) == 0) {
