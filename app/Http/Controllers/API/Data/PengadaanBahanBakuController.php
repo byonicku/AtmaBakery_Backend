@@ -233,6 +233,14 @@ class PengadaanBahanBakuController extends Controller
         DB::beginTransaction();
 
         try {
+            $bahan_baku = BahanBaku::find($data->id_bahan_baku);
+
+            if ($bahan_baku) {
+                $bahan_baku->update([
+                    'stok' => $bahan_baku->stok - $data->stok,
+                ]);
+            }
+
             $data->delete();
 
             DB::commit();
