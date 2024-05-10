@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\Data\AlamatController;
 use App\Http\Controllers\API\Data\BahanBakuController;
+use App\Http\Controllers\API\Data\CartController;
 use App\Http\Controllers\API\Data\DetailHampersController;
 use App\Http\Controllers\API\Data\GambarController;
 use App\Http\Controllers\API\Data\HampersController;
@@ -28,6 +29,13 @@ Route::controller(UserAuthController::class)
         Route::post('/verify/{verify_key}', 'verify')->name('verify');
         Route::post('/password/verify', 'verifyPassword')->name('verify-password');
     })->name('authentications');
+
+Route::controller(CartController::class)
+    ->middleware('auth:sanctum')
+    ->group(function () {
+        Route::apiResource('cart', CartController::class);
+        Route::delete('/cart/all', 'destroyAll')->name('cart.destroy-all');
+    })->name('cart');
 
 // Self User - Digunakan untuk user yang sedang login
 Route::get('/users/self', [UserController::class, 'showSelf'])->name('users.self')

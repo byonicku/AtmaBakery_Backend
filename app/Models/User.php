@@ -60,6 +60,11 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class, 'id_role', 'id_role');
     }
 
+    public function cart()
+    {
+        return $this->hasMany(Cart::class, 'id_user', 'id_user');
+    }
+
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new ResetPassword($token));

@@ -42,4 +42,14 @@ class Produk extends Model
     {
         return $this->hasMany(Gambar::class, 'id_produk', 'id_produk');
     }
+
+    public function cart()
+    {
+        return $this->hasMany(Cart::class, 'id_produk', 'id_produk');
+    }
+
+    public function penitip()
+    {
+        return $this->belongsTo(Penitip::class, 'id_penitip', 'id_penitip');
+    }
 }

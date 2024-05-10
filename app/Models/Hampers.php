@@ -27,4 +27,9 @@ class Hampers extends Model
     {
         return $this->hasMany(Gambar::class, 'id_hampers', 'id_hampers');
     }
+
+    public function cart()
+    {
+        return $this->hasMany(Cart::class, 'id_hampers', 'id_hampers');
+    }
 }
