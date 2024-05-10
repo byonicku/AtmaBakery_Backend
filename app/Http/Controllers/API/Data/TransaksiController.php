@@ -30,6 +30,7 @@ class TransaksiController extends Controller
 
         $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
             ->where('id_user', '=', $data->id_user)
+            ->orderByDesc('no_nota')
             ->get();
 
         if (count($transaksi) == 0) {
@@ -72,6 +73,7 @@ class TransaksiController extends Controller
 
         $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
             ->where('id_user', '=', $data->id_user)
+            ->orderByDesc('no_nota')
             ->paginate(10);
 
         if (count($transaksi) == 0) {
@@ -115,6 +117,7 @@ class TransaksiController extends Controller
         // Fetch transactions with their detail transactions including product info
         $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
             ->where('id_user', '=', $id_user)
+            ->orderByDesc('no_nota')
             ->paginate(10);
 
         if (count($transaksi) == 0) {
@@ -182,6 +185,7 @@ class TransaksiController extends Controller
                 'tipe_delivery',
                 'status',
             ], 'LIKE', '%' . $data . '%')
+            ->orderByDesc('no_nota')
             ->get();
 
         if (count($transaksi) == 0) {
@@ -230,6 +234,7 @@ class TransaksiController extends Controller
                     $query->where('nama_hampers', 'LIKE', '%' . $data . '%');
                 });
             })
+            ->orderByDesc('no_nota')
             ->get();
 
         if (count($transaksi) == 0) {
