@@ -96,6 +96,12 @@ class PengadaanBahanBakuController extends Controller
             ], 400);
         }
 
+        if (date('Y-m', strtotime(($request->tanggal_pembelian))) != date('Y-m')) {
+            return response()->json([
+                'message' => 'Tidak dapat membuat data bulan / tahun sebelumnya',
+            ], 400);
+        }
+
         DB::beginTransaction();
 
         try {
@@ -157,6 +163,12 @@ class PengadaanBahanBakuController extends Controller
             return response()->json([
                 'message' => 'Data tidak ditemukan',
             ], 404);
+        }
+
+        if (date('Y-m', strtotime(($data->tanggal_pembelian))) != date('Y-m')) {
+            return response()->json([
+                'message' => 'Tidak dapat mengubah data bulan / tahun sebelumnya',
+            ], 400);
         }
 
         $validate = Validator::make($request->all(), [
@@ -229,6 +241,12 @@ class PengadaanBahanBakuController extends Controller
             return response()->json([
                 'message' => 'Data tidak ditemukan',
             ], 404);
+        }
+
+        if (date('Y-m', strtotime(($data->tanggal_pembelian))) != date('Y-m')) {
+            return response()->json([
+                'message' => 'Tidak dapat mengubah data bulan / tahun sebelumnya',
+            ], 400);
         }
 
         DB::beginTransaction();
