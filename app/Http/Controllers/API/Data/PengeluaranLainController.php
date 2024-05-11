@@ -30,6 +30,24 @@ class PengeluaranLainController extends Controller
         ], 200);
     }
 
+    public function indexOnlyTrashed()
+    {
+        $data = Pengeluaran::onlyTrashed()
+            ->orderByDesc('tanggal_pengeluaran')
+            ->get();
+
+        if (count($data) == 0) {
+            return response()->json([
+                'message' => 'Data kosong',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Data berhasil diterima',
+            'data' => $data,
+        ], 200);
+    }
+
     public function paginate()
     {
         $data = Pengeluaran::orderByDesc('tanggal_pengeluaran')
@@ -98,6 +116,36 @@ class PengeluaranLainController extends Controller
         return response()->json([
             'message' => 'Data berhasil diterima',
             'data' => $data,
+        ], 200);
+    }
+
+    public function restore(string $id)
+    {
+        $data = Pengeluaran::onlyTrashed()
+            ->find($id);
+
+        if (!$data) {
+            return response()->json([
+                'message' => 'Data tidak ditemukan',
+            ], 404);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $data->restore();
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Data berhasil direstore',
         ], 200);
     }
 

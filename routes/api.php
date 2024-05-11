@@ -121,6 +121,8 @@ Route::middleware(['auth:sanctum', 'ability:mo'])
             Route::apiResource('penitip', PenitipController::class, ['except' => ['index']]);
             Route::get('/paginate/penitip', 'paginate')->name('penitip.paginate');
             Route::get('/penitip/search/{data}', 'search')->name('penitip.search');
+            Route::get('/trash/penitip', 'indexOnlyTrashed')->name('penitip.trash');
+            Route::get('/penitip/restore/{id}', 'restore')->name('penitip.restore');
         });
 
         // PengeluaranLain routes
@@ -129,6 +131,8 @@ Route::middleware(['auth:sanctum', 'ability:mo'])
             Route::get('/paginate/pengeluaran_lain', 'paginate')->name('pengeluaran_lain.paginate');
             Route::get('/pengeluaran_lain/search/{data}', 'search')->name('pengeluaran_lain.search');
             Route::get('/pengeluaran_lain/filter/{month}/{year}', 'filter')->name('pengeluaran_lain.filter');
+            Route::get('/trash/pengeluaran_lain', 'indexOnlyTrashed')->name('pengeluaran_lain.trash');
+            Route::get('/pengeluaran_lain/restore/{id}', 'restore')->name('pengeluaran_lain.restore');
         });
 
         // PembelianBahanBaku routes
@@ -136,6 +140,8 @@ Route::middleware(['auth:sanctum', 'ability:mo'])
             Route::apiResource('pembelian_bahan_baku', PengadaanBahanBakuController::class);
             Route::get('/paginate/pembelian_bahan_baku', 'paginate')->name('pembelian_bahan_baku.paginate');
             Route::get('/pembelian_bahan_baku/search/{data}', 'search')->name('pembelian_bahan_baku.search');
+            Route::get('/trash/pembelian_bahan_baku', 'indexOnlyTrashed')->name('pembelian_bahan_baku.trash');
+            Route::get('/pembelian_bahan_baku/restore/{id}', 'restore')->name('pembelian_bahan_baku.restore');
         });
 
         // Presensi routes

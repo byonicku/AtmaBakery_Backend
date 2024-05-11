@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Penitip extends Model
 {
+    use SoftDeletes;
     protected $table = 'penitip';
     protected $primaryKey = 'id_penitip';
     protected $keyType = 'string';
@@ -24,5 +26,10 @@ class Penitip extends Model
         return [
             'id_penitip' => 'string',
         ];
+    }
+
+    public function produk()
+    {
+        return $this->hasMany(Produk::class, 'id_penitip', 'id_penitip');
     }
 }

@@ -30,6 +30,22 @@ class PenitipController extends Controller
         ], 200);
     }
 
+    public function indexOnlyTrashed()
+    {
+        $data = Penitip::onlyTrashed()->get();
+
+        if (count($data) == 0) {
+            return response()->json([
+                'message' => 'Data kosong',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Data berhasil diterima',
+            'data' => $data,
+        ], 200);
+    }
+
     public function paginate()
     {
         $data = Penitip::paginate(10);
@@ -62,6 +78,35 @@ class PenitipController extends Controller
         ], 200);
     }
 
+    public function restore(string $id)
+    {
+        $data = Penitip::onlyTrashed()->find($id);
+
+        if (!$data) {
+            return response()->json([
+                'message' => 'Data tidak ditemukan',
+            ], 404);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $data->restore();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal melakukan restore',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Data berhasil direstore',
+            'data' => $data,
+        ], 200);
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -84,7 +129,7 @@ class PenitipController extends Controller
             ], 400);
         }
 
-        $latestId = Penitip::latest('id_penitip')->first();
+        $latestId = Penitip::withTrashed()->latest('id_penitip')->first();
 
         if ($latestId) {
             $latestNumericPart = (int) substr($latestId->id_penitip, 7);
