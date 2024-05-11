@@ -14,7 +14,6 @@ class Transaksi extends Model
     protected $fillable = [
         'no_nota',
         'id_user',
-        'id_alamat',
         'tanggal_pesan',
         'tanggal_lunas',
         'tanggal_ambil',
@@ -29,18 +28,16 @@ class Transaksi extends Model
         'bukti_pembayaran',
         'public_id',
         'status',
+        'nama_penerima',
+        'no_telp_penerima',
+        'lokasi',
+        'keterangan',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user', 'id_user');
     }
-
-    public function alamat()
-    {
-        return $this->belongsTo(Alamat::class, 'id_alamat', 'id_alamat');
-    }
-
     public function detail_transaksi()
     {
         return $this->hasMany(DetailTransaksi::class, 'no_nota', 'no_nota');
