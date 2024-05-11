@@ -84,7 +84,7 @@ class BahanBakuController extends Controller
     {
         $validate = Validator::make($request->all(), [
             'nama_bahan_baku' => 'required|max:255',
-            'satuan' => 'required|max:255',
+            'satuan' => 'required|max:255|in:gram,butir,buah,ml',
             'stok' => 'required|gte:0',
         ], [
             'required' => ':attribute harus diisi',
@@ -186,7 +186,7 @@ class BahanBakuController extends Controller
 
         $validate = Validator::make($request->all(), [
             'nama_bahan_baku' => 'sometimes|max:255',
-            'satuan' => 'sometimes|max:255',
+            'satuan' => 'sometimes|max:255|in:gram,butir,buah,ml',
             'stok' => 'sometimes|gte:0',
         ], [
             'gte' => ':attribute harus lebih dari atau sama dengan 0',
