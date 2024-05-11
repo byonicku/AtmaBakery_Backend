@@ -49,7 +49,7 @@ class PengeluaranLainController extends Controller
 
     public function search(string $data)
     {
-        $data = Pengeluaran::whereAny(['nama', 'satuan', 'total', 'tanggal_pengeluaran'], 'LIKE', '%' . $data . '%')->get();
+        $data = Pengeluaran::whereAny(['nama', 'total', 'tanggal_pengeluaran'], 'LIKE', '%' . $data . '%')->get();
 
         if (count($data) == 0) {
             return response()->json([
@@ -109,7 +109,6 @@ class PengeluaranLainController extends Controller
     {
         $validate = Validator::make($request->all(), [
             'nama' => 'required|max:255',
-            'satuan' => 'required|max:255',
             'total' => 'required|numeric|gte:0',
             'tanggal_pengeluaran' => 'required|date',
         ], [
@@ -131,7 +130,6 @@ class PengeluaranLainController extends Controller
         try {
             $data = Pengeluaran::create([
                 'nama' => $request->nama,
-                'satuan' => $request->satuan,
                 'total' => $request->total,
                 'tanggal_pengeluaran' => $request->tanggal_pengeluaran,
             ]);
@@ -185,7 +183,6 @@ class PengeluaranLainController extends Controller
 
         $validate = Validator::make($request->all(), [
             'nama' => 'sometimes|max:255',
-            'satuan' => 'sometimes|max:255',
             'total' => 'sometimes|numeric|gte:0',
             'tanggal_pengeluaran' => 'sometimes|date',
         ], [
@@ -203,7 +200,6 @@ class PengeluaranLainController extends Controller
 
         $fillableAttributes = [
             'nama',
-            'satuan',
             'total',
             'tanggal_pengeluaran',
         ];

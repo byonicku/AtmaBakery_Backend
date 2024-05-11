@@ -13,7 +13,6 @@ class Pengeluaran extends Model
     protected $fillable = [
         'id_pengeluaran',
         'nama',
-        'satuan',
         'total',
         'tanggal_pengeluaran',
     ];
