@@ -32,7 +32,8 @@ class PengeluaranLainController extends Controller
 
     public function paginate()
     {
-        $data = Pengeluaran::paginate(10);
+        $data = Pengeluaran::orderByDesc('tanggal_pengeluaran')
+            ->paginate(10);
 
         if (count($data) == 0) {
             return response()->json([
