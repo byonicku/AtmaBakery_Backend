@@ -165,9 +165,9 @@ class PengadaanBahanBakuController extends Controller
             ], 404);
         }
 
-        if (date('Y-m', strtotime(($data->tanggal_pembelian))) != date('Y-m')) {
+        if (date('Y-m-d', strtotime(($data->tanggal_pembelian))) != date('Y-m-d')) {
             return response()->json([
-                'message' => 'Tidak dapat mengubah data bulan / tahun sebelumnya',
+                'message' => 'Tidak dapat mengubah data selain hari ini',
             ], 400);
         }
 
@@ -206,12 +206,14 @@ class PengadaanBahanBakuController extends Controller
 
         DB::beginTransaction();
         try {
-            $bahan_baku = BahanBaku::find($data->id_bahan_baku);
+            if ($data->tanggal_pembelian == date('Y-m-d')) {
+                $bahan_baku = BahanBaku::find($data->id_bahan_baku);
 
-            if ($bahan_baku) {
-                $bahan_baku->update([
-                    'stok' => $bahan_baku->stok - $data->stok + $request->stok,
-                ]);
+                if ($bahan_baku) {
+                    $bahan_baku->update([
+                        'stok' => $bahan_baku->stok - $data->stok,
+                    ]);
+                }
             }
 
             $data->update($updateData);
@@ -243,9 +245,9 @@ class PengadaanBahanBakuController extends Controller
             ], 404);
         }
 
-        if (date('Y-m', strtotime(($data->tanggal_pembelian))) != date('Y-m')) {
+        if (date('Y-m-d', strtotime(($data->tanggal_pembelian))) != date('Y-m-d')) {
             return response()->json([
-                'message' => 'Tidak dapat mengubah data bulan / tahun sebelumnya',
+                'message' => 'Tidak dapat mengubah data selain hari ini',
             ], 400);
         }
 
