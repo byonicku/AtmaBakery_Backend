@@ -32,25 +32,6 @@ class PengadaanBahanBakuController extends Controller
         ], 200);
     }
 
-    public function indexOnlyTrashed()
-    {
-        $data = PengadaanBahanBaku::onlyTrashed()
-            ->with('bahan_baku')
-            ->orderByDesc('tanggal_pembelian')
-            ->get();
-
-        if (count($data) == 0) {
-            return response()->json([
-                'message' => 'Data kosong',
-            ], 404);
-        }
-
-        return response()->json([
-            'message' => 'Data berhasil diterima',
-            'data' => $data,
-        ], 200);
-    }
-
     public function paginate()
     {
         $data = PengadaanBahanBaku::with('bahan_baku')
@@ -88,44 +69,6 @@ class PengadaanBahanBakuController extends Controller
         return response()->json([
             'message' => 'Data berhasil diterima',
             'data' => $data,
-        ], 200);
-    }
-
-    public function restore(string $id)
-    {
-        $data = PengadaanBahanBaku::onlyTrashed()
-            ->find($id);
-
-        if (!$data) {
-            return response()->json([
-                'message' => 'Data tidak ditemukan',
-            ], 404);
-        }
-
-        DB::beginTransaction();
-
-        try {
-            $bahan_baku = BahanBaku::find($data->id_bahan_baku);
-
-            if ($bahan_baku) {
-                $bahan_baku->update([
-                    'stok' => $bahan_baku->stok - $data->stok,
-                ]);
-            }
-
-            $data->restore();
-
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-
-            return response()->json([
-                'message' => $e->getMessage(),
-            ], 500);
-        }
-
-        return response()->json([
-            'message' => 'Data berhasil direstore',
         ], 200);
     }
 
