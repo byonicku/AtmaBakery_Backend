@@ -65,7 +65,7 @@ class ProdukController extends Controller
 
     public function paginatePublic()
     {
-        $data = Produk::with('gambar')->paginate(10);
+        $data = Produk::with('gambar')->paginate(6);
 
         if (count($data) == 0) {
             return response()->json([
