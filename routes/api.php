@@ -39,7 +39,7 @@ Route::controller(CartController::class)
     })->name('cart');
 
 Route::get('/produk', [ProdukController::class, 'index'])->name('produk.index');
-Route::get('/paginate/produk', [ProdukController::class, 'paginate'])->name('produk.paginate');
+Route::get('/public/paginate/produk', [ProdukController::class, 'paginatePublic'])->name('produk.paginate');
 
 // Self User - Digunakan untuk user yang sedang login
 Route::get('/users/self', [UserController::class, 'showSelf'])->name('users.self')
@@ -174,6 +174,7 @@ Route::middleware(['auth:sanctum', 'ability:admin'])
         // ProdukController routes
         Route::controller(ProdukController::class)->group(function () {
             Route::apiResource('produk', ProdukController::class, ['except' => ['index']]);
+            Route::get('/paginate/produk', 'paginate')->name('produk.paginate');
             Route::post('/produk/search', 'search')->name('produk.search');
             Route::get('/trash/produk', 'indexOnlyTrashed')->name('produk.trash');
             Route::get('/produk/restore/{id}', 'restore')->name('produk.restore');

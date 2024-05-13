@@ -63,6 +63,22 @@ class ProdukController extends Controller
         ], 200);
     }
 
+    public function paginatePublic()
+    {
+        $data = Produk::with('gambar')->paginate(10);
+
+        if (count($data) == 0) {
+            return response()->json([
+                'message' => 'Data kosong',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Data berhasil diterima',
+            'data' => $data,
+        ], 200);
+    }
+
     public function search(Request $request)
     {
         $validate = Validator::make($request->all(), [
