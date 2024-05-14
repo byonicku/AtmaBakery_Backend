@@ -39,6 +39,7 @@ Route::controller(CartController::class)
     })->name('cart');
 
 Route::get('/produk', [ProdukController::class, 'index'])->name('produk.index');
+Route::get('/produk/{id}', [ProdukController::class, 'show'])->name('produk.show');
 Route::get('/public/paginate/produk', [ProdukController::class, 'paginatePublic'])->name('produk.paginate');
 
 Route::get('/hampers', [HampersController::class, 'index'])->name('hampers.index');
@@ -175,7 +176,7 @@ Route::middleware(['auth:sanctum', 'ability:admin'])
 
         // ProdukController routes
         Route::controller(ProdukController::class)->group(function () {
-            Route::apiResource('produk', ProdukController::class, ['except' => ['index']]);
+            Route::apiResource('produk', ProdukController::class, ['except' => ['index', 'show']]);
             Route::get('/paginate/produk', 'paginate')->name('produk.paginate');
             Route::post('/produk/search', 'search')->name('produk.search');
             Route::get('/trash/produk', 'indexOnlyTrashed')->name('produk.trash');
