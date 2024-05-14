@@ -180,7 +180,12 @@ class HampersController extends Controller
      */
     public function show(string $id)
     {
-        $data = Hampers::with('gambar')->find($id);
+        $data = Hampers::with([
+            'detail_hampers' => function ($query) {
+                $query->whereNotNull('id_produk');
+            },
+            'detail_hampers.produk:id_produk,id_kategori,nama_produk,ukuran'
+        ])->find($id);
 
         if (!$data) {
             return response()->json([
