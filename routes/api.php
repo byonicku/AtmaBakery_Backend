@@ -43,6 +43,7 @@ Route::get('/produk/{id}', [ProdukController::class, 'show'])->name('produk.show
 Route::get('/public/paginate/produk', [ProdukController::class, 'paginatePublic'])->name('produk.paginate');
 
 Route::get('/hampers', [HampersController::class, 'index'])->name('hampers.index');
+Route::get('/hampers/{id}', [HampersController::class, 'show'])->name('hampers.show');
 
 // Self User - Digunakan untuk user yang sedang login
 Route::get('/users/self', [UserController::class, 'showSelf'])->name('users.self')
@@ -194,7 +195,7 @@ Route::middleware(['auth:sanctum', 'ability:admin'])
 
         // HampersController routes
         Route::controller(HampersController::class)->group(function () {
-            Route::apiResource('hampers', HampersController::class, ['except' => ['index']]);
+            Route::apiResource('hampers', HampersController::class, ['except' => ['index', 'show']]);
             Route::get('/paginate/hampers', 'paginate')->name('hampers.paginate');
             Route::get('/hampers/search/{data}', 'search')->name('hampers.search');
             Route::get('/trash/hampers', 'indexOnlyTrashed')->name('hampers.trash');
