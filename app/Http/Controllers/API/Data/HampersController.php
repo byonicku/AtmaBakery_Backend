@@ -184,9 +184,17 @@ class HampersController extends Controller
             'detail_hampers' => function ($query) {
                 $query->whereNotNull('id_produk');
             },
-            'detail_hampers.produk:id_produk,id_kategori,nama_produk,ukuran',
+            'detail_hampers.produk',
             'gambar'
         ])->find($id);
+
+        $status = $data->detail_hampers->pluck('produk.status');
+
+        if ($status->contains('PO')) {
+            $data->status = 'PO';
+        } else {
+            $data->status = 'READY';
+        }
 
         if (!$data) {
             return response()->json([
