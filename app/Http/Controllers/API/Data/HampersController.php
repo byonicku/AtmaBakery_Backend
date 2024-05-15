@@ -184,7 +184,8 @@ class HampersController extends Controller
             'detail_hampers' => function ($query) {
                 $query->whereNotNull('id_produk');
             },
-            'detail_hampers.produk:id_produk,id_kategori,nama_produk,ukuran'
+            'detail_hampers.produk:id_produk,id_kategori,nama_produk,ukuran',
+            'gambar'
         ])->find($id);
 
         if (!$data) {
