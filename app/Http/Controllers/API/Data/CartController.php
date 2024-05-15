@@ -43,7 +43,7 @@ class CartController extends Controller
             'id_produk' => 'sometimes|exists:produk,id_produk',
             'id_hampers' => 'sometimes|exists:hampers,id_hampers',
             'jumlah' => 'required|integer|min:1',
-            'po_date' => 'required|date',
+            'po_date' => 'sometimes|date',
         ], [
 
             'id_produk.exists' => 'Produk tidak ditemukan',
