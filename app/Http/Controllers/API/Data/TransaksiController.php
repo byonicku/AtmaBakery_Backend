@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Data;
 
 use App\Http\Controllers\Controller;
+use App\Models\Produk;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -157,7 +158,35 @@ class TransaksiController extends Controller
         ], 200);
     }
 
+    public function countTransaksi(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            'id_produk' => 'required|exists:produk,id_produk',
+            'po_date' => 'required|date',
+        ], [
+            'id_produk.required' => 'ID produk tidak boleh kosong',
+            'id_produk.exists' => 'ID produk tidak ditemukan',
+            'po_date.required' => 'Tanggal PO tidak boleh kosong',
+            'po_date.date' => 'Tanggal PO harus berupa tanggal',
+        ]);
 
+        if ($validate->fails()) {
+            return response()->json([
+                'message' => $validate->errors()->first(),
+            ], 400);
+        }
+
+        $produk = Produk::find($request->id_produk);
+
+        $transaksi = Transaksi::whereHas('detail_transaksi', function ($query) use ($request) {
+            $query->where('id_produk', '=', $request->id_produk);
+        })->whereDate('tanggal_ambil', '=', $request->po_date)->count();
+
+        return response()->json([
+            'message' => 'Data berhasil diterima',
+            'data' => $produk->limit - $transaksi,
+        ], 200);
+    }
 
     public function search(Request $request, string $id_user)
     {

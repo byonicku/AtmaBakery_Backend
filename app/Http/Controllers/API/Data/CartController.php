@@ -43,6 +43,12 @@ class CartController extends Controller
             'id_produk' => 'sometimes|exists:produk,id_produk',
             'id_hampers' => 'sometimes|exists:hampers,id_hampers',
             'jumlah' => 'required|integer|min:1',
+            'po_date' => 'required|date',
+        ], [
+
+            'id_produk.exists' => 'Produk tidak ditemukan',
+            'id_hampers.exists' => 'Hampers tidak ditemukan',
+            'po_date.date' => 'Tanggal PO harus berupa tanggal'
         ]);
 
         if ($validate->fails()) {
@@ -65,6 +71,30 @@ class CartController extends Controller
             ], 404);
         }
 
+        $dataCart = Cart::where('id_user', $user->id_user)->get();
+
+        if ($dataCart->isNotEmpty()) {
+            $dates = $dataCart->pluck('po_date');
+            $produkIds = $dataCart->pluck('id_produk');
+            $hampersIds = $dataCart->pluck('id_hampers');
+
+            if (!$dates->contains($request->po_date)) {
+                return response()->json([
+                    'message' => 'Tanggal PO harus sama',
+                ], 404);
+            }
+
+            $isProductInCart = $request->id_produk && $produkIds->contains($request->id_produk);
+            $isHampersInCart = $request->id_hampers && $hampersIds->contains($request->id_hampers);
+
+            if ($isProductInCart || $isHampersInCart) {
+                return response()->json([
+                    'message' => 'Produk atau hampers sudah ada di cart, silahkan melakukan update pada cart saja',
+                ], 404);
+            }
+        }
+
+
         try {
             DB::beginTransaction();
             $data = Cart::create([
@@ -72,7 +102,9 @@ class CartController extends Controller
                 'id_produk' => $request->id_produk,
                 'id_hampers' => $request->id_hampers,
                 'jumlah' => $request->jumlah,
+                'po_date' => $request->po_date
             ]);
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -138,7 +170,7 @@ class CartController extends Controller
     {
         $validate = Validator::make($request->all(), [
             'cart' => 'required|array',
-            'cart.*.id_cart' => 'required|integer',
+            'cart.*.id_cart' => 'required|integer|exists:cart,id_cart',
             'cart.*.jumlah' => 'required|integer|min:1',
         ]);
 

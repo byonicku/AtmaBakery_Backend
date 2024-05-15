@@ -29,7 +29,7 @@ class User extends Authenticatable
         'jenis_kelamin',
         'foto_profil',
         'public_id',
-        'verify_key',
+        'verify_key'
     ];
 
     /**

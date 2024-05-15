@@ -15,6 +15,7 @@ class Cart extends Model
         'id_produk',
         'id_hampers',
         'jumlah',
+        'po_date'
     ];
 
     public function produk()
