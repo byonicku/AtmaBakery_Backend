@@ -31,6 +31,8 @@ class CartController extends Controller
             ], 404);
         }
 
+        $data->poin = $user->poin;
+
         return response()->json([
             'message' => 'Data berhasil diterima',
             'data' => $data,
