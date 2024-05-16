@@ -44,6 +44,7 @@ class CartController extends Controller
             'id_produk' => 'sometimes|exists:produk,id_produk',
             'id_hampers' => 'sometimes|exists:hampers,id_hampers',
             'jumlah' => 'required|integer|min:1',
+            'status' => 'required|in:READY,PO',
             'po_date' => 'sometimes|date',
         ];
 
@@ -82,7 +83,7 @@ class CartController extends Controller
 
             if ($status->contains('READY') && $request->po_date && $dates->contains(null)) {
                 $this->updateCartWhenReadyInserted($user->id_user, 'status', 'READY', $request->po_date);
-                return $this->addToCart($user->id_user, $request->id_produk, $request->id_hampers, $request->jumlah, $request->po_date);
+                return $this->addToCart($user->id_user, $request->id_produk, $request->id_hampers, $request->jumlah, $request->po_date, $request->status);
             }
 
             if (!$dates->contains($request->po_date)) {
@@ -103,7 +104,7 @@ class CartController extends Controller
             }
         }
 
-        return $this->addToCart($user->id_user, $request->id_produk, $request->id_hampers, $request->jumlah, $request->po_date);
+        return $this->addToCart($user->id_user, $request->id_produk, $request->id_hampers, $request->jumlah, $request->po_date, $request->status);
     }
     private function updateCart($userId, $column, $value, $quantity)
     {
@@ -135,7 +136,7 @@ class CartController extends Controller
         }
     }
 
-    private function addToCart($userId, $idProduk, $idHampers, $quantity, $poDate)
+    private function addToCart($userId, $idProduk, $idHampers, $quantity, $poDate, $status)
     {
         try {
             DB::beginTransaction();
@@ -144,6 +145,7 @@ class CartController extends Controller
                 'id_produk' => $idProduk,
                 'id_hampers' => $idHampers,
                 'jumlah' => $quantity,
+                'status' => $status,
                 'po_date' => $poDate,
             ]);
             DB::commit();
