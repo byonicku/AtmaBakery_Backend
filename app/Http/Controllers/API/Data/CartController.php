@@ -101,6 +101,11 @@ class CartController extends Controller
                     ]);
 
                     DB::commit();
+
+                    return response()->json([
+                        'message' => 'Data berhasil diubah',
+                        'data' => $data,
+                    ], 200);
                 } catch (\Exception $e) {
                     DB::rollBack();
                     return response()->json([
