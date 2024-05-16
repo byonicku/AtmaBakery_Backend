@@ -89,12 +89,27 @@ class CartController extends Controller
             $isHampersInCart = $request->id_hampers && $hampersIds->contains($request->id_hampers);
 
             if ($isProductInCart || $isHampersInCart) {
-                return response()->json([
-                    'message' => 'Produk atau hampers sudah ada di cart, silahkan melakukan update pada cart saja',
-                ], 404);
+                try {
+                    DB::beginTransaction();
+                    $data = Cart::where('id_user', $user->id_user)
+                        ->where('id_produk', $request->id_produk)
+                        ->orWhere('id_hampers', $request->id_hampers)
+                        ->first();
+
+                    $data->update([
+                        'jumlah' => $request->jumlah,
+                    ]);
+
+                    DB::commit();
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                    return response()->json([
+                        'message' => $e->getMessage(),
+                    ], 500);
+
+                }
             }
         }
-
 
         try {
             DB::beginTransaction();
