@@ -40,35 +40,37 @@ class CartController extends Controller
 
     public function store(Request $request)
     {
-        $validate = Validator::make($request->all(), [
+        $rules = [
             'id_produk' => 'sometimes|exists:produk,id_produk',
             'id_hampers' => 'sometimes|exists:hampers,id_hampers',
             'jumlah' => 'required|integer|min:1',
             'po_date' => 'sometimes|date',
-        ], [
+        ];
 
+        $messages = [
             'id_produk.exists' => 'Produk tidak ditemukan',
             'id_hampers.exists' => 'Hampers tidak ditemukan',
-            'po_date.date' => 'Tanggal PO harus berupa tanggal'
-        ]);
+            'po_date.date' => 'Tanggal PO harus berupa tanggal',
+        ];
+
+        $validate = Validator::make($request->all(), $rules, $messages);
 
         if ($validate->fails()) {
             return response()->json([
-                'message' => $validate->errors()->first(),
+                'message' => $validate->errors()->first()
             ], 404);
         }
 
         if (!$request->id_produk && !$request->id_hampers) {
             return response()->json([
-                'message' => 'id_produk atau id_hampers harus diisi',
+                'message' => 'id_produk atau id_hampers harus diisi'
             ], 404);
         }
 
         $user = Auth::user();
-
         if (!$user) {
             return response()->json([
-                'message' => 'Unauthenticated',
+                'message' => 'Unauthenticated'
             ], 404);
         }
 
@@ -76,67 +78,59 @@ class CartController extends Controller
 
         if ($dataCart->isNotEmpty()) {
             $dates = $dataCart->pluck('po_date');
-            $produkIds = $dataCart->pluck('id_produk');
-            $hampersIds = $dataCart->pluck('id_hampers');
-
             if (!$dates->contains($request->po_date)) {
                 return response()->json([
-                    'message' => 'Tanggal PO harus sama',
+                    'message' => 'Tanggal PO harus sama'
                 ], 404);
             }
 
-            $isProductInCart = $request->id_produk && $produkIds->contains($request->id_produk);
-            $isHampersInCart = $request->id_hampers && $hampersIds->contains($request->id_hampers);
+            $isProductInCart = $request->id_produk && $dataCart->pluck('id_produk')->contains($request->id_produk);
 
-            if ($isProductInCart || $isHampersInCart) {
-                try {
-                    DB::beginTransaction();
-                    $data = Cart::where('id_user', $user->id_user)
-                        ->where('id_produk', $request->id_produk)
-                        ->orWhere('id_hampers', $request->id_hampers)
-                        ->first();
+            $isHampersInCart = $request->id_hampers && $dataCart->pluck('id_hampers')->contains($request->id_hampers);
+            if ($isProductInCart) {
+                return $this->updateCart($user->id_user, 'id_produk', $request->id_produk, $request->jumlah);
+            }
 
-                    $data->update([
-                        'jumlah' => $request->jumlah,
-                    ]);
-
-                    DB::commit();
-
-                    return response()->json([
-                        'message' => 'Data berhasil diubah',
-                        'data' => $data,
-                    ], 200);
-                } catch (\Exception $e) {
-                    DB::rollBack();
-                    return response()->json([
-                        'message' => $e->getMessage(),
-                    ], 500);
-
-                }
+            if ($isHampersInCart) {
+                return $this->updateCart($user->id_user, 'id_hampers', $request->id_hampers, $request->jumlah);
             }
         }
 
+        return $this->addToCart($user->id_user, $request->id_produk, $request->id_hampers, $request->jumlah, $request->po_date);
+    }
+    private function updateCart($userId, $column, $value, $quantity)
+    {
+        try {
+            DB::beginTransaction();
+            $data = Cart::where('id_user', $userId)->where($column, $value)->first();
+            $data->update(['jumlah' => $quantity]);
+            DB::commit();
+
+            return response()->json(['message' => 'Data berhasil diubah', 'data' => $data], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    private function addToCart($userId, $idProduk, $idHampers, $quantity, $poDate)
+    {
         try {
             DB::beginTransaction();
             $data = Cart::create([
-                'id_user' => $user->id_user,
-                'id_produk' => $request->id_produk,
-                'id_hampers' => $request->id_hampers,
-                'jumlah' => $request->jumlah,
-                'po_date' => $request->po_date
+                'id_user' => $userId,
+                'id_produk' => $idProduk,
+                'id_hampers' => $idHampers,
+                'jumlah' => $quantity,
+                'po_date' => $poDate,
             ]);
-
             DB::commit();
+
+            return response()->json(['message' => 'Data berhasil ditambahkan', 'data' => $data], 200);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'message' => $e->getMessage(),
-            ], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
-        return response()->json([
-            'message' => 'Data berhasil ditambahkan',
-            'data' => $data,
-        ], 200);
     }
 
     public function update(Request $request, string $id)
