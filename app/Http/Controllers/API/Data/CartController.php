@@ -123,7 +123,7 @@ class CartController extends Controller
     {
         try {
             DB::beginTransaction();
-            $data = Cart::where('id_user', $userId)->where($column, $value);
+            $data = Cart::where('id_user', $userId)->where($column, $value)->get();
             foreach ($data as $cart) {
                 $cart->update(['po_date' => $date]);
             }
