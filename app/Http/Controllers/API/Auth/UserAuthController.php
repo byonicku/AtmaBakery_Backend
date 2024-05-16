@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cart;
 use App\Notifications\EmailVerify;
 use Auth;
 use Carbon\Carbon;
@@ -133,10 +134,13 @@ class UserAuthController extends Controller
                 ], 400);
         }
 
+        $po_date = Cart::all()->where('id_user', $user->id_user)->pluck('po_date')->whereNotNull()->first();
+
         return response()->json([
             'message' => 'Berhasil login',
             'data' => $user,
-            'token' => $user->createToken('login', $abilities)->plainTextToken
+            'token' => $user->createToken('login', $abilities)->plainTextToken,
+            'po_date' => $po_date,
         ], 200);
     }
 
