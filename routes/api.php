@@ -35,7 +35,7 @@ Route::controller(CartController::class)
     ->group(function () {
         Route::apiResource('cart', CartController::class);
         Route::put('/cart/logout', 'updateWhenLogout')->name('cart.update-logout');
-        Route::delete('/cart/all', 'destroyAll')->name('cart.destroy-all');
+        Route::delete('/all/cart', 'destroyAll')->name('cart.destroy-all');
     })->name('cart');
 
 Route::get('/produk', [ProdukController::class, 'index'])->name('produk.index');
