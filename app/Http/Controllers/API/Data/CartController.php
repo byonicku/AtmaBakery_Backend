@@ -284,7 +284,8 @@ class CartController extends Controller
             ], 404);
         }
 
-        $data = Cart::where('id_user', '=', $user->id_user)->get();
+        $data = Cart::where('id_user', '=', $user->id_user)
+            ->get();
 
         if (count($data) == 0) {
             return response()->json([
