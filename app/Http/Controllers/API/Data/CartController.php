@@ -78,6 +78,12 @@ class CartController extends Controller
 
         if ($dataCart->isNotEmpty()) {
             $dates = $dataCart->pluck('po_date');
+            $status = $dataCart->pluck('status');
+
+            if ($status->contains('READY') && $request->po_date && $dates->contains(null)) {
+                return $this->updateCartWhenReadyInserted($user->id_user, 'status', 'READY', $request->po_date);
+            }
+
             if (!$dates->contains($request->po_date)) {
                 return response()->json([
                     'message' => 'Tanggal PO harus sama'
@@ -104,6 +110,23 @@ class CartController extends Controller
             DB::beginTransaction();
             $data = Cart::where('id_user', $userId)->where($column, $value)->first();
             $data->update(['jumlah' => $quantity]);
+            DB::commit();
+
+            return response()->json(['message' => 'Data berhasil diubah', 'data' => $data], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    private function updateCartWhenReadyInserted($userId, $column, $value, $date)
+    {
+        try {
+            DB::beginTransaction();
+            $data = Cart::where('id_user', $userId)->where($column, $value);
+            foreach ($data as $cart) {
+                $cart->update(['po_date' => $date]);
+            }
             DB::commit();
 
             return response()->json(['message' => 'Data berhasil diubah', 'data' => $data], 200);
