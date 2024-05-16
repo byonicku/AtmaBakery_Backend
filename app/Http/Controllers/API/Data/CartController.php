@@ -81,7 +81,8 @@ class CartController extends Controller
             $status = $dataCart->pluck('status');
 
             if ($status->contains('READY') && $request->po_date && $dates->contains(null)) {
-                return $this->updateCartWhenReadyInserted($user->id_user, 'status', 'READY', $request->po_date);
+                $this->updateCartWhenReadyInserted($user->id_user, 'status', 'READY', $request->po_date);
+                return $this->addToCart($user->id_user, $request->id_produk, $request->id_hampers, $request->jumlah, $request->po_date);
             }
 
             if (!$dates->contains($request->po_date)) {
@@ -128,8 +129,6 @@ class CartController extends Controller
                 $cart->update(['po_date' => $date]);
             }
             DB::commit();
-
-            return response()->json(['message' => 'Data berhasil diubah', 'data' => $data], 200);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['message' => $e->getMessage()], 500);
