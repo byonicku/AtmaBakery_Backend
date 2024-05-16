@@ -183,8 +183,6 @@ class TransaksiController extends Controller
             $query->where('id_produk', '=', $request->id_produk);
         })->get();
 
-        $arrayCounter = [];
-
         $remaining = $produk->limit;
 
         foreach ($hampersWithCurrentIdProduk as $hampers) {
@@ -194,7 +192,6 @@ class TransaksiController extends Controller
 
             $remaining -= $transaksi;
         }
-
 
         return response()->json([
             'message' => 'Data berhasil diterima',
@@ -207,7 +204,6 @@ class TransaksiController extends Controller
                 'stok' => $produk->stok,
                 'count' => $transaksi,
                 'remaining' => $remaining,
-                'hampers' => $arrayCounter,
             ],
         ], 200);
     }
