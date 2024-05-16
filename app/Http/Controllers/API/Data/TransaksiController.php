@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Data;
 
 use App\Http\Controllers\Controller;
+use App\Models\Hampers;
 use App\Models\Produk;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
@@ -178,13 +179,87 @@ class TransaksiController extends Controller
 
         $produk = Produk::find($request->id_produk);
 
-        $transaksi = Transaksi::whereHas('detail_transaksi', function ($query) use ($request) {
+        $hampersWithCurrentIdProduk = Hampers::whereHas('detail_hampers', function ($query) use ($request) {
             $query->where('id_produk', '=', $request->id_produk);
-        })->whereDate('tanggal_ambil', '=', $request->po_date)->count();
+        })->get();
+
+        $arrayCounter = [];
+
+        $remaining = $produk->limit;
+
+        foreach ($hampersWithCurrentIdProduk as $hampers) {
+            $transaksi = Transaksi::whereHas('detail_transaksi', function ($query) use ($hampers, $request) {
+                $query->where('id_hampers', '=', $hampers->id_hampers)->OrWhere('id_produk', '=', $request->id_produk);
+            })->whereDate('tanggal_ambil', '=', $request->po_date)->count();
+
+            $remaining -= $transaksi;
+        }
+
 
         return response()->json([
             'message' => 'Data berhasil diterima',
-            'data' => $produk->limit - $transaksi,
+            'data' => [
+                'id_produk' => $produk->id_produk,
+                'nama_produk' => $produk->nama_produk,
+                'ukuran' => $produk->ukuran,
+                'status' => $produk->status,
+                'limit' => $produk->limit,
+                'stok' => $produk->stok,
+                'count' => $transaksi,
+                'remaining' => $remaining,
+                'hampers' => $arrayCounter,
+            ],
+        ], 200);
+    }
+
+    public function countTransaksiWithHampers(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            'id_hampers' => 'required|exists:hampers,id_hampers',
+            'po_date' => 'required|date',
+        ], [
+            'id_hampers.required' => 'ID hampers tidak boleh kosong',
+            'id_hampers.exists' => 'ID hampers tidak ditemukan',
+            'po_date.required' => 'Tanggal PO tidak boleh kosong',
+            'po_date.date' => 'Tanggal PO harus berupa tanggal',
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'message' => $validate->errors()->first(),
+            ], 400);
+        }
+
+        $hampers = Hampers::with([
+            'detail_hampers' => function ($query) {
+                $query->whereNotNull('id_produk');
+            },
+            'detail_hampers.produk'
+        ])->find($request->id_hampers);
+
+        $arrayCounter = [];
+
+        foreach ($hampers->detail_hampers as $detail) {
+            $transaksi = Transaksi::whereHas('detail_transaksi', function ($query) use ($detail, $request) {
+                $query->where('id_hampers', '=', $request->id_hampers)->OrWhere('id_produk', '=', $detail->id_produk);
+            })->whereDate('tanggal_ambil', '=', $request->po_date)->count();
+
+            $arrayCounter[] = [
+                'id_produk' => $detail->id_produk,
+                'id_kategori' => $detail->produk->id_kategori,
+                'nama_produk' => $detail->produk->nama_produk,
+                'ukuran' => $detail->produk->ukuran,
+                'status' => $detail->produk->status,
+                'limit' => $detail->produk->limit,
+                'stok' => $detail->produk->stok,
+                'count' => $transaksi,
+                'remaining' => $detail->produk->limit - $transaksi,
+            ];
+        }
+
+        return response()->json([
+            'message' => 'Data berhasil diterima',
+            'data' => $arrayCounter,
         ], 200);
     }
 

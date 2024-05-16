@@ -44,7 +44,9 @@ Route::get('/public/paginate/produk', [ProdukController::class, 'paginatePublic'
 
 Route::get('/hampers', [HampersController::class, 'index'])->name('hampers.index');
 Route::get('/hampers/{id}', [HampersController::class, 'show'])->name('hampers.show');
+
 Route::post('/transaksi/count', [TransaksiController::class, 'countTransaksi'])->name('transaksi.count');
+Route::post('/transaksi/hampers/count', [TransaksiController::class, 'countTransaksiWithHampers'])->name('transaksi.count-hampers');
 
 // Self User - Digunakan untuk user yang sedang login
 Route::get('/users/self', [UserController::class, 'showSelf'])->name('users.self')
