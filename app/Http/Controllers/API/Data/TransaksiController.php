@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\API\Data;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cart;
+use App\Models\DetailTransaksi;
 use App\Models\Hampers;
 use App\Models\Produk;
 use App\Models\Transaksi;
+use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -392,7 +395,124 @@ class TransaksiController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthenticated',
+            ], 404);
+        }
+
+        $validate = Validator::make($request->all(), [
+            'tanggal_ambil' => 'sometimes|date',
+            'is_using_poin' => 'required|boolean',
+            'total' => 'required|numeric',
+            'tipe_delivery' => 'required|string',
+            'status' => 'required|string',
+            'nama_penerima' => 'required|string',
+            'no_telp_penerima' => 'required|string',
+            'lokasi' => 'sometimes|string',
+            'keterangan' => 'sometimes|string',
+        ], [
+            'id_user.required' => 'ID user tidak boleh kosong',
+            'id_user.exists' => 'ID user tidak ditemukan',
+            'tanggal_ambil.required' => 'Tanggal ambil tidak boleh kosong',
+            'tanggal_ambil.date' => 'Tanggal ambil harus berupa tanggal',
+            'is_using_poin.required' => 'Penggunaan poin tidak boleh kosong',
+            'is_using_poin.boolean' => 'Penggunaan poin harus berupa boolean',
+            'total.required' => 'Total tidak boleh kosong',
+            'total.numeric' => 'Total harus berupa angka',
+            'tipe_delivery.required' => 'Tipe delivery tidak boleh kosong',
+            'tipe_delivery.string' => 'Tipe delivery harus berupa teks',
+            'status.required' => 'Status tidak boleh kosong',
+            'status.string' => 'Status harus berupa teks',
+            'nama_penerima.required' => 'Nama penerima tidak boleh kosong',
+            'nama_penerima.string' => 'Nama penerima harus berupa teks',
+            'no_telp_penerima.required' => 'Nomor telepon penerima tidak boleh kosong',
+            'no_telp_penerima.string' => 'Nomor telepon penerima harus berupa teks',
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'message' => $validate->errors()->first(),
+            ], 400);
+        }
+
+        $transaksi = new Transaksi();
+
+        $latestNota = Transaksi::latest('no_nota')->first()->no_nota;
+        $number = (int) substr($latestNota, 6, 3);
+        $number++;
+        $number = str_pad($number, 3, '0', STR_PAD_LEFT);
+        $transaksi->no_nota = date('y') . date('m') . $number;
+
+        $transaksi->id_user = $user->id_user;
+        $transaksi->tanggal_pesan = date('Y-m-d H:i:s');
+
+        if ($request->tanggal_ambil) {
+            $transaksi->tanggal_ambil = $request->tanggal_ambil;
+        }
+
+        $transaksi->penggunaan_poin = $request->is_using_poin ? $request->penggunaan_poin : 0;
+
+        try {
+            $points = DB::select("SELECT p3l.calculate_points(?) AS points;", [$request['no_nota']]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+
+        $transaksi->penambahaan_poin = $points[0]->points;
+        $transaksi->poin_setelah_penambahan = $user->poin + $transaksi->penambahaan_poin - $transaksi->penggunaan_poin;
+        $transaksi->total = $request->total;
+        $transaksi->radius = 0;
+        $transaksi->ongkir = 0;
+        $transaksi->tip = 0;
+
+        $transaksi->tipe_delivery = $request->tipe_delivery;
+        $transaksi->status = $request->status;
+
+        if ($request->lokasi) {
+            $transaksi->lokasi = $request->lokasi;
+        }
+
+        if ($request->keterangan) {
+            $transaksi->keterangan = $request->keterangan;
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $transaksi->save();
+
+            $cartData = Cart::where('id_user', $user->id_user)->get();
+
+            foreach ($cartData as $cart) {
+                $detailTransaksi = new DetailTransaksi();
+                $detailTransaksi->no_nota = $transaksi->no_nota;
+                $detailTransaksi->id_produk = $cart->id_produk ?? null;
+                $detailTransaksi->id_hampers = $cart->id_hampers ?? null;
+                $detailTransaksi->jumlah = $cart->jumlah;
+                $detailTransaksi->harga_saat_beli = $cart->produk->harga;
+                $detailTransaksi->save();
+            }
+
+            Cart::where('id_user', $user->id_user)->delete();
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Failed to save data',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Data successfully saved',
+            'data' => $transaksi,
+        ], 201);
     }
 
     /**

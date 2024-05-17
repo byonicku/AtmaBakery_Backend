@@ -48,6 +48,9 @@ Route::get('/hampers/{id}', [HampersController::class, 'show'])->name('hampers.s
 Route::post('/transaksi/count', [TransaksiController::class, 'countTransaksi'])->name('transaksi.count');
 Route::post('/transaksi/hampers/count', [TransaksiController::class, 'countTransaksiWithHampers'])->name('transaksi.count-hampers');
 
+Route::apiResource('transaksi', TransaksiController::class)
+    ->middleware('auth:sanctum');
+
 // Self User - Digunakan untuk user yang sedang login
 Route::get('/users/self', [UserController::class, 'showSelf'])->name('users.self')
     ->middleware('auth:sanctum');
