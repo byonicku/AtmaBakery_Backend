@@ -444,7 +444,7 @@ class TransaksiController extends Controller
         $number = (int) substr($latestNota, 6, 3);
         $number++;
         $number = str_pad($number, 3, '0', STR_PAD_LEFT);
-        $transaksi->no_nota = date('y') . date('m') . $number;
+        $transaksi->no_nota = date('y') . '.' . date('m') . '.' . $number;
 
         $transaksi->id_user = $user->id_user;
         $transaksi->tanggal_pesan = date('Y-m-d H:i:s');
