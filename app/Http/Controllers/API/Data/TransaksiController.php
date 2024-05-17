@@ -200,7 +200,8 @@ class TransaksiController extends Controller
 
         $totalJumlah = $directTransaksiSum + $hampersTransaksiSum;
 
-        $remaining = $produk->limit - $totalJumlah;
+        $limitOrStok = ($produk->status === 'PO') ? $produk->limit : $produk->stok;
+        $remaining = $limitOrStok - (int) $totalJumlah;
 
         return response()->json([
             'message' => 'Data berhasil diterima',
@@ -259,6 +260,9 @@ class TransaksiController extends Controller
             $totalTransaksiSum = $directTransaksiSum + $hampersTransaksiSum;
 
             $produk = $detail->produk;
+            $limitOrStok = ($produk->status === 'PO') ? $produk->limit : $produk->stok;
+            $remaining = $limitOrStok - (int) $totalTransaksiSum;
+
             $arrayCounter[] = [
                 'id_produk' => $detail->id_produk,
                 'id_kategori' => $produk->id_kategori,
@@ -268,20 +272,30 @@ class TransaksiController extends Controller
                 'limit' => $produk->limit,
                 'stok' => $produk->stok,
                 'count' => (int) $totalTransaksiSum,
-                'remaining' => $produk->limit - (int) $totalTransaksiSum,
+                'remaining' => $remaining,
             ];
         }
 
-        $minStok = min(array_column($arrayCounter, 'stok'));
-        $minRemaining = min(array_column($arrayCounter, 'remaining'));
-        $minValue = min($minStok, $minRemaining);
+        // Calculate the minimum remaining value based on the status
+        $minRemaining = null;
+        foreach ($arrayCounter as $item) {
+            if ($item['status'] === 'PO') {
+                $value = $item['limit'] - $item['count'];
+            } else {
+                $value = $item['stok'] - $item['count'];
+            }
+            if ($minRemaining === null || $value < $minRemaining) {
+                $minRemaining = $value;
+            }
+        }
 
         return response()->json([
             'message' => 'Data berhasil diterima',
             'data' => $arrayCounter,
-            'min' => $minValue,
+            'min' => $minRemaining,
         ], 200);
     }
+
 
     public function search(Request $request, string $id_user)
     {
