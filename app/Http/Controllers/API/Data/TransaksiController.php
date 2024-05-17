@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Data;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
+use App\Models\DetailHampers;
 use App\Models\DetailTransaksi;
 use App\Models\Hampers;
 use App\Models\Produk;
@@ -508,6 +509,21 @@ class TransaksiController extends Controller
                 $detailTransaksi->jumlah = $cart->jumlah;
                 $detailTransaksi->harga_saat_beli = $cart->produk->harga;
                 $detailTransaksi->save();
+
+                if ($cart->id_produk && $cart->produk->status === 'READY') {
+                    $produk = Produk::find($cart->id_produk);
+                    $produk->stok -= $cart->jumlah;
+                    $produk->save();
+                } else if ($cart->id_hampers) {
+                    $hampers = DetailHampers::find($cart->id_hampers);
+                    foreach ($hampers->detail_hampers as $detail) {
+                        $produk = Produk::find($detail->id_produk);
+                        if ($produk->status === 'READY') {
+                            $produk->stok -= $cart->jumlah * $detail->jumlah;
+                            $produk->save();
+                        }
+                    }
+                }
             }
 
             Cart::where('id_user', $user->id_user)->delete();
@@ -538,6 +554,69 @@ class TransaksiController extends Controller
             'data' => $transaksi,
             'produk' => $cartData,
         ], 201);
+    }
+
+    public function batalTransaksi(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            'no_nota' => 'required|exists:transaksi,no_nota',
+        ], [
+            'no_nota.required' => 'No nota tidak boleh kosong',
+            'no_nota.exists' => 'No nota tidak ditemukan',
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'message' => $validate->errors()->first(),
+            ], 400);
+        }
+
+        $transaksi = Transaksi::where('no_nota', $request->no_nota)->first();
+
+        if ($transaksi->status === 'Terkirim') {
+            return response()->json([
+                'message' => 'Transaksi tidak dapat dibatalkan'
+            ], 400);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $transaksi->status = 'Dibatalkan';
+            $transaksi->save();
+
+            $detailTransaksi = DetailTransaksi::where('no_nota', $request->no_nota)->get();
+
+            foreach ($detailTransaksi as $detail) {
+                if ($detail->id_produk && $detail->produk->status === 'READY') {
+                    $produk = Produk::find($detail->id_produk);
+                    $produk->stok += $detail->jumlah;
+                    $produk->save();
+                } else if ($detail->id_hampers) {
+                    $hampers = DetailHampers::find($detail->id_hampers);
+                    foreach ($hampers->detail_hampers as $item) {
+                        $produk = Produk::find($item->id_produk);
+                        if ($produk->status === 'READY') {
+                            $produk->stok += $detail->jumlah * $item->jumlah;
+                            $produk->save();
+                        }
+                    }
+                }
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal membatalkan transaksi',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Transaksi berhasil dibatalkan',
+            'data' => $transaksi,
+        ], 200);
     }
 
     /**
