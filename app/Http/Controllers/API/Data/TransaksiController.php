@@ -463,8 +463,8 @@ class TransaksiController extends Controller
             ], 500);
         }
 
-        $transaksi->penambahaan_poin = $points[0]->points;
-        $transaksi->poin_setelah_penambahan = $user->poin + $transaksi->penambahaan_poin - $transaksi->penggunaan_poin;
+        $transaksi->penambahan_poin = $points[0]->points;
+        $transaksi->poin_setelah_penambahan = $user->poin + $transaksi->penambahan_poin - $transaksi->penggunaan_poin;
         $transaksi->total = $request->total;
         $transaksi->radius = 0;
         $transaksi->ongkir = 0;
