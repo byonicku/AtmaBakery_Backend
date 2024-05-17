@@ -9,6 +9,7 @@ use App\Models\DetailTransaksi;
 use App\Models\Hampers;
 use App\Models\Produk;
 use App\Models\Transaksi;
+use App\Models\User;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
@@ -537,8 +538,14 @@ class TransaksiController extends Controller
             }
 
             $transaksi->penambahan_poin = $points[0]->points;
+
+            $user = User::find($user->id_user);
+            $transaksi->poin_sebelum_penambahan = $user->poin;
+            $user->poin -= $transaksi->penggunaan_poin;
             $transaksi->poin_setelah_penambahan = $user->poin + $transaksi->penambahan_poin - $transaksi->penggunaan_poin;
+
             $transaksi->save();
+            $user->save();
 
             DB::commit();
         } catch (\Exception $e) {
@@ -603,6 +610,10 @@ class TransaksiController extends Controller
                     }
                 }
             }
+
+            $user = User::find($transaksi->id_user);
+            $user->poin = $transaksi->poin_sebelum_penggunaan;
+            $user->save();
 
             DB::commit();
         } catch (\Exception $e) {
