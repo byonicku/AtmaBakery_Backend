@@ -453,7 +453,7 @@ class TransaksiController extends Controller
             $transaksi->tanggal_ambil = $request->tanggal_ambil;
         }
 
-        $transaksi->penggunaan_poin = $request->is_using_poin ? $request->penggunaan_poin : 0;
+        $transaksi->penggunaan_poin = $request->is_using_poin ? $user->poin : 0;
 
         $transaksi->total = $request->total;
         $transaksi->radius = 0;
