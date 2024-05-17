@@ -511,10 +511,12 @@ class TransaksiController extends Controller
                 $detailTransaksi->harga_saat_beli = $cart->produk->harga ?? $cart->hampers->harga;
                 $detailTransaksi->save();
 
-                if ($cart->id_produk && ($cart->produk->status === 'READY')) {
+                if ($cart->id_produk) {
                     $produk = Produk::find($cart->id_produk);
-                    $produk->stok -= $cart->jumlah;
-                    $produk->save();
+                    if ($produk->status === 'READY') {
+                        $produk->stok -= $cart->jumlah;
+                        $produk->save();
+                    }
                 } else if ($cart->id_hampers) {
                     $dt = DetailHampers::where('id_hampers', $cart->id_hampers)->get();
                     foreach ($dt as $detail) {
@@ -595,10 +597,12 @@ class TransaksiController extends Controller
             $detailTransaksi = DetailTransaksi::where('no_nota', $request->no_nota)->get();
 
             foreach ($detailTransaksi as $detail) {
-                if ($detail->id_produk && ($detail->produk->status === 'READY')) {
+                if ($detail->id_produk) {
                     $produk = Produk::find($detail->id_produk);
-                    $produk->stok += $detail->jumlah;
-                    $produk->save();
+                    if ($produk->status === 'READY') {
+                        $produk->stok += $detail->jumlah;
+                        $produk->save();
+                    }
                 } else if ($detail->id_hampers) {
                     $dt = DetailHampers::where('id_hampers', $detail->id_hampers)->get();
                     foreach ($dt as $item) {
