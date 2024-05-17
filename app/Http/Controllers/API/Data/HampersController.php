@@ -189,8 +189,9 @@ class HampersController extends Controller
         ])->find($id);
 
         $status = $data->detail_hampers->pluck('produk.status');
+        $cekStok = $data->detail_hampers->pluck('produk.stok');
 
-        if ($status->contains('PO')) {
+        if ($status->contains('PO') && $cekStok->contains(0)) {
             $data->status = 'PO';
         } else {
             $data->status = 'READY';
