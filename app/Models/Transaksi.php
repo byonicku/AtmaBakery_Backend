@@ -19,7 +19,7 @@ class Transaksi extends Model
         'tanggal_ambil',
         'penggunaan_poin',
         'penambahan_poin',
-        'poin_sebelum_penggunaan',
+        'poin_sebelum_penambahan',
         'poin_setelah_penambahan',
         'total',
         'radius',
