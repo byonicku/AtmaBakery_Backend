@@ -508,7 +508,7 @@ class TransaksiController extends Controller
                 $detailTransaksi->id_produk = $cart->id_produk ?? null;
                 $detailTransaksi->id_hampers = $cart->id_hampers ?? null;
                 $detailTransaksi->jumlah = $cart->jumlah;
-                $detailTransaksi->harga_saat_beli = $cart->produk->harga;
+                $detailTransaksi->harga_saat_beli = $cart->produk->harga ?? $cart->hampers->harga;
                 $detailTransaksi->save();
 
                 if ($cart->id_produk && ($cart->produk->status === 'READY' || $cart->produk->id_kategori === 'CK')) {
