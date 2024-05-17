@@ -510,7 +510,7 @@ class TransaksiController extends Controller
                 $detailTransaksi->harga_saat_beli = $cart->produk->harga;
                 $detailTransaksi->save();
 
-                if ($cart->id_produk && $cart->produk->status === 'READY') {
+                if ($cart->id_produk && ($cart->produk->status === 'READY' || $cart->produk->id_kategori === 'CK')) {
                     $produk = Produk::find($cart->id_produk);
                     $produk->stok -= $cart->jumlah;
                     $produk->save();
@@ -518,7 +518,7 @@ class TransaksiController extends Controller
                     $hampers = DetailHampers::find($cart->id_hampers);
                     foreach ($hampers->detail_hampers as $detail) {
                         $produk = Produk::find($detail->id_produk);
-                        if ($produk->status === 'READY') {
+                        if ($produk->status === 'READY' || $produk->id_kategori === 'CK') {
                             $produk->stok -= $cart->jumlah * $detail->jumlah;
                             $produk->save();
                         }
@@ -588,7 +588,7 @@ class TransaksiController extends Controller
             $detailTransaksi = DetailTransaksi::where('no_nota', $request->no_nota)->get();
 
             foreach ($detailTransaksi as $detail) {
-                if ($detail->id_produk && $detail->produk->status === 'READY') {
+                if ($detail->id_produk && ($detail->produk->status === 'READY' || $detail->produk->id_kategori === 'CK')) {
                     $produk = Produk::find($detail->id_produk);
                     $produk->stok += $detail->jumlah;
                     $produk->save();
@@ -596,7 +596,7 @@ class TransaksiController extends Controller
                     $hampers = DetailHampers::find($detail->id_hampers);
                     foreach ($hampers->detail_hampers as $item) {
                         $produk = Produk::find($item->id_produk);
-                        if ($produk->status === 'READY') {
+                        if ($produk->status === 'READY' || $produk->id_kategori === 'CK') {
                             $produk->stok += $detail->jumlah * $item->jumlah;
                             $produk->save();
                         }
