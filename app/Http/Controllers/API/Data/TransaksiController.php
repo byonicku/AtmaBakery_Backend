@@ -520,6 +520,10 @@ class TransaksiController extends Controller
                 } else if ($cart->id_hampers) {
                     $dt = DetailHampers::where('id_hampers', $cart->id_hampers)->get();
                     foreach ($dt as $detail) {
+                        if ($detail->id_produk === null) {
+                            continue;
+                        }
+
                         $produk = Produk::find($detail->id_produk);
                         if ($produk->status === 'READY') {
                             $produk->stok -= $cart->jumlah * $detail->jumlah;
@@ -606,6 +610,10 @@ class TransaksiController extends Controller
                 } else if ($detail->id_hampers) {
                     $dt = DetailHampers::where('id_hampers', $detail->id_hampers)->get();
                     foreach ($dt as $item) {
+                        if ($item->id_produk === null) {
+                            continue;
+                        }
+
                         $produk = Produk::find($item->id_produk);
                         if ($produk->status === 'READY') {
                             $produk->stok += $detail->jumlah * $item->jumlah;
