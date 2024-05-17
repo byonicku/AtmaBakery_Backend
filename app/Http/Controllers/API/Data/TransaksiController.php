@@ -455,16 +455,6 @@ class TransaksiController extends Controller
 
         $transaksi->penggunaan_poin = $request->is_using_poin ? $request->penggunaan_poin : 0;
 
-        try {
-            $points = DB::select("SELECT p3l.calculate_points(?) AS points;", [$request['no_nota']]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-            ], 500);
-        }
-
-        $transaksi->penambahan_poin = $points[0]->points;
-        $transaksi->poin_setelah_penambahan = $user->poin + $transaksi->penambahan_poin - $transaksi->penggunaan_poin;
         $transaksi->total = $request->total;
         $transaksi->radius = 0;
         $transaksi->ongkir = 0;
@@ -472,6 +462,9 @@ class TransaksiController extends Controller
 
         $transaksi->tipe_delivery = $request->tipe_delivery;
         $transaksi->status = $request->status;
+
+        $transaksi->nama_penerima = $request->nama_penerima;
+        $transaksi->no_telp_penerima = $request->no_telp_penerima;
 
         if ($request->lokasi) {
             $transaksi->lokasi = $request->lokasi;
@@ -499,6 +492,18 @@ class TransaksiController extends Controller
             }
 
             Cart::where('id_user', $user->id_user)->delete();
+
+            try {
+                $points = DB::select("SELECT p3l.calculate_points(?) AS points;", [$request['no_nota']]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                ], 500);
+            }
+
+            $transaksi->penambahan_poin = $points[0]->points;
+            $transaksi->poin_setelah_penambahan = $user->poin + $transaksi->penambahan_poin - $transaksi->penggunaan_poin;
+            $transaksi->save();
 
             DB::commit();
         } catch (\Exception $e) {
