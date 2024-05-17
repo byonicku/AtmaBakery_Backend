@@ -272,9 +272,14 @@ class TransaksiController extends Controller
             ];
         }
 
+        $minStok = min(array_column($arrayCounter, 'stok'));
+        $minRemaining = min(array_column($arrayCounter, 'remaining'));
+        $minValue = min($minStok, $minRemaining);
+
         return response()->json([
             'message' => 'Data berhasil diterima',
             'data' => $arrayCounter,
+            'min' => $minValue,
         ], 200);
     }
 
@@ -455,7 +460,7 @@ class TransaksiController extends Controller
 
         $transaksi->penggunaan_poin = $request->is_using_poin ? $user->poin : 0;
 
-        $transaksi->total = $request->total;
+        $transaksi->total = $request->is_using_poin ? max(0, $request->total - ($user->poin * 100)) : $request->total;
         $transaksi->radius = 0;
         $transaksi->ongkir = 0;
         $transaksi->tip = 0;
