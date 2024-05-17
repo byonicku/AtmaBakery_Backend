@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Hampers;
 use App\Models\Produk;
 use App\Models\Transaksi;
+use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -172,26 +173,31 @@ class TransaksiController extends Controller
         ]);
 
         if ($validate->fails()) {
-            return response()->json([
-                'message' => $validate->errors()->first(),
-            ], 400);
+            return response()->json(['message' => $validate->errors()->first()], 400);
         }
 
         $produk = Produk::find($request->id_produk);
 
-        $hampersWithCurrentIdProduk = Hampers::whereHas('detail_hampers', function ($query) use ($request) {
-            $query->where('id_produk', '=', $request->id_produk);
-        })->get();
+        $directTransaksiSum = Transaksi::whereHas('detail_transaksi', function ($query) use ($request) {
+            $query->where('id_produk', $request->id_produk);
+        })->whereDate('tanggal_ambil', $request->po_date)
+            ->join('detail_transaksi', 'transaksi.no_nota', '=', 'detail_transaksi.no_nota')
+            ->sum('detail_transaksi.jumlah');
 
-        $remaining = $produk->limit;
+        $hampersTransaksiSum = Transaksi::whereHas('detail_transaksi', function ($query) use ($request) {
+            $query->whereHas('hampers.detail_hampers', function ($subQuery) use ($request) {
+                $subQuery->where('id_produk', $request->id_produk);
+            });
+        })->whereDate('tanggal_ambil', $request->po_date)
+            ->join('detail_transaksi as dt', 'transaksi.no_nota', '=', 'dt.no_nota')
+            ->join('hampers', 'hampers.id_hampers', '=', 'dt.id_hampers')
+            ->join('detail_hampers as dh', 'hampers.id_hampers', '=', 'dh.id_hampers')
+            ->where('dh.id_produk', $request->id_produk)
+            ->sum(DB::raw('dt.jumlah * dh.jumlah'));
 
-        foreach ($hampersWithCurrentIdProduk as $hampers) {
-            $transaksi = Transaksi::whereHas('detail_transaksi', function ($query) use ($hampers, $request) {
-                $query->where('id_hampers', '=', $hampers->id_hampers)->OrWhere('id_produk', '=', $request->id_produk);
-            })->whereDate('tanggal_ambil', '=', $request->po_date)->count();
+        $totalJumlah = $directTransaksiSum + $hampersTransaksiSum;
 
-            $remaining -= $transaksi;
-        }
+        $remaining = $produk->limit - $totalJumlah;
 
         return response()->json([
             'message' => 'Data berhasil diterima',
@@ -202,11 +208,11 @@ class TransaksiController extends Controller
                 'status' => $produk->status,
                 'limit' => $produk->limit,
                 'stok' => $produk->stok,
-                'count' => $transaksi,
                 'remaining' => $remaining,
             ],
         ], 200);
     }
+
 
     public function countTransaksiWithHampers(Request $request)
     {
@@ -221,35 +227,45 @@ class TransaksiController extends Controller
         ]);
 
         if ($validate->fails()) {
-            return response()->json([
-                'message' => $validate->errors()->first(),
-            ], 400);
+            return response()->json(['message' => $validate->errors()->first()], 400);
         }
 
-        $hampers = Hampers::with([
-            'detail_hampers' => function ($query) {
-                $query->whereNotNull('id_produk');
-            },
-            'detail_hampers.produk'
-        ])->find($request->id_hampers);
+        $hampers = Hampers::with(['detail_hampers.produk'])->find($request->id_hampers);
 
         $arrayCounter = [];
 
         foreach ($hampers->detail_hampers as $detail) {
-            $transaksi = Transaksi::whereHas('detail_transaksi', function ($query) use ($detail, $request) {
-                $query->where('id_hampers', '=', $request->id_hampers)->OrWhere('id_produk', '=', $detail->id_produk);
-            })->whereDate('tanggal_ambil', '=', $request->po_date)->count();
+            if ($detail->produk === null) {
+                continue;
+            }
 
+            $directTransaksiSum = Transaksi::whereHas('detail_transaksi', function ($query) use ($detail) {
+                $query->where('id_produk', '=', $detail->id_produk);
+            })->whereDate('tanggal_ambil', '=', $request->po_date)
+                ->join('detail_transaksi', 'transaksi.no_nota', '=', 'detail_transaksi.no_nota')
+                ->sum('detail_transaksi.jumlah');
+
+            $hampersTransaksiSum = Transaksi::whereHas('detail_transaksi', function ($query) use ($request) {
+                $query->where('id_hampers', '=', $request->id_hampers);
+            })->whereDate('tanggal_ambil', '=', $request->po_date)
+                ->join('detail_transaksi as dt', 'transaksi.no_nota', '=', 'dt.no_nota')
+                ->join('detail_hampers as dh', 'dh.id_hampers', '=', 'dt.id_hampers')
+                ->where('dh.id_produk', '=', $detail->id_produk)
+                ->sum(DB::raw('dt.jumlah * dh.jumlah'));
+
+            $totalTransaksiSum = $directTransaksiSum + $hampersTransaksiSum;
+
+            $produk = $detail->produk;
             $arrayCounter[] = [
                 'id_produk' => $detail->id_produk,
-                'id_kategori' => $detail->produk->id_kategori,
-                'nama_produk' => $detail->produk->nama_produk,
-                'ukuran' => $detail->produk->ukuran,
-                'status' => $detail->produk->status,
-                'limit' => $detail->produk->limit,
-                'stok' => $detail->produk->stok,
-                'count' => $transaksi,
-                'remaining' => $detail->produk->limit - $transaksi,
+                'id_kategori' => $produk->id_kategori,
+                'nama_produk' => $produk->nama_produk,
+                'ukuran' => $produk->ukuran,
+                'status' => $produk->status,
+                'limit' => $produk->limit,
+                'stok' => $produk->stok,
+                'count' => (int) $totalTransaksiSum,
+                'remaining' => $produk->limit - (int) $totalTransaksiSum,
             ];
         }
 
