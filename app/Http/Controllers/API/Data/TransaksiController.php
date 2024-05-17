@@ -494,7 +494,7 @@ class TransaksiController extends Controller
             Cart::where('id_user', $user->id_user)->delete();
 
             try {
-                $points = DB::select("SELECT p3l.calculate_points(?) AS points;", [$request['no_nota']]);
+                $points = DB::select("SELECT p3l.calculate_points(?) AS points;", [$transaksi->no_nota]);
             } catch (\Exception $e) {
                 return response()->json([
                     'message' => $e->getMessage(),
