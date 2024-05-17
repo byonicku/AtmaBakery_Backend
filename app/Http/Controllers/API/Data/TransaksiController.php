@@ -462,7 +462,10 @@ class TransaksiController extends Controller
         $transaksi = new Transaksi();
 
         $latestNota = Transaksi::latest('no_nota')->first()->no_nota;
-        $number = (int) substr($latestNota, 6, 3);
+        if (!$latestNota) {
+            $latestNota = '00.00.000';
+        }
+        $number = (int) substr($latestNota, 6);
         $number++;
         $number = str_pad($number, 3, '0', STR_PAD_LEFT);
         $transaksi->no_nota = date('y') . '.' . date('m') . '.' . $number;
