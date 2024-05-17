@@ -512,6 +512,7 @@ class TransaksiController extends Controller
         return response()->json([
             'message' => 'Data successfully saved',
             'data' => $transaksi,
+            'produk' => $cartData,
         ], 201);
     }
 
