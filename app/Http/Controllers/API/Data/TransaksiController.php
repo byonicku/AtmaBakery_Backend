@@ -596,6 +596,7 @@ class TransaksiController extends Controller
 
         try {
             $transaksi->status = 'Dibatalkan';
+            $transaksi->tanggal_ambil = null;
             $transaksi->save();
 
             $detailTransaksi = DetailTransaksi::where('no_nota', $request->no_nota)->get();
