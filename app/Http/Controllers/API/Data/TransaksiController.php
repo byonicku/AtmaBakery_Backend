@@ -589,7 +589,7 @@ class TransaksiController extends Controller
 
         $transaksi = Transaksi::where('no_nota', $request->no_nota)->first();
 
-        if ($transaksi->status === 'Terkirim') {
+        if ($transaksi->status === 'Terkirim' || $transaksi->status === 'Dibatalkan') {
             return response()->json([
                 'message' => 'Transaksi tidak dapat dibatalkan'
             ], 400);
@@ -628,7 +628,7 @@ class TransaksiController extends Controller
             }
 
             $user = User::find($transaksi->id_user);
-            $user->poin = $transaksi->poin_sebelum_penambahan;
+            $user->poin += $transaksi->poin_sebelum_penambahan;
             $user->save();
 
             DB::commit();
