@@ -30,13 +30,6 @@ Route::controller(UserAuthController::class)
         Route::post('/password/verify', 'verifyPassword')->name('verify-password');
     })->name('authentications');
 
-Route::controller(CartController::class)
-    ->middleware('auth:sanctum')
-    ->group(function () {
-        Route::apiResource('cart', CartController::class);
-        Route::put('/cart/logout', 'updateWhenLogout')->name('cart.update-logout');
-        Route::delete('/all/cart', 'destroyAll')->name('cart.destroy-all');
-    })->name('cart');
 
 Route::get('/produk', [ProdukController::class, 'index'])->name('produk.index');
 Route::get('/produk/{id}', [ProdukController::class, 'show'])->name('produk.show');
@@ -47,11 +40,6 @@ Route::get('/hampers/{id}', [HampersController::class, 'show'])->name('hampers.s
 
 Route::post('/transaksi/count', [TransaksiController::class, 'countTransaksi'])->name('transaksi.count');
 Route::post('/transaksi/hampers/count', [TransaksiController::class, 'countTransaksiWithHampers'])->name('transaksi.count-hampers');
-
-Route::apiResource('transaksi', TransaksiController::class)
-    ->middleware('auth:sanctum');
-Route::post('/batal/transaksi', [TransaksiController::class, 'batalTransaksi'])->name('transaksi.batal')
-    ->middleware(['auth:sanctum', 'ability:admin']);
 
 // Self User - Digunakan untuk user yang sedang login
 Route::get('/users/self', [UserController::class, 'showSelf'])->name('users.self')
@@ -74,6 +62,14 @@ Route::get('/paginate/transaksi/history/{id_user}', [TransaksiController::class,
     ->middleware(['auth:sanctum', 'ability:admin']);
 Route::post('/transaksi/search/{id_user}', [TransaksiController::class, 'search'])->name('users.show-self')
     ->middleware(['auth:sanctum', 'ability:admin']);
+
+Route::controller(CartController::class)
+    ->middleware('auth:sanctum')
+    ->group(function () {
+        Route::apiResource('cart', CartController::class);
+        Route::put('/cart/logout', 'updateWhenLogout')->name('cart.update-logout');
+        Route::delete('/all/cart', 'destroyAll')->name('cart.destroy-all');
+    })->name('cart');
 
 // Self Alamat - Digunakan untuk CRUDS alamat user yang sedang login
 Route::controller(AlamatController::class)
@@ -161,6 +157,11 @@ Route::middleware(['auth:sanctum', 'ability:mo'])
             Route::get('/presensi/date/{date}', 'indexByDate')->name('presensi.date');
             Route::get('/presensi/search/{data}/{date}', 'search')->name('presensi.search');
         });
+
+        Route::controller(TransaksiController::class)->group(function () {
+            Route::post('/konfirmasi/transaksi/pesanan', 'konfirmasiTransaksiMO')->name('transaksi.konfirmasi-transaksi-mo');
+            Route::post('/tolak/transaksi/pesanan', 'batalTransaksi')->name('transaksi.tolak-transaksi');
+        });
     });
 
 Route::middleware(['auth:sanctum', 'ability:admin'])
@@ -233,6 +234,10 @@ Route::middleware(['auth:sanctum', 'ability:admin'])
             Route::post('/alamat/search', 'search')->name('alamat.search');
         });
 
+        Route::controller(TransaksiController::class)->group(function () {
+            Route::post('/konfirmasi/transaksi/ongkir', 'konfirmasiAddJarakAdmin')->name('transaksi.konfirmasi-ongkir');
+            Route::post('/konfirmasi/transaksi/pembayaran', 'konfirmasiTransaksiAdmin')->name('transaksi.konfirmasi-transaksi-admin');
+        });
     });
 
 Route::get('/cron', function () {

@@ -674,6 +674,7 @@ class TransaksiController extends Controller
             $transaksi->bukti_bayar = $updateData['bukti_bayar'];
             $transaksi->public_id = $updateData['public_id'];
             $transaksi->status = 'Menunggu Konfirmasi Pembayaran';
+            $transaksi->tanggal_lunas = Carbon::now();
             $transaksi->save();
 
             DB::commit();
@@ -785,6 +786,53 @@ class TransaksiController extends Controller
             'data' => $transaksi,
         ], 200);
     }
+
+    public function konfirmasiTransaksiMO(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            'no_nota' => 'required|exists:transaksi,no_nota',
+        ], [
+            'no_nota.required' => 'No nota tidak boleh kosong',
+            'no_nota.exists' => 'No nota tidak ditemukan'
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'message' => $validate->errors()->first(),
+            ], 400);
+        }
+
+        $transaksi = Transaksi::where('no_nota', $request->no_nota)->first();
+
+        if ($transaksi->status === 'Terkirim' || $transaksi->status === 'Ditolak') {
+            return response()->json([
+                'message' => 'Transaksi tidak dapat diubah',
+            ], 400);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $transaksi->status = 'Pesanan Diterima';
+            $transaksi->tanggal_ambil = Carbon::now();
+            $user = User::find($transaksi->id_user);
+            $user->poin += $transaksi->penambahan_poin;
+            $transaksi->save();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal mengkonfirmasi transaksi',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Transaksi berhasil dikonfirmasi',
+            'data' => $transaksi,
+        ], 200);
+    }
+
     public function batalTransaksi(Request $request)
     {
         $validate = Validator::make($request->all(), [
@@ -842,6 +890,7 @@ class TransaksiController extends Controller
 
             $user = User::find($transaksi->id_user);
             $user->poin += $transaksi->poin_sebelum_penambahan;
+            $user->saldo += $transaksi->total + $transaksi->tip;
             $user->save();
 
             DB::commit();
