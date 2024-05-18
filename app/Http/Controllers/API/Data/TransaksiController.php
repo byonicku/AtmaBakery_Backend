@@ -75,14 +75,28 @@ class TransaksiController extends Controller
         ], 200);
     }
 
-    public function paginateHistorySelf()
+    public function paginateHistorySelf(Request $request)
     {
         $data = Auth::user();
 
-        $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
-            ->where('id_user', '=', $data->id_user)
-            ->orderByDesc('no_nota')
-            ->paginate(10);
+        if (!$data) {
+            return response()->json([
+                'message' => 'Unauthenticated',
+            ], 404);
+        }
+
+        if ($request->query('status')) {
+            $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
+                ->where('id_user', '=', $data->id_user)
+                ->where('status', '=', $request->query('status'))
+                ->orderByDesc('no_nota')
+                ->paginate(10);
+        } else {
+            $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
+                ->where('id_user', '=', $data->id_user)
+                ->orderByDesc('no_nota')
+                ->paginate(10);
+        }
 
         if (count($transaksi) == 0) {
             return response()->json([
@@ -122,7 +136,6 @@ class TransaksiController extends Controller
 
     public function paginateHistory(string $id_user)
     {
-        // Fetch transactions with their detail transactions including product info
         $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
             ->where('id_user', '=', $id_user)
             ->orderByDesc('no_nota')
@@ -158,7 +171,6 @@ class TransaksiController extends Controller
 
         $transaksi->data = $data;
 
-        // Return the data
         return response()->json([
             'message' => 'Data berhasil diterima',
             'data' => $data,
@@ -309,24 +321,36 @@ class TransaksiController extends Controller
             ], 404);
         }
 
-        $transaksi = Transaksi::with('user', 'alamat')
-            ->where('id_user', '=', $id_user)
-            ->whereAny([
-                'no_nota',
-                'id_user',
-                'id_alamat',
-                'tanggal_pesan',
-                'tanggal_lunas',
-                'tanggal_ambil',
-                'penggunaan_poin',
-                'total',
-                'radius',
-                'tip',
-                'tipe_delivery',
-                'status',
-            ], 'LIKE', '%' . $data . '%')
-            ->orderByDesc('no_nota')
-            ->get();
+        if ($request->query('status')) {
+            $transaksi = Transaksi::with('user', 'alamat')
+                ->where('id_user', '=', $id_user)
+                ->where('status', '=', $request->query('status'))
+                ->whereAny([
+                    'no_nota',
+                    'tanggal_pesan',
+                    'tanggal_lunas',
+                    'tanggal_ambil',
+                    'total',
+                    'tipe_delivery',
+                    'status',
+                ], 'LIKE', '%' . $data . '%')
+                ->orderByDesc('no_nota')
+                ->get();
+        } else {
+            $transaksi = Transaksi::with('user', 'alamat')
+                ->where('id_user', '=', $id_user)
+                ->whereAny([
+                    'no_nota',
+                    'tanggal_pesan',
+                    'tanggal_lunas',
+                    'tanggal_ambil',
+                    'total',
+                    'tipe_delivery',
+                    'status',
+                ], 'LIKE', '%' . $data . '%')
+                ->orderByDesc('no_nota')
+                ->get();
+        }
 
         if (count($transaksi) == 0) {
             return response()->json([
@@ -365,17 +389,32 @@ class TransaksiController extends Controller
 
         $data = $request->data;
 
-        $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
-            ->where('id_user', '=', $user->id_user)
-            ->whereHas('detail_transaksi', function ($query) use ($data) {
-                $query->whereHas('produk', function ($query) use ($data) {
-                    $query->where('nama_produk', 'LIKE', '%' . $data . '%');
-                })->orWhereHas('hampers', function ($query) use ($data) {
-                    $query->where('nama_hampers', 'LIKE', '%' . $data . '%');
-                });
-            })
-            ->orderByDesc('no_nota')
-            ->get();
+        if ($request->query('status')) {
+            $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
+                ->where('id_user', '=', $user->id_user)
+                ->where('status', '=', $request->query('status'))
+                ->whereHas('detail_transaksi', function ($query) use ($data) {
+                    $query->whereHas('produk', function ($query) use ($data) {
+                        $query->where('nama_produk', 'LIKE', '%' . $data . '%');
+                    })->orWhereHas('hampers', function ($query) use ($data) {
+                        $query->where('nama_hampers', 'LIKE', '%' . $data . '%');
+                    });
+                })
+                ->orderByDesc('no_nota')
+                ->get();
+        } else {
+            $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
+                ->where('id_user', '=', $user->id_user)
+                ->whereHas('detail_transaksi', function ($query) use ($data) {
+                    $query->whereHas('produk', function ($query) use ($data) {
+                        $query->where('nama_produk', 'LIKE', '%' . $data . '%');
+                    })->orWhereHas('hampers', function ($query) use ($data) {
+                        $query->where('nama_hampers', 'LIKE', '%' . $data . '%');
+                    });
+                })
+                ->orderByDesc('no_nota')
+                ->get();
+        }
 
         if (count($transaksi) == 0) {
             return response()->json([
@@ -572,6 +611,180 @@ class TransaksiController extends Controller
         ], 201);
     }
 
+    public function uploadBuktiBayar(Request $request)
+    {
+        $data = Auth::user();
+
+        $validate = Validator::make($request->all(), [
+            'no_nota' => 'required|exists:transaksi,no_nota',
+            'bukti_bayar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ], [
+            'no_nota.required' => 'No nota tidak boleh kosong',
+            'no_nota.exists' => 'No nota tidak ditemukan',
+            'bukti_bayar.required' => 'Bukti bayar tidak boleh kosong',
+            'bukti_bayar.image' => 'Bukti bayar harus berupa gambar',
+            'bukti_bayar.mimes' => 'Bukti bayar harus berformat jpeg, png, jpg',
+            'bukti_bayar.max' => 'Bukti bayar tidak boleh lebih dari 2MB',
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'message' => $validate->errors()->first(),
+            ], 400);
+        }
+
+        $transaksi = Transaksi::where('no_nota', $request->no_nota)->first();
+
+        if ($transaksi->id_user !== $data->id_user) {
+            return response()->json([
+                'message' => 'Transaksi tidak ditemukan, atau bukan transaksi anda',
+            ], 404);
+        }
+
+        if ($transaksi->status === 'Terkirim' || $transaksi->status === 'Ditolak') {
+            return response()->json([
+                'message' => 'Transaksi tidak dapat diubah',
+            ], 400);
+        }
+
+        $updateData = [];
+
+        if ($request->hasFile('bukti_bayar')) {
+            $imageName = null;
+
+            if ($data->public_id == null) {
+                $imageName = time() . "-bukti-bayar";
+            } else {
+                $imageName = $data->public_id;
+            }
+
+            $uploadedFileUrl = (new FunctionHelper())
+                ->uploadImage($request->file('bukti_bayar'), $imageName);
+
+            if ($data->public_id == null) {
+                $updateData['public_id'] = $imageName;
+            }
+
+            $updateData['bukti_bayar'] = $uploadedFileUrl;
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $transaksi->bukti_bayar = $updateData['bukti_bayar'];
+            $transaksi->public_id = $updateData['public_id'];
+            $transaksi->status = 'Menunggu Konfirmasi Pembayaran';
+            $transaksi->save();
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal mengunggah bukti bayar',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Bukti bayar berhasil diunggah',
+            'data' => $transaksi,
+        ], 200);
+    }
+
+    public function konfirmasiAddJarakAdmin(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            'no_nota' => 'required|exists:transaksi,no_nota',
+            'radius' => 'required|numeric',
+            'ongkir' => 'required|numeric',
+        ], [
+            'no_nota.required' => 'No nota tidak boleh kosong',
+            'no_nota.exists' => 'No nota tidak ditemukan'
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'message' => $validate->errors()->first(),
+            ], 400);
+        }
+
+        $transaksi = Transaksi::where('no_nota', $request->no_nota)->first();
+
+        if ($transaksi->status === 'Terkirim' || $transaksi->status === 'Ditolak') {
+            return response()->json([
+                'message' => 'Transaksi tidak dapat diubah',
+            ], 400);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $transaksi->status = 'Menunggu Pembayaran';
+            $transaksi->radius = $request->radius;
+            $transaksi->ongkir = $request->ongkir;
+            $transaksi->save();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal mengkonfirmasi transaksi',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Transaksi berhasil dikonfirmasi',
+            'data' => $transaksi,
+        ], 200);
+    }
+
+    public function konfirmasiTransaksiAdmin(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            'no_nota' => 'required|exists:transaksi,no_nota',
+            'tip' => 'required|numeric',
+        ], [
+            'no_nota.required' => 'No nota tidak boleh kosong',
+            'no_nota.exists' => 'No nota tidak ditemukan'
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'message' => $validate->errors()->first(),
+            ], 400);
+        }
+
+        $transaksi = Transaksi::where('no_nota', $request->no_nota)->first();
+
+        if ($transaksi->status === 'Terkirim' || $transaksi->status === 'Ditolak') {
+            return response()->json([
+                'message' => 'Transaksi tidak dapat diubah',
+            ], 400);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $transaksi->status = 'Menunggu Konfirmasi Pesanan';
+            $transaksi->tanggal_lunas = Carbon::now();
+            if ($request->tip) {
+                $transaksi->tip = $request->tip;
+            }
+            $transaksi->save();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal mengkonfirmasi transaksi',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Transaksi berhasil dikonfirmasi',
+            'data' => $transaksi,
+        ], 200);
+    }
     public function batalTransaksi(Request $request)
     {
         $validate = Validator::make($request->all(), [
@@ -589,16 +802,16 @@ class TransaksiController extends Controller
 
         $transaksi = Transaksi::where('no_nota', $request->no_nota)->first();
 
-        if ($transaksi->status === 'Terkirim' || $transaksi->status === 'Dibatalkan') {
+        if ($transaksi->status === 'Terkirim' || $transaksi->status === 'Ditolak') {
             return response()->json([
-                'message' => 'Transaksi tidak dapat dibatalkan'
+                'message' => 'Transaksi tidak dapat Ditolak'
             ], 400);
         }
 
         DB::beginTransaction();
 
         try {
-            $transaksi->status = 'Dibatalkan';
+            $transaksi->status = 'Ditolak';
             $transaksi->tanggal_ambil = null;
             $transaksi->save();
 
@@ -641,7 +854,7 @@ class TransaksiController extends Controller
         }
 
         return response()->json([
-            'message' => 'Transaksi berhasil dibatalkan',
+            'message' => 'Transaksi berhasil Ditolak',
             'data' => $transaksi,
         ], 200);
     }
