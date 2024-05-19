@@ -641,7 +641,7 @@ class TransaksiController extends Controller
             ], 404);
         }
 
-        if ($transaksi->status === 'Terkirim' || $transaksi->status === 'Ditolak') {
+        if ($transaksi->status !== 'Menunggu Pembayaran') {
             return response()->json([
                 'message' => 'Transaksi tidak dapat diubah',
             ], 400);
@@ -711,7 +711,7 @@ class TransaksiController extends Controller
 
         $transaksi = Transaksi::where('no_nota', $request->no_nota)->first();
 
-        if ($transaksi->status === 'Terkirim' || $transaksi->status === 'Ditolak') {
+        if ($transaksi->status !== ' Menunggu Perhitungan Ongkir') {
             return response()->json([
                 'message' => 'Transaksi tidak dapat diubah',
             ], 400);
@@ -757,7 +757,7 @@ class TransaksiController extends Controller
 
         $transaksi = Transaksi::where('no_nota', $request->no_nota)->first();
 
-        if ($transaksi->status === 'Terkirim' || $transaksi->status === 'Ditolak') {
+        if ($transaksi->status !== 'Menunggu Konfirmasi Pembayaran') {
             return response()->json([
                 'message' => 'Transaksi tidak dapat diubah',
             ], 400);
@@ -804,7 +804,7 @@ class TransaksiController extends Controller
 
         $transaksi = Transaksi::where('no_nota', $request->no_nota)->first();
 
-        if ($transaksi->status === 'Terkirim' || $transaksi->status === 'Ditolak') {
+        if ($transaksi->status !== 'Menunggu Konfirmasi Pesanan') {
             return response()->json([
                 'message' => 'Transaksi tidak dapat diubah',
             ], 400);
@@ -850,7 +850,7 @@ class TransaksiController extends Controller
 
         $transaksi = Transaksi::where('no_nota', $request->no_nota)->first();
 
-        if ($transaksi->status === 'Terkirim' || $transaksi->status === 'Ditolak') {
+        if ($transaksi->status !== 'Menunggu Konfirmasi Pesanan') {
             return response()->json([
                 'message' => 'Transaksi tidak dapat Ditolak'
             ], 400);
