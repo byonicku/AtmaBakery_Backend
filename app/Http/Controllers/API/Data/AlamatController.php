@@ -205,8 +205,14 @@ class AlamatController extends Controller
 
         if (!$user) {
             return response()->json([
-                'message' => 'Unauthenticated',
+                'message' => 'Unauthenticated'
             ], 404);
+        }
+
+        if ($user->id_role !== "CUST") {
+            return response()->json([
+                'message' => 'Unauthorized',
+            ], 401);
         }
 
         $validate = Validator::make($request->all(), [
@@ -280,8 +286,14 @@ class AlamatController extends Controller
 
         if (!$user) {
             return response()->json([
-                'message' => 'Unauthenticated',
+                'message' => 'Unauthenticated'
             ], 404);
+        }
+
+        if ($user->id_role !== "CUST") {
+            return response()->json([
+                'message' => 'Unauthorized',
+            ], 401);
         }
 
         $id_user = $user->id_user;
@@ -305,12 +317,18 @@ class AlamatController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $data = Alamat::find($id);
+        $data = Auth::user();
 
         if (!$data) {
             return response()->json([
-                'message' => 'Data tidak ditemukan',
+                'message' => 'Unauthenticated'
             ], 404);
+        }
+
+        if ($data->id_role !== "CUST") {
+            return response()->json([
+                'message' => 'Unauthorized',
+            ], 401);
         }
 
         $validate = Validator::make($request->all(), [
@@ -373,8 +391,14 @@ class AlamatController extends Controller
 
         if (!$user) {
             return response()->json([
-                'message' => 'Unauthenticated',
+                'message' => 'Unauthenticated'
             ], 404);
+        }
+
+        if ($user->id_role !== "CUST") {
+            return response()->json([
+                'message' => 'Unauthorized',
+            ], 401);
         }
 
         $data = Alamat::find($id);
@@ -479,8 +503,14 @@ class AlamatController extends Controller
 
         if (!$user) {
             return response()->json([
-                'message' => 'Unauthenticated',
+                'message' => 'Unauthenticated'
             ], 404);
+        }
+
+        if ($user->id_role !== "CUST") {
+            return response()->json([
+                'message' => 'Unauthorized',
+            ], 401);
         }
 
         $data = Alamat::find($id);
