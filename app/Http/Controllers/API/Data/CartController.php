@@ -21,6 +21,12 @@ class CartController extends Controller
             ], 404);
         }
 
+        if ($user->id_role !== "CUST") {
+            return response()->json([
+                'message' => 'Unauthorized',
+            ], 401);
+        }
+
         $data = Cart::where('id_user', '=', $user->id_user)
             ->with('produk.gambar', 'hampers.gambar')
             ->get();
@@ -40,6 +46,20 @@ class CartController extends Controller
 
     public function store(Request $request)
     {
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthenticated'
+            ], 404);
+        }
+
+        if ($user->id_role !== "CUST") {
+            return response()->json([
+                'message' => 'Unauthorized',
+            ], 401);
+        }
+
         $rules = [
             'id_produk' => 'sometimes|exists:produk,id_produk',
             'id_hampers' => 'sometimes|exists:hampers,id_hampers',
@@ -65,13 +85,6 @@ class CartController extends Controller
         if (!$request->id_produk && !$request->id_hampers) {
             return response()->json([
                 'message' => 'id_produk atau id_hampers harus diisi'
-            ], 404);
-        }
-
-        $user = Auth::user();
-        if (!$user) {
-            return response()->json([
-                'message' => 'Unauthenticated'
             ], 404);
         }
 
@@ -106,6 +119,7 @@ class CartController extends Controller
 
         return $this->addToCart($user->id_user, $request->id_produk, $request->id_hampers, $request->jumlah, $request->po_date, $request->status);
     }
+
     private function updateCart($userId, $column, $value, $quantity)
     {
         try {
@@ -159,6 +173,20 @@ class CartController extends Controller
 
     public function update(Request $request, string $id)
     {
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthenticated'
+            ], 404);
+        }
+
+        if ($user->id_role !== "CUST") {
+            return response()->json([
+                'message' => 'Unauthorized',
+            ], 401);
+        }
+
         $validate = Validator::make($request->all(), [
             'jumlah' => 'required|integer|min:1',
         ]);
@@ -166,14 +194,6 @@ class CartController extends Controller
         if ($validate->fails()) {
             return response()->json([
                 'message' => $validate->errors()->first(),
-            ], 404);
-        }
-
-        $user = Auth::user();
-
-        if (!$user) {
-            return response()->json([
-                'message' => 'Unauthenticated',
             ], 404);
         }
 
@@ -205,70 +225,20 @@ class CartController extends Controller
         ], 200);
     }
 
-    public function updateWhenLogout(Request $request)
-    {
-        $validate = Validator::make($request->all(), [
-            'cart' => 'required|array',
-            'cart.*.id_cart' => 'required|integer|exists:cart,id_cart',
-            'cart.*.jumlah' => 'required|integer|min:1',
-        ]);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'message' => $validate->errors()->first(),
-            ], 404);
-        }
-
-        $user = Auth::user();
-
-        if (!$user) {
-            return response()->json([
-                'message' => 'Unauthenticated',
-            ], 404);
-        }
-
-        $data = Cart::where('id_user', '=', $user->id_user)
-            ->whereIn('id_cart', array_column($request->cart, 'id_cart'))
-            ->get();
-
-        if (!$data) {
-            return response()->json([
-                'message' => 'Data tidak ditemukan',
-            ], 404);
-        }
-
-        try {
-            DB::beginTransaction();
-            foreach ($data as $key => $cart) {
-                if ($cart->jumlah == $request->cart[$key]['jumlah']) {
-                    continue;
-                }
-
-                $cart->update([
-                    'jumlah' => $request->cart[$key]['jumlah'],
-                ]);
-            }
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'message' => $e->getMessage(),
-            ], 500);
-        }
-        return response()->json([
-            'message' => 'Data berhasil diubah',
-            'data' => $data,
-        ], 200);
-    }
-
     public function destroy(string $id)
     {
         $user = Auth::user();
 
         if (!$user) {
             return response()->json([
-                'message' => 'Unauthenticated',
+                'message' => 'Unauthenticated'
             ], 404);
+        }
+
+        if ($user->id_role !== "CUST") {
+            return response()->json([
+                'message' => 'Unauthorized',
+            ], 401);
         }
 
         $data = Cart::where('id_user', '=', $user->id_user)
@@ -304,8 +274,14 @@ class CartController extends Controller
 
         if (!$user) {
             return response()->json([
-                'message' => 'Unauthenticated',
+                'message' => 'Unauthenticated'
             ], 404);
+        }
+
+        if ($user->id_role !== "CUST") {
+            return response()->json([
+                'message' => 'Unauthorized',
+            ], 401);
         }
 
         $data = Cart::where('id_user', '=', $user->id_user)

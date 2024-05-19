@@ -459,8 +459,14 @@ class TransaksiController extends Controller
 
         if (!$user) {
             return response()->json([
-                'message' => 'Unauthenticated',
+                'message' => 'Unauthenticated'
             ], 404);
+        }
+
+        if ($user->id_role !== "CUST") {
+            return response()->json([
+                'message' => 'Unauthorized',
+            ], 401);
         }
 
         $validate = Validator::make($request->all(), [
