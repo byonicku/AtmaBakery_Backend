@@ -856,7 +856,7 @@ class TransaksiController extends Controller
 
         $transaksi = Transaksi::where('no_nota', $request->no_nota)->first();
 
-        if ($transaksi->status !== 'Menunggu Konfirmasi Pesanan') {
+        if ($transaksi->status !== 'Menunggu Konfirmasi Pesanan' || $transaksi->status !== 'Menunggu Pembayaran') {
             return response()->json([
                 'message' => 'Transaksi tidak dapat Ditolak'
             ], 400);
