@@ -190,11 +190,9 @@ class TransaksiController extends Controller
         if ($request->query('status')) {
             $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
                 ->where('status', '=', $request->query('status'))
-                ->orderByDesc('no_nota')
                 ->paginate(10);
         } else {
             $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
-                ->orderByDesc('no_nota')
                 ->paginate(10);
         }
 
@@ -536,7 +534,6 @@ class TransaksiController extends Controller
                             });
                         });
                 })
-                ->orderByDesc('no_nota')
                 ->get();
         } else {
             $transaksi = Transaksi::with(['detail_transaksi.produk', 'detail_transaksi.hampers'])
@@ -556,7 +553,6 @@ class TransaksiController extends Controller
                             });
                         });
                 })
-                ->orderByDesc('no_nota')
                 ->get();
         }
 
