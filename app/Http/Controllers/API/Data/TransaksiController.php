@@ -899,6 +899,7 @@ class TransaksiController extends Controller
         DB::beginTransaction();
 
         try {
+            $transaksiStatusBefore = $transaksi->status;
             $transaksi->status = 'Ditolak';
             $transaksi->tanggal_ambil = null;
             $transaksi->save();
@@ -929,8 +930,15 @@ class TransaksiController extends Controller
             }
 
             $user = User::find($transaksi->id_user);
-            $user->poin += $transaksi->poin_sebelum_penambahan;
-            $user->saldo += $transaksi->total + $transaksi->tip;
+
+            if ($transaksi->penggunaan_poin > 0) {
+                $user->poin += $transaksi->poin_sebelum_penambahan;
+            }
+
+            if ($transaksiStatusBefore === 'Menunggu Konfirmasi Pesanan') {
+                $user->saldo += $transaksi->total + $transaksi->tip;
+            }
+
             $user->save();
 
             DB::commit();
