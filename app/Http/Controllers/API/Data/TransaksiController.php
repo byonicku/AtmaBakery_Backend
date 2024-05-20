@@ -850,11 +850,14 @@ class TransaksiController extends Controller
     {
         $validate = Validator::make($request->all(), [
             'no_nota' => 'required|exists:transaksi,no_nota',
-            'radius' => 'required|numeric',
-            'ongkir' => 'required|numeric',
+            'radius' => 'required|numeric|gte:0',
+            'ongkir' => 'required|numeric|gte:0',
         ], [
             'no_nota.required' => 'No nota tidak boleh kosong',
-            'no_nota.exists' => 'No nota tidak ditemukan'
+            'no_nota.exists' => 'No nota tidak ditemukan',
+            'radius' => 'Jarak tidak boleh kosong',
+            'radius.numeric' => 'Jarak harus berupa angka',
+            'radius.gte' => 'Jarak tidak boleh kurang dari 0',
         ]);
 
         if ($validate->fails()) {
@@ -898,10 +901,13 @@ class TransaksiController extends Controller
     {
         $validate = Validator::make($request->all(), [
             'no_nota' => 'required|exists:transaksi,no_nota',
-            'tip' => 'required|numeric',
+            'tip' => 'required|numeric|gte:0',
         ], [
             'no_nota.required' => 'No nota tidak boleh kosong',
-            'no_nota.exists' => 'No nota tidak ditemukan'
+            'no_nota.exists' => 'No nota tidak ditemukan',
+            'tip.required' => 'Tip tidak boleh kosong',
+            'tip.numeric' => 'Tip harus berupa angka',
+            'tip.gte' => 'Tip tidak boleh kurang dari 0',
         ]);
 
         if ($validate->fails()) {
