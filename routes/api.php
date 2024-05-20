@@ -120,13 +120,13 @@ Route::middleware(['auth:sanctum', 'ability:mo,owner'])
             Route::get('/trash/karyawan', 'indexOnlyTrashed')->name('karyawan.trash');
             Route::get('/karyawan/restore/{id}', 'restore')->name('karyawan.restore');
         })->name('karyawan');
+
+        Route::get('/penitip', [PenitipController::class, 'index'])->name('penitip.index');
+        Route::get('/bahan_baku', [BahanBakuController::class, 'index'])->name('bahan_baku.index');
+
+        Route::get('/paginate/transaksi/all', [TransaksiController::class, 'paginateHistoryAll'])->name('users.paginate-all');
+        Route::post('/transaksi/search/all', [TransaksiController::class, 'searchAll'])->name('users.search-all');
     });
-
-Route::get('/penitip', [PenitipController::class, 'index'])->name('penitip.index')
-    ->middleware(['auth:sanctum', 'ability:mo,admin']);
-
-Route::get('/bahan_baku', [BahanBakuController::class, 'index'])->name('bahan_baku.index')
-    ->middleware(['auth:sanctum', 'ability:mo,admin']);
 
 Route::middleware(['auth:sanctum', 'ability:mo'])
     ->group(function () {

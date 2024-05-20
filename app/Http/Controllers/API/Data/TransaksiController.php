@@ -181,7 +181,56 @@ class TransaksiController extends Controller
 
         return response()->json([
             'message' => 'Data berhasil diterima',
-            'data' => $data,
+            'data' => $transaksi,
+        ], 200);
+    }
+
+    public function paginateHistoryAll(Request $request)
+    {
+        if ($request->query('status')) {
+            $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
+                ->where('status', '=', $request->query('status'))
+                ->orderByDesc('no_nota')
+                ->paginate(10);
+        } else {
+            $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
+                ->orderByDesc('no_nota')
+                ->paginate(10);
+        }
+
+        if (count($transaksi) == 0) {
+            return response()->json([
+                'message' => 'Data kosong',
+            ], 404);
+        }
+
+        $data = $transaksi->map(function ($trans) {
+            $trans->detail_transaksi = $trans->detail_transaksi->map(function ($detail) {
+                if ($detail->produk !== null) {
+                    $detail->subtotal = $detail->jumlah * $detail->harga_saat_beli;
+                    $detail->nama_produk = $detail->produk->nama_produk;
+                } else if ($detail->hampers !== null) {
+                    $detail->subtotal = $detail->jumlah * $detail->harga_saat_beli;
+                    $detail->nama_produk = $detail->hampers->nama_hampers;
+                } else {
+                    $detail->subtotal = null;
+                    $detail->nama_produk = null;
+                }
+
+                unset ($detail->produk);
+                unset ($detail->hampers);
+
+                return $detail;
+            });
+
+            return $trans;
+        });
+
+        $transaksi->data = $data;
+
+        return response()->json([
+            'message' => 'Data berhasil diterima',
+            'data' => $transaksi,
         ], 200);
     }
 
@@ -455,6 +504,57 @@ class TransaksiController extends Controller
         return response()->json([
             'message' => 'Data berhasil diterima',
             'data' => $data,
+        ], 200);
+    }
+
+    public function searchAll(Request $request)
+    {
+        $data = $request->data;
+
+        if ($data == null) {
+            return response()->json([
+                'message' => 'Data kosong',
+            ], 404);
+        }
+
+        if ($request->query('status')) {
+            $transaksi = Transaksi::with('user', 'alamat')
+                ->where('status', '=', $request->query('status'))
+                ->whereAny([
+                    'no_nota',
+                    'tanggal_pesan',
+                    'tanggal_lunas',
+                    'tanggal_ambil',
+                    'total',
+                    'tipe_delivery',
+                    'status',
+                ], 'LIKE', '%' . $data . '%')
+                ->orderByDesc('no_nota')
+                ->get();
+        } else {
+            $transaksi = Transaksi::with('user', 'alamat')
+                ->whereAny([
+                    'no_nota',
+                    'tanggal_pesan',
+                    'tanggal_lunas',
+                    'tanggal_ambil',
+                    'total',
+                    'tipe_delivery',
+                    'status',
+                ], 'LIKE', '%' . $data . '%')
+                ->orderByDesc('no_nota')
+                ->get();
+        }
+
+        if (count($transaksi) == 0) {
+            return response()->json([
+                'message' => 'Data tidak ditemukan',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Data berhasil diterima',
+            'data' => $transaksi,
         ], 200);
     }
 
