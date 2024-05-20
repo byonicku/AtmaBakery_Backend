@@ -571,6 +571,12 @@ class TransaksiController extends Controller
                     $produk = Produk::find($cart->id_produk);
                     if ($produk->status === 'READY') {
                         $produk->stok -= $cart->jumlah;
+                        if ($produk->stok < 0) {
+                            DB::rollBack();
+                            return response()->json([
+                                'message' => 'Stok produk ' . $produk->nama_produk . ' tidak mencukupi, silahkan hapus produk dari keranjang anda',
+                            ], 400);
+                        }
                         $produk->save();
                     }
                 } else if ($cart->id_hampers) {
@@ -582,6 +588,12 @@ class TransaksiController extends Controller
 
                         $produk = Produk::find($detail->id_produk);
                         if ($produk->status === 'READY') {
+                            if ($produk->stok < $cart->jumlah * $detail->jumlah) {
+                                DB::rollBack();
+                                return response()->json([
+                                    'message' => 'Stok produk ' . $produk->nama_produk . ' tidak mencukupi, silahkan hapus produk dari keranjang anda',
+                                ], 400);
+                            }
                             $produk->stok -= $cart->jumlah * $detail->jumlah;
                             $produk->save();
                         }
