@@ -865,7 +865,7 @@ class TransaksiController extends Controller
 
         $transaksi = Transaksi::where('no_nota', $request->no_nota)->first();
 
-        if ($transaksi->status !== ' Menunggu Perhitungan Ongkir') {
+        if ($transaksi->status !== 'Menunggu Perhitungan Ongkir') {
             return response()->json([
                 'message' => 'Transaksi tidak dapat diubah',
             ], 400);
