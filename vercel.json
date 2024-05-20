@@ -22,11 +22,5 @@
         "CACHE_DRIVER": "array",
         "LOG_CHANNEL": "stderr",
         "SESSION_DRIVER": "cookie"
-    },
-    "crons" : [
-        {
-            "path" : "/cron",
-            "schedule": "0 19 * * 1-5"
-        }
-    ]
+    }
 }

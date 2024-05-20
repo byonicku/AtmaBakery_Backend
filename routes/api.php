@@ -251,8 +251,20 @@ Route::get('/cron', function () {
 
     Artisan::call('add-presensi');
     $output = Artisan::output();
-    Mail::raw($output, function ($message) {
-        $message->to('nicoherlim2003@gmail.com')->subject('Presensi Karyawan');
-    });
+
+    return $output;
+});
+
+Route::get('/cron/cart', function () {
+    $providedToken = request()->header('cron-secret');
+    $expectedToken = env('CRON_SECRET');
+
+    if ($providedToken !== $expectedToken) {
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }
+
+    Artisan::call('remove-cart');
+    $output = Artisan::output();
+
     return $output;
 });
