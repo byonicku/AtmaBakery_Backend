@@ -134,12 +134,20 @@ class TransaksiController extends Controller
         ], 200);
     }
 
-    public function paginateHistory(string $id_user)
+    public function paginateHistory(Request $request, string $id_user)
     {
-        $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
-            ->where('id_user', '=', $id_user)
-            ->orderByDesc('no_nota')
-            ->paginate(10);
+        if ($request->query('status')) {
+            $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
+                ->where('id_user', '=', $id_user)
+                ->where('status', '=', $request->query('status'))
+                ->orderByDesc('no_nota')
+                ->paginate(10);
+        } else {
+            $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
+                ->where('id_user', '=', $id_user)
+                ->orderByDesc('no_nota')
+                ->paginate(10);
+        }
 
         if (count($transaksi) == 0) {
             return response()->json([
