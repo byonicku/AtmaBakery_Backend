@@ -636,9 +636,7 @@ class TransaksiController extends Controller
         $transaksi->id_user = $user->id_user;
         $transaksi->tanggal_pesan = date('Y-m-d H:i:s');
 
-        if ($request->tanggal_ambil) {
-            $transaksi->tanggal_ambil = $request->tanggal_ambil;
-        }
+        $transaksi->tanggal_ambil = $request->tanggal_ambil;
 
         $transaksi->penggunaan_poin = $request->is_using_poin ? $user->poin : 0;
 
