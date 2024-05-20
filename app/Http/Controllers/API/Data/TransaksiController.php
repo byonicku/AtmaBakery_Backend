@@ -691,19 +691,22 @@ class TransaksiController extends Controller
 
         $updateData = [];
 
+        $updateData['status'] = 'Menunggu Konfirmasi Pembayaran';
+        $updateData['tanggal_lunas'] = Carbon::now();
+
         if ($request->hasFile('bukti_bayar')) {
             $imageName = null;
 
-            if ($data->public_id == null) {
+            if ($transaksi->public_id == null) {
                 $imageName = time() . "-bukti-bayar";
             } else {
-                $imageName = $data->public_id;
+                $imageName = $transaksi->public_id;
             }
 
             $uploadedFileUrl = (new FunctionHelper())
                 ->uploadImage($request->file('bukti_bayar'), $imageName);
 
-            if ($data->public_id == null) {
+            if ($transaksi->public_id == null) {
                 $updateData['public_id'] = $imageName;
             }
 
@@ -713,12 +716,7 @@ class TransaksiController extends Controller
         DB::beginTransaction();
 
         try {
-            $transaksi->bukti_bayar = $updateData['bukti_bayar'];
-            $transaksi->public_id = $updateData['public_id'];
-            $transaksi->status = 'Menunggu Konfirmasi Pembayaran';
-            $transaksi->tanggal_lunas = Carbon::now();
-            $transaksi->save();
-
+            $transaksi->update($updateData);
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
