@@ -578,6 +578,14 @@ class TransaksiController extends Controller
                             ], 400);
                         }
                         $produk->save();
+                    } else {
+                        $remaining = (new FunctionHelper())->countStok($produk->id_produk, $transaksi->tanggal_ambil);
+                        if ($remaining < 0) {
+                            DB::rollBack();
+                            return response()->json([
+                                'message' => 'Limit produk ' . $produk->nama_produk . ' tidak mencukupi, silahkan hapus produk dari keranjang anda',
+                            ], 400);
+                        }
                     }
                 } else if ($cart->id_hampers) {
                     $dt = DetailHampers::where('id_hampers', $cart->id_hampers)->get();
@@ -596,6 +604,14 @@ class TransaksiController extends Controller
                             }
                             $produk->stok -= $cart->jumlah * $detail->jumlah;
                             $produk->save();
+                        } else {
+                            $remaining = (new FunctionHelper())->countStok($produk->id_produk, $transaksi->tanggal_ambil);
+                            if ($remaining < 0) {
+                                DB::rollBack();
+                                return response()->json([
+                                    'message' => 'Limit produk ' . $produk->nama_produk . ' tidak mencukupi, silahkan hapus produk dari keranjang anda',
+                                ], 400);
+                            }
                         }
                     }
                 }
