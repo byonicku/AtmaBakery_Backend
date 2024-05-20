@@ -128,9 +128,9 @@ Route::middleware(['auth:sanctum', 'ability:mo,admin'])
         Route::get('/bahan_baku', [BahanBakuController::class, 'index'])->name('bahan_baku.index');
 
         Route::get('/paginate/transaksi/all', [TransaksiController::class, 'paginateHistoryAll'])->name('users.paginate-all');
-        Route::post('/transaksi/search/all', [TransaksiController::class, 'searchAll'])->name('users.search-all');
-    });
 
+    });
+    Route::post('/transaksi/all/search', [TransaksiController::class, 'searchAll'])->name('users.search-all');
 Route::middleware(['auth:sanctum', 'ability:mo'])
     ->group(function () {
         // PenitipController routes
