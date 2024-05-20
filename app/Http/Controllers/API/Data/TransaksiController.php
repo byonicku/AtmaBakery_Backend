@@ -877,6 +877,7 @@ class TransaksiController extends Controller
             $transaksi->status = 'Menunggu Pembayaran';
             $transaksi->radius = $request->radius;
             $transaksi->ongkir = $request->ongkir;
+            $transaksi->total += $request->ongkir;
             $transaksi->save();
             DB::commit();
         } catch (\Exception $e) {
