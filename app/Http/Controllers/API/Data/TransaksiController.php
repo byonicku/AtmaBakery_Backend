@@ -710,7 +710,7 @@ class TransaksiController extends Controller
                 $updateData['public_id'] = $imageName;
             }
 
-            $updateData['bukti_bayar'] = $uploadedFileUrl;
+            $updateData['bukti_pembayaran'] = $uploadedFileUrl;
         }
 
         DB::beginTransaction();
