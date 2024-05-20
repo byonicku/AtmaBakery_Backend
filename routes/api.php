@@ -55,6 +55,8 @@ Route::get('/paginate/transaksi/self/history', [TransaksiController::class, 'pag
     ->middleware('auth:sanctum');
 Route::post('/transaksi/search/self', [TransaksiController::class, 'searchSelf'])->name('users.search-self')
     ->middleware('auth:sanctum');
+Route::post('/transaksi/bayar', [TransaksiController::class, 'uploadBuktiBayar'])->name('users.bayar')
+    ->middleware('auth:sanctum');
 
 Route::post('/get-nota/self', [ProcedureController::class, 'getNotaPemesananSelf'])->name('get-nota-self')
     ->middleware('auth:sanctum');
