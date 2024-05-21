@@ -6,6 +6,7 @@ use App\Http\Controllers\API\Data\CartController;
 use App\Http\Controllers\API\Data\DetailHampersController;
 use App\Http\Controllers\API\Data\GambarController;
 use App\Http\Controllers\API\Data\HampersController;
+use App\Http\Controllers\API\Data\HistoriSaldoController;
 use App\Http\Controllers\API\Data\KaryawanController;
 use App\Http\Controllers\API\Data\PengeluaranLainController;
 use App\Http\Controllers\API\Data\PenitipController;
@@ -65,6 +66,9 @@ Route::get('/paginate/transaksi/history/{id_user}', [TransaksiController::class,
     ->middleware(['auth:sanctum', 'ability:admin']);
 Route::post('/transaksi/search/{id_user}', [TransaksiController::class, 'search'])->name('users.show-self')
     ->middleware(['auth:sanctum', 'ability:admin']);
+
+Route::apiResource('histori_saldo', HistoriSaldoController::class)
+    ->middleware('auth:sanctum');
 
 Route::controller(CartController::class)
     ->middleware('auth:sanctum')
@@ -127,6 +131,7 @@ Route::middleware(['auth:sanctum', 'ability:mo,admin'])
         Route::get('/penitip', [PenitipController::class, 'index'])->name('penitip.index');
         Route::get('/bahan_baku', [BahanBakuController::class, 'index'])->name('bahan_baku.index');
 
+        // TransaksiController routes
         Route::get('/paginate/transaksi/all', [TransaksiController::class, 'paginateHistoryAll'])->name('users.paginate-all');
         Route::post('/transaksi/all/search', [TransaksiController::class, 'searchAll'])->name('users.search-all');
     });
@@ -240,9 +245,16 @@ Route::middleware(['auth:sanctum', 'ability:admin'])
             Route::post('/alamat/search', 'search')->name('alamat.search');
         });
 
+        // TransaksiController routes
         Route::controller(TransaksiController::class)->group(function () {
             Route::post('/konfirmasi/transaksi/ongkir', 'konfirmasiAddJarakAdmin')->name('transaksi.konfirmasi-ongkir');
             Route::post('/konfirmasi/transaksi/pembayaran', 'konfirmasiTransaksiAdmin')->name('transaksi.konfirmasi-transaksi-admin');
+        });
+
+        // HistoriSaldoController routes
+        Route::controller(HistoriSaldoController::class)->group(function () {
+            Route::get('/paginate/histori_saldo', 'paginate')->name('histori_saldo.paginate');
+            Route::put('/histori_saldo/konfirmasi/{id}', 'konfirmasi')->name('histori_saldo.konfirmasi');
         });
     });
 

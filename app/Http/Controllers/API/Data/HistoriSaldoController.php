@@ -3,21 +3,44 @@
 namespace App\Http\Controllers\API\Data;
 
 use App\Http\Controllers\Controller;
-use App\Models\HistoriBahanBaku;
+use App\Models\HistoriSaldo;
+use Carbon\Carbon;
+use DB;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
-
-class HistoriBahanBakuController extends Controller
+class HistoriSaldoController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $data = HistoriBahanBaku::all();
+        $data = HistoriSaldo::with('user')->all();
+
+        if (count($data) == 0) {
+            return response()->json([
+                'message' => 'Data kosong',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Data berhasil diterima',
+            'data' => $data,
+        ], 200);
+    }
+
+    public function indexSelf()
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthorized',
+            ], 403);
+        }
+
+        $data = HistoriSaldo::with('user')->where('id_user', $user->id)->get();
 
         if (count($data) == 0) {
             return response()->json([
@@ -33,28 +56,7 @@ class HistoriBahanBakuController extends Controller
 
     public function paginate()
     {
-        $data = HistoriBahanBaku::paginate(10);
-
-        if (count($data) == 0) {
-            return response()->json([
-                'message' => 'Data kosong',
-            ], 404);
-        }
-
-        return response()->json([
-            'message' => 'Data berhasil diterima',
-            'data' => $data,
-        ], 200);
-    }
-
-    public function search(string $data)
-    {
-        $data = HistoriBahanBaku::whereHas('bahan_baku', function ($query) use ($data) {
-            $query->where('nama_bahan_baku', 'LIKE', '%' . $data . '%');
-        })->orWhere('jumlah', 'LIKE', '%' . $data . '%')
-            ->orWhere('tanggal_pakai', 'LIKE', '%' . $data . '%')
-            ->with('bahan_baku')
-            ->get();
+        $data = HistoriSaldo::with('user')->paginate(10);
 
         if (count($data) == 0) {
             return response()->json([
@@ -73,46 +75,81 @@ class HistoriBahanBakuController extends Controller
      */
     public function store(Request $request)
     {
-        $validate = Validator::make($request->all(), [
-            'id_bahan_baku' => 'required|exists:bahan_baku,id_bahan_baku',
-            'jumlah' => 'required|gte:0|numeric',
-            'tanggal_pakai' => 'required|date',
-        ], [
-            'required' => ':attribute harus diisi',
-            'exists' => ':attribute tidak ditemukan',
-            'gte' => ':attribute harus lebih besar atau sama dengan 0',
-            'numeric' => ':attribute harus berupa angka',
-            'date' => ':attribute harus berupa tanggal',
+        $request->validate([
+            'saldo' => 'required|numeric',
+            'nama_bank' => 'required|string',
+            'no_rek' => 'required|string',
         ]);
 
-        if ($validate->fails()) {
+        if ($request->saldo % 50000 != 0) {
             return response()->json([
-                'message' => $validate->errors()->first(),
+                'message' => 'Saldo harus kelipatan 50.000',
+            ], 400);
+        }
+
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthorized',
+            ], 403);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            HistoriSaldo::create([
+                'id_user' => $user->id,
+                'saldo' => $request->saldo,
+                'nama_bank' => $request->nama_bank,
+                'no_rek' => $request->no_rek,
+            ]);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Data tidak berhasil disimpan',
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Data berhasil disimpan',
+        ], 200);
+    }
+
+    public function konfirmasi(string $id)
+    {
+        $data = HistoriSaldo::find($id);
+
+        if (!$data) {
+            return response()->json([
+                'message' => 'Data tidak ditemukan',
+            ], 404);
+        }
+
+        if ($data->tanggal != null) {
+            return response()->json([
+                'message' => 'Data sudah dikonfirmasi',
             ], 400);
         }
 
         DB::beginTransaction();
 
         try {
-            $data = HistoriBahanBaku::create([
-                'id_bahan_baku' => $request->id_bahan_baku,
-                'jumlah' => $request->jumlah,
-                'tanggal_pakai' => $request->tanggal_pakai,
+            $data->update([
+                'tanggal' => Carbon::now(),
             ]);
-
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-
             return response()->json([
-                'message' => $e->getMessage(),
+                'message' => 'Data tidak berhasil dikonfirmasi',
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Data berhasil dibuat',
-            'data' => $data,
-        ], 201);
+            'message' => 'Data berhasil dikonfirmasi',
+        ], 200);
     }
 
     /**
@@ -120,7 +157,7 @@ class HistoriBahanBakuController extends Controller
      */
     public function show(string $id)
     {
-        $data = HistoriBahanBaku::find($id);
+        $data = HistoriSaldo::with('user')->find($id);
 
         if (!$data) {
             return response()->json([
@@ -134,12 +171,14 @@ class HistoriBahanBakuController extends Controller
         ], 200);
     }
 
+
+
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
     {
-        $data = HistoriBahanBaku::find($id);
+        $data = HistoriSaldo::find($id);
 
         if (!$data) {
             return response()->json([
@@ -147,49 +186,38 @@ class HistoriBahanBakuController extends Controller
             ], 404);
         }
 
-        $validate = Validator::make($request->all(), [
-            'id_bahan_baku' => 'sometimes|exists:bahan_baku,id_bahan_baku',
-            'jumlah' => 'sometimes|gte:0|numeric',
-            'tanggal_pakai' => 'sometimes|date',
-        ], [
-            'exists' => ':attribute tidak ditemukan',
-            'gte' => ':attribute harus lebih besar atau sama dengan 0',
-            'numeric' => ':attribute harus berupa angka',
-            'date' => ':attribute harus berupa tanggal',
+        $request->validate([
+            'tanggal' => 'required|date',
+            'saldo' => 'required|numeric',
+            'nama_bank' => 'required|string',
+            'no_rek' => 'required|string',
         ]);
 
-        if ($validate->fails()) {
+        if ($request->saldo % 50000 != 0) {
             return response()->json([
-                'message' => $validate->errors()->first(),
+                'message' => 'Saldo harus kelipatan 50.000',
             ], 400);
         }
-
-        $fillableAttributes = [
-            'id_bahan_baku',
-            'jumlah',
-            'tanggal_pakai',
-        ];
-
-        $updateData = (new FunctionHelper())
-            ->updateDataMaker($fillableAttributes, $request);
 
         DB::beginTransaction();
 
         try {
-            $data->update($updateData);
-
+            $data->update([
+                'tanggal' => $request->tanggal,
+                'saldo' => $request->saldo,
+                'nama_bank' => $request->nama_bank,
+                'no_rek' => $request->no_rek,
+            ]);
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-
             return response()->json([
-                'message' => $e->getMessage(),
+                'message' => 'Data tidak berhasil diubah',
             ], 500);
         }
 
         return response()->json([
-            'message' => 'Data berhasil diupdate',
-            'data' => $data,
+            'message' => 'Data berhasil diubah',
         ], 200);
     }
 
@@ -198,7 +226,7 @@ class HistoriBahanBakuController extends Controller
      */
     public function destroy(string $id)
     {
-        $data = HistoriBahanBaku::find($id);
+        $data = HistoriSaldo::find($id);
 
         if (!$data) {
             return response()->json([
@@ -210,13 +238,11 @@ class HistoriBahanBakuController extends Controller
 
         try {
             $data->delete();
-
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-
             return response()->json([
-                'message' => $e->getMessage(),
+                'message' => 'Data tidak berhasil dihapus',
             ], 500);
         }
 
