@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\API\Data;
 
 use App\Http\Controllers\Controller;
+use App\Models\BahanBaku;
 use App\Models\Cart;
 use App\Models\DetailHampers;
 use App\Models\DetailTransaksi;
 use App\Models\Hampers;
+use App\Models\Resep;
 use App\Models\Produk;
 use App\Models\Transaksi;
 use App\Models\User;
@@ -964,6 +966,100 @@ class TransaksiController extends Controller
                 'message' => 'Transaksi tidak dapat diubah',
             ], 400);
         }
+    
+        $detail_transaksi = DetailTransaksi::where('no_nota', $transaksi->no_nota)->get();
+        $bahan_baku_kurang = [];
+        foreach ($detail_transaksi as $dt) {
+            if($dt->id_produk != null){
+                $resep = Resep::where('id_produk',$dt->id_produk)->get();
+                foreach($resep as $rs){
+                    $bahan_baku = BahanBaku::where('id_bahan_baku',$rs->id_bahan_baku)->first();
+                    if(($bahan_baku->stok - ($rs->kuantitas * $dt->jumlah)) < 0){
+                        $found = false;
+                        foreach ($bahan_baku_kurang as &$bbk) {
+                            if ($bbk['id_bahan_baku'] === $bahan_baku->id_bahan_baku) {
+                                $found = true;
+                                $bbk['stok_yang_harus_dibeli'] += ($rs->kuantitas * $dt->jumlah);
+                                $bbk['stok_dibutuhkan'] += ($rs->kuantitas * $dt->jumlah);
+                                break;
+                            }
+                        }
+                        if (!$found) {
+                            $bahan_baku_kurang[] = [
+                                'id_bahan_baku' => $bahan_baku->id_bahan_baku,
+                                'nama_bahan_baku' => $bahan_baku->nama_bahan_baku,
+                                'stok_sekarang' => $bahan_baku->stok,
+                                'stok_dibutuhkan' => ($rs->kuantitas * $dt->jumlah),
+                                'stok_yang_harus_dibeli' => ($bahan_baku->stok - ($rs->kuantitas * $dt->jumlah))*-1,
+                            ];
+                        }
+                    }
+                }
+            }else if($dt->id_hampers != null){
+                $detail_hampers = DetailHampers::where('id_hampers',$dt->id_hampers)->get();
+                foreach($detail_hampers as $dh){
+                    if($dh->id_produk != null){
+                            $resep = Resep::where('id_produk',$dh->id_produk)->get();
+                            foreach($resep as $rs){
+                                $bahan_baku = BahanBaku::where('id_bahan_baku',$rs->id_bahan_baku)->first();
+                                    if(($bahan_baku->stok - ($rs->kuantitas * $dt->jumlah * $dh->jumlah)) < 0){
+                                        $found = false;
+                                        foreach ($bahan_baku_kurang as &$bbk) {
+                                            if ($bbk['id_bahan_baku'] === $bahan_baku->id_bahan_baku) {
+                                                $found = true;
+                                                $bbk['stok_dibutuhkan'] += ($rs->kuantitas * $dt->jumlah * $dh->jumlah);
+                                                $bbk['stok_yang_harus_dibeli'] += ($rs->kuantitas * $dt->jumlah * $dh->jumlah);
+                                                break;
+                                            }
+                                        }
+                                        if (!$found) {
+                                            $bahan_baku_kurang[] = [
+                                                'id_bahan_baku' => $bahan_baku->id_bahan_baku,
+                                                'nama_bahan_baku' => $bahan_baku->nama_bahan_baku,
+                                                'stok_sekarang' => $bahan_baku->stok,
+                                                'stok_dibutuhkan' => ($rs->kuantitas * $dt->jumlah * $dh->jumlah),
+                                                'stok_yang_harus_dibeli' => ($bahan_baku->stok - ($rs->kuantitas * $dt->jumlah * $dh->jumlah))*-1,
+                                            ];
+                                        }
+                                    }
+                            }
+                    }else{
+                        $bahan_baku = BahanBaku::where('id_bahan_baku',$dh->id_bahan_baku)->first();
+                            if(($bahan_baku->stok - $dt->jumlah * $dh->jumlah) < 0){
+                                        $found = false;
+                                        foreach ($bahan_baku_kurang as &$bbk) {
+                                            if ($bbk['id_bahan_baku'] === $bahan_baku->id_bahan_baku) {
+                                                $found = true;
+                                                $bbk['stok_dibutuhkan'] += ($dt->jumlah * $dh->jumlah);
+                                                $bbk['stok_yang_harus_dibeli'] += $dt->jumlah * $dh->jumlah ;
+                                                break;
+                                            }
+                                        }
+                                        if (!$found) {
+                                            $bahan_baku_kurang[] = [
+                                                'id_bahan_baku' => $bahan_baku->id_bahan_baku,
+                                                'nama_bahan_baku' => $bahan_baku->nama_bahan_baku,
+                                                'stok_sekarang' => $bahan_baku->stok,
+                                                'stok_dibutuhkan' => ($dt->jumlah * $dh->jumlah),
+                                                'stok_yang_harus_dibeli' =>($bahan_baku->stok - $dt->jumlah * $dh->jumlah ) * -1,
+                                            ];
+                                        }
+                                    }
+                    }
+                }
+            }
+        }
+        
+        $tasSpound = BahanBaku::where('id_bahan_baku',27)->first();
+        if(($tasSpound->stok - 1) < 0){
+            $bahan_baku_kurang[] = [
+                'nama_bahan_baku' => $tasSpound->nama_bahan_baku,
+                'stok_sekarang' => $tasSpound->stok,
+                'stok_dibutuhkan' => ($dt->jumlah * $dt->jumlah),
+                'stok_yang_harus_dibeli' => $tasSpound->stok - $dt->jumlah * $dh->jumlah,
+            ];
+        }
+
 
         DB::beginTransaction();
 
@@ -982,10 +1078,18 @@ class TransaksiController extends Controller
             ], 500);
         }
 
-        return response()->json([
-            'message' => 'Transaksi berhasil dikonfirmasi',
-            'data' => $transaksi,
-        ], 200);
+        if (count($bahan_baku_kurang) > 0) {
+            return response()->json([
+                'message' => 'Transaksi berhasil dikonfirmasi dan ada Stok bahan baku tidak mencukupi',
+                'data' => $transaksi,
+                'bahan_baku' => $bahan_baku_kurang
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'Transaksi berhasil dikonfirmasi',
+                'data' => $transaksi,
+            ], 200);
+        }
     }
 
     public function batalTransaksi(Request $request)
