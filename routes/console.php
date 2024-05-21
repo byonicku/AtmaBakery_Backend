@@ -1,6 +1,11 @@
 <?php
 
 use App\Models\Cart;
+use App\Models\DetailHampers;
+use App\Models\DetailTransaksi;
+use App\Models\Produk;
+use App\Models\Transaksi;
+use App\Models\User;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use App\Models\Presensi;
@@ -50,3 +55,64 @@ Artisan::command('remove-cart', function () {
         $this->error('Error: ' . $e->getMessage());
     }
 })->purpose('Menghapus cart h-1 PO');
+
+Artisan::command('remove-transaksi', function () {
+    try {
+        $date = date('Y-m-d', strtotime('+1 day'));
+        $transaksi = Transaksi::
+            where(function ($query) use ($date) {
+                $query->where('tanggal_ambil', '=', $date)
+                    ->orWhere('tanggal_ambil', '=', null);
+            })
+            ->where('status', '=', 'Menunggu Pembayaran')->get();
+
+        if (count($transaksi) == 0) {
+            $this->info('Transaksi hari ini kosong');
+            return;
+        }
+
+        for ($i = 0; $i < count($transaksi); $i++) {
+            $transaksi[$i]->status = 'Ditolak';
+            $transaksi[$i]->tanggal_ambil = null;
+            $transaksi[$i]->save();
+            $detailTransaksi = DetailTransaksi::where('no_nota', $transaksi[$i]->no_nota)->get();
+
+            foreach ($detailTransaksi as $detail) {
+                if ($detail->id_produk) {
+                    $produk = Produk::find($detail->id_produk);
+                    if ($produk->status === 'READY') {
+                        $produk->stok += $detail->jumlah;
+                        $produk->save();
+                    }
+                } else if ($detail->id_hampers) {
+                    $dt = DetailHampers::where('id_hampers', $detail->id_hampers)->get();
+                    foreach ($dt as $item) {
+                        if ($item->id_produk === null) {
+                            continue;
+                        }
+
+                        $produk = Produk::find($item->id_produk);
+                        if ($produk->status === 'READY') {
+                            $produk->stok += $detail->jumlah * $item->jumlah;
+                            $produk->save();
+                        }
+                    }
+                }
+            }
+
+            $user = User::find($transaksi->id_user);
+
+            if ($transaksi->penggunaan_poin > 0) {
+                $user->poin += $transaksi->poin_sebelum_penambahan;
+            }
+
+            $user->save();
+
+            $this->info('Transaksi ' . $transaksi[$i]->no_nota . ' berhasil ditolak');
+        }
+
+        $this->info('Transaksi berhasil dihapus');
+    } catch (\Exception $e) {
+        $this->error('Error: ' . $e->getMessage());
+    }
+});

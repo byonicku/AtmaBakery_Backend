@@ -285,3 +285,17 @@ Route::get('/cron/cart', function () {
 
     return $output;
 });
+
+Route::get('/cron/transaksi', function () {
+    $providedToken = request()->header('cron-secret');
+    $expectedToken = env('CRON_SECRET');
+
+    if ($providedToken !== $expectedToken) {
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }
+
+    Artisan::call('remove-transaksi');
+    $output = Artisan::output();
+
+    return $output;
+});
