@@ -13,6 +13,7 @@ use App\Models\Karyawan;
 
 Artisan::command('add-presensi', function () {
     try {
+        DB::beginTransaction();
         $karyawan = Karyawan::all();
 
         $presensi = Presensi::where('tanggal', '=', date('Y-m-d'))->get();
@@ -30,13 +31,18 @@ Artisan::command('add-presensi', function () {
             $presensi->save();
             $this->info('Presensi karyawan ' . $karyawan[$i]->nama . ' berhasil ditambahkan');
         }
+
+        $this->info('Presensi berhasil ditambahkan');
+        DB::commit();
     } catch (\Exception $e) {
+        DB::rollBack();
         $this->error('Error: ' . $e->getMessage());
     }
 })->purpose('Menambahkan presensi karyawan');
 
 Artisan::command('remove-cart', function () {
     try {
+        DB::beginTransaction();
         $date = date('Y-m-d', strtotime('+1 day'));
         $cart = Cart::where('po_date', '=', $date)->get();
 
@@ -51,13 +57,17 @@ Artisan::command('remove-cart', function () {
         }
 
         $this->info('Cart berhasil dihapus');
+        DB::commit();
     } catch (\Exception $e) {
+        DB::rollBack();
         $this->error('Error: ' . $e->getMessage());
     }
 })->purpose('Menghapus cart h-1 PO');
 
 Artisan::command('remove-transaksi', function () {
     try {
+        DB::beginTransaction();
+
         $date = date('Y-m-d', strtotime('+1 day'));
         $transaksi = Transaksi::
             where(function ($query) use ($date) {
@@ -100,10 +110,10 @@ Artisan::command('remove-transaksi', function () {
                 }
             }
 
-            $user = User::find($transaksi->id_user);
+            $user = User::find($transaksi[$i]->id_user);
 
-            if ($transaksi->penggunaan_poin > 0) {
-                $user->poin += $transaksi->poin_sebelum_penambahan;
+            if ($transaksi[$i]->penggunaan_poin > 0) {
+                $user->poin += $transaksi[$i]->poin_sebelum_penambahan;
             }
 
             $user->save();
@@ -112,7 +122,9 @@ Artisan::command('remove-transaksi', function () {
         }
 
         $this->info('Transaksi berhasil dihapus');
+        DB::commit();
     } catch (\Exception $e) {
+        DB::rollBack();
         $this->error('Error: ' . $e->getMessage());
     }
 });
