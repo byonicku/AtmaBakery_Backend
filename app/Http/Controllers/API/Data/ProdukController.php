@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API\Data;
 
 use App\Http\Controllers\Controller;
 use App\Models\Produk;
-use App\Models\Gambar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;

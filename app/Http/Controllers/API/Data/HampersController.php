@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\API\Data;
 
 use App\Models\DetailHampers;
-use App\Models\Gambar;
 use App\Models\Hampers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
