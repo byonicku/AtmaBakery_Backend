@@ -1001,99 +1001,8 @@ class TransaksiController extends Controller
             ], 400);
         }
 
-        $detail_transaksi = DetailTransaksi::where('no_nota', $transaksi->no_nota)->get();
-        $bahan_baku_kurang = [];
-        foreach ($detail_transaksi as $dt) {
-            if ($dt->id_produk != null) {
-                $resep = Resep::where('id_produk', $dt->id_produk)->get();
-                foreach ($resep as $rs) {
-                    $bahan_baku = BahanBaku::where('id_bahan_baku', $rs->id_bahan_baku)->first();
-                    if (($bahan_baku->stok - ($rs->kuantitas * $dt->jumlah)) < 0) {
-                        $found = false;
-                        foreach ($bahan_baku_kurang as &$bbk) {
-                            if ($bbk['id_bahan_baku'] === $bahan_baku->id_bahan_baku) {
-                                $found = true;
-                                $bbk['stok_yang_harus_dibeli'] += ($rs->kuantitas * $dt->jumlah);
-                                $bbk['stok_dibutuhkan'] += ($rs->kuantitas * $dt->jumlah);
-                                break;
-                            }
-                        }
-                        if (!$found) {
-                            $bahan_baku_kurang[] = [
-                                'id_bahan_baku' => $bahan_baku->id_bahan_baku,
-                                'nama_bahan_baku' => $bahan_baku->nama_bahan_baku,
-                                'stok_sekarang' => $bahan_baku->stok,
-                                'stok_dibutuhkan' => ($rs->kuantitas * $dt->jumlah),
-                                'stok_yang_harus_dibeli' => ($bahan_baku->stok - ($rs->kuantitas * $dt->jumlah)) * -1,
-                            ];
-                        }
-                    }
-                }
-            } else if ($dt->id_hampers != null) {
-                $detail_hampers = DetailHampers::where('id_hampers', $dt->id_hampers)->get();
-                foreach ($detail_hampers as $dh) {
-                    if ($dh->id_produk != null) {
-                        $resep = Resep::where('id_produk', $dh->id_produk)->get();
-                        foreach ($resep as $rs) {
-                            $bahan_baku = BahanBaku::where('id_bahan_baku', $rs->id_bahan_baku)->first();
-                            if (($bahan_baku->stok - ($rs->kuantitas * $dt->jumlah * $dh->jumlah)) < 0) {
-                                $found = false;
-                                foreach ($bahan_baku_kurang as &$bbk) {
-                                    if ($bbk['id_bahan_baku'] === $bahan_baku->id_bahan_baku) {
-                                        $found = true;
-                                        $bbk['stok_dibutuhkan'] += ($rs->kuantitas * $dt->jumlah * $dh->jumlah);
-                                        $bbk['stok_yang_harus_dibeli'] += ($rs->kuantitas * $dt->jumlah * $dh->jumlah);
-                                        break;
-                                    }
-                                }
-                                if (!$found) {
-                                    $bahan_baku_kurang[] = [
-                                        'id_bahan_baku' => $bahan_baku->id_bahan_baku,
-                                        'nama_bahan_baku' => $bahan_baku->nama_bahan_baku,
-                                        'stok_sekarang' => $bahan_baku->stok,
-                                        'stok_dibutuhkan' => ($rs->kuantitas * $dt->jumlah * $dh->jumlah),
-                                        'stok_yang_harus_dibeli' => ($bahan_baku->stok - ($rs->kuantitas * $dt->jumlah * $dh->jumlah)) * -1,
-                                    ];
-                                }
-                            }
-                        }
-                    } else {
-                        $bahan_baku = BahanBaku::where('id_bahan_baku', $dh->id_bahan_baku)->first();
-                        if (($bahan_baku->stok - $dt->jumlah * $dh->jumlah) < 0) {
-                            $found = false;
-                            foreach ($bahan_baku_kurang as &$bbk) {
-                                if ($bbk['id_bahan_baku'] === $bahan_baku->id_bahan_baku) {
-                                    $found = true;
-                                    $bbk['stok_dibutuhkan'] += ($dt->jumlah * $dh->jumlah);
-                                    $bbk['stok_yang_harus_dibeli'] += $dt->jumlah * $dh->jumlah;
-                                    break;
-                                }
-                            }
-                            if (!$found) {
-                                $bahan_baku_kurang[] = [
-                                    'id_bahan_baku' => $bahan_baku->id_bahan_baku,
-                                    'nama_bahan_baku' => $bahan_baku->nama_bahan_baku,
-                                    'stok_sekarang' => $bahan_baku->stok,
-                                    'stok_dibutuhkan' => ($dt->jumlah * $dh->jumlah),
-                                    'stok_yang_harus_dibeli' => ($bahan_baku->stok - $dt->jumlah * $dh->jumlah) * -1,
-                                ];
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        $tasSpound = BahanBaku::where('id_bahan_baku', 27)->first();
-        if (($tasSpound->stok - 1) < 0) {
-            $bahan_baku_kurang[] = [
-                'nama_bahan_baku' => $tasSpound->nama_bahan_baku,
-                'stok_sekarang' => $tasSpound->stok,
-                'stok_dibutuhkan' => ($dt->jumlah * $dt->jumlah),
-                'stok_yang_harus_dibeli' => $tasSpound->stok - $dt->jumlah * $dh->jumlah,
-            ];
-        }
-
+        DB::statement('SET SESSION sql_require_primary_key=0');
+        $bahan_baku_kurang = DB::select('CALL p3l.get_bahan_baku_details(?)', [$transaksi->no_nota]);
 
         DB::beginTransaction();
 
@@ -1209,6 +1118,63 @@ class TransaksiController extends Controller
         return response()->json([
             'message' => 'Transaksi berhasil Ditolak',
             'data' => $transaksi,
+        ], 200);
+    }
+
+    public function konfirmasiPemrosesanMO(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            'no_nota' => 'required|exists:transaksi,no_nota',
+        ], [
+            'no_nota.required' => 'No nota tidak boleh kosong',
+            'no_nota.exists' => 'No nota tidak ditemukan',
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'message' => $validate->errors()->first(),
+            ], 400);
+        }
+
+        $transaksi = Transaksi::with('detail_transaksi')->where('no_nota', $request->no_nota)->first();
+
+        if ($transaksi->status !== 'Pesanan Diterima') {
+            return response()->json([
+                "message" => "Transaksi tidak dapat diubah",
+            ], 400);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            DB::statement('SET SESSION sql_require_primary_key=0');
+            $bahan_baku_kurang = DB::select('CALL p3l.get_bahan_baku_details(?)', [$transaksi->no_nota]);
+
+            if (count($bahan_baku_kurang) > 0) {
+                return response()->json([
+                    'message' => 'Transaksi tidak berhasil diproses karena stok bahan baku tidak mencukupi',
+                    'data' => $transaksi,
+                    'bahan_baku' => $bahan_baku_kurang
+                ], 200);
+            }
+
+            $transaksi->status = 'Sedang Diproses';
+            $histori = DB::select('CALL p3l.update_bahan_baku_dan_tambah_histori(?, ?)', [$transaksi->no_nota, Carbon::now()]);
+
+            $transaksi->save();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                "message" => "Gagal mengkonfirmasi transaksi",
+                "error" => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            "message" => "Transaksi berhasil dikonfirmasi",
+            "data" => $transaksi,
+            'histori' => $histori,
         ], 200);
     }
 
