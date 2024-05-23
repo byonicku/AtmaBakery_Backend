@@ -1065,10 +1065,13 @@ class TransaksiController extends Controller
 
         try {
             $transaksi->status = 'Pesanan Diterima';
-            $transaksi->tanggal_ambil = Carbon::now();
+
             $user = User::find($transaksi->id_user);
             $user->poin += $transaksi->penambahan_poin;
+
+            $user->save();
             $transaksi->save();
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
