@@ -194,7 +194,7 @@ class TransaksiController extends Controller
                 $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
                     ->where(function ($query) {
                         $query->whereDate('tanggal_ambil', '=', date('Y-m-d', strtotime('+1 day')))
-                            ->orWhereDate('tanggal_ambil', '=', null);
+                            ->where('status', '=', 'Pesanan Diterima');
                     })
                     ->orWhere('status', '=', 'Pesanan Diterima')
                     ->paginate(10);
@@ -534,7 +534,7 @@ class TransaksiController extends Controller
                 $transaksi = Transaksi::with(['detail_transaksi.produk', 'detail_transaksi.hampers'])
                     ->where(function ($query) {
                         $query->whereDate('tanggal_ambil', '=', date('Y-m-d', strtotime('+1 day')))
-                            ->orWhereDate('tanggal_ambil', '=', null);
+                            ->where('status', '=', 'Pesanan Diterima');
                     })
                     ->orWhere('status', '=', 'Pesanan Diterima')
                     ->where(function ($query) use ($data) {
