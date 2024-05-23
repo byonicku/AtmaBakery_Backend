@@ -192,11 +192,8 @@ class TransaksiController extends Controller
 
             if ($date === "date") {
                 $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
-                    ->where(function ($query) {
-                        $query->whereDate('tanggal_ambil', '=', date('Y-m-d', strtotime('+1 day')))
-                            ->where('status', '=', 'Pesanan Diterima');
-                    })
-                    ->orWhere('status', '=', 'Pesanan Diterima')
+                    ->whereDate('tanggal_ambil', '=', date('Y-m-d', strtotime('+1 day')))
+                    ->where('status', '=', 'Pesanan Diterima')
                     ->paginate(10);
             } else {
                 $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
@@ -532,15 +529,13 @@ class TransaksiController extends Controller
 
             if ($date === "date") {
                 $transaksi = Transaksi::with(['detail_transaksi.produk', 'detail_transaksi.hampers'])
-                    ->where(function ($query) {
-                        $query->whereDate('tanggal_ambil', '=', date('Y-m-d', strtotime('+1 day')))
-                            ->where('status', '=', 'Pesanan Diterima');
-                    })
-                    ->orWhere('status', '=', 'Pesanan Diterima')
+                    ->whereDate('tanggal_ambil', '=', date('Y-m-d', strtotime('+1 day')))
+                    ->where('status', '=', 'Pesanan Diterima')
                     ->where(function ($query) use ($data) {
                         $query->where('no_nota', 'LIKE', '%' . $data . '%')
                             ->orWhere('total', 'LIKE', '%' . $data . '%')
                             ->orWhere('tipe_delivery', 'LIKE', '%' . $data . '%')
+                            ->orWhere('status', 'LIKE', '%' . $data . '%')
                             ->orWhereHas('detail_transaksi', function ($query) use ($data) {
                                 $query->whereHas('produk', function ($query) use ($data) {
                                     $query->where('nama_produk', 'LIKE', '%' . $data . '%');
@@ -557,6 +552,7 @@ class TransaksiController extends Controller
                         $query->where('no_nota', 'LIKE', '%' . $data . '%')
                             ->orWhere('total', 'LIKE', '%' . $data . '%')
                             ->orWhere('tipe_delivery', 'LIKE', '%' . $data . '%')
+                            ->orWhere('status', 'LIKE', '%' . $data . '%')
                             ->orWhereHas('detail_transaksi', function ($query) use ($data) {
                                 $query->whereHas('produk', function ($query) use ($data) {
                                     $query->where('nama_produk', 'LIKE', '%' . $data . '%');
@@ -573,6 +569,7 @@ class TransaksiController extends Controller
                     $query->where('no_nota', 'LIKE', '%' . $data . '%')
                         ->orWhere('total', 'LIKE', '%' . $data . '%')
                         ->orWhere('tipe_delivery', 'LIKE', '%' . $data . '%')
+                        ->orWhere('status', 'LIKE', '%' . $data . '%')
                         ->orWhereHas('detail_transaksi', function ($query) use ($data) {
                             $query->whereHas('produk', function ($query) use ($data) {
                                 $query->where('nama_produk', 'LIKE', '%' . $data . '%');
