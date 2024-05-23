@@ -611,7 +611,7 @@ class TransaksiController extends Controller
 
         $validate = Validator::make($request->all(), [
             'tanggal_ambil' => 'sometimes|date',
-            'is_using_poin' => 'required|boolean',
+            'penggunaan_poin' => 'required|numeric',
             'total' => 'required|numeric',
             'tipe_delivery' => 'required|string',
             'status' => 'required|string',
@@ -624,8 +624,7 @@ class TransaksiController extends Controller
             'id_user.exists' => 'ID user tidak ditemukan',
             'tanggal_ambil.required' => 'Tanggal ambil tidak boleh kosong',
             'tanggal_ambil.date' => 'Tanggal ambil harus berupa tanggal',
-            'is_using_poin.required' => 'Penggunaan poin tidak boleh kosong',
-            'is_using_poin.boolean' => 'Penggunaan poin harus berupa boolean',
+            'penggunaan_poin.required' => 'Penggunaan poin tidak boleh kosong',
             'total.required' => 'Total tidak boleh kosong',
             'total.numeric' => 'Total harus berupa angka',
             'tipe_delivery.required' => 'Tipe delivery tidak boleh kosong',
@@ -660,9 +659,9 @@ class TransaksiController extends Controller
 
         $transaksi->tanggal_ambil = $request->tanggal_ambil;
 
-        $transaksi->penggunaan_poin = $request->is_using_poin ? $user->poin : 0;
+        $transaksi->penggunaan_poin = $request->penggunaan_poin;
 
-        $transaksi->total = $request->is_using_poin ? max(0, $request->total - ($user->poin * 100)) : $request->total;
+        $transaksi->total = max(0, $request->total - ($request->penggunaan_poin * 100));
         $transaksi->radius = 0;
         $transaksi->ongkir = 0;
         $transaksi->tip = 0;
