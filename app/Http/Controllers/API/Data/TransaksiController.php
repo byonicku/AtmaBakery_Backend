@@ -196,7 +196,7 @@ class TransaksiController extends Controller
                         $query->whereDate('tanggal_ambil', '=', date('Y-m-d', strtotime('+1 day')))
                             ->orWhereDate('tanggal_ambil', '=', null);
                     })
-                    ->where('status', '=', 'Pesanan Diterima')
+                    ->orWhere('status', '=', 'Pesanan Diterima')
                     ->paginate(10);
             } else {
                 $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
@@ -536,7 +536,7 @@ class TransaksiController extends Controller
                         $query->whereDate('tanggal_ambil', '=', date('Y-m-d', strtotime('+1 day')))
                             ->orWhereDate('tanggal_ambil', '=', null);
                     })
-                    ->where('status', '=', 'Pesanan Diterima')
+                    ->orWhere('status', '=', 'Pesanan Diterima')
                     ->where(function ($query) use ($data) {
                         $query->where('no_nota', 'LIKE', '%' . $data . '%')
                             ->orWhere('total', 'LIKE', '%' . $data . '%')
