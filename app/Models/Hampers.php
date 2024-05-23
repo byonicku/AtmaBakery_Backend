@@ -32,4 +32,9 @@ class Hampers extends Model
     {
         return $this->hasMany(Cart::class, 'id_hampers', 'id_hampers');
     }
+
+    public function transaksi()
+    {
+        return $this->hasMany(DetailTransaksi::class, 'id_hampers', 'id_hampers');
+    }
 }

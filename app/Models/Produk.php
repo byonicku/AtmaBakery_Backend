@@ -52,4 +52,15 @@ class Produk extends Model
     {
         return $this->belongsTo(Penitip::class, 'id_penitip', 'id_penitip');
     }
+
+    public function detail_transaksi()
+    {
+        return $this->hasMany(DetailTransaksi::class, 'id_produk', 'id_produk');
+    }
+
+    public function detail_hampers()
+    {
+        return $this->hasMany(DetailHampers::class, 'id_produk', 'id_produk');
+    }
+
 }

@@ -993,7 +993,42 @@ class TransaksiController extends Controller
         DB::beginTransaction();
 
         try {
-            $transaksi->status = 'Pesanan Diterima';
+            $produk = $transaksi->detail_transaksi->pluck('produk');
+            $hampers = $transaksi->detail_transaksi->pluck('hampers')->whereNotNull();
+            $isHampersPO = false;
+
+            foreach ($hampers as $item) {
+                $detail_hampers = DetailHampers::with('produk')
+                    ->where('id_hampers', $item->id_hampers)
+                    ->where('id_produk', '!=', null)
+                    ->get();
+
+                $status = $detail_hampers->pluck('produk.status');
+
+                if ($status->contains('PO')) {
+                    $isHampersPO = true;
+                    break;
+                }
+            }
+
+            $status = $produk->pluck('status');
+            $cekStok = $produk->pluck('stok');
+
+            if (
+                $status->contains('PO') && $cekStok->contains(0)
+                || $status->contains('PO') && $cekStok->contains(null)
+                || $isHampersPO
+            ) {
+                $transaksi->status = 'Pesanan Diterima';
+            } else {
+                if ($transaksi->tipe_delivery === 'Ambil') {
+                    $transaksi->status = 'Siap Pick Up';
+                } else if ($transaksi->tipe_delivery === 'Kurir') {
+                    $transaksi->status = 'Sedang Diantar Kurir';
+                } else {
+                    $transaksi->status = 'Sedang Diantar Ojol';
+                }
+            }
 
             $user = User::find($transaksi->id_user);
             $user->poin += $transaksi->penambahan_poin;
