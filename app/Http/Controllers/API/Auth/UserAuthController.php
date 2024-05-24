@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 
 use Notification;
+use Symfony\Component\Console\Output\NullOutput;
 
 class UserAuthController extends Controller
 {
@@ -154,6 +155,13 @@ class UserAuthController extends Controller
 
     public function logout(Request $request)
     {
+
+        $isMobile = $request->header('is-mobile') === 'true';
+        $user = Auth::user();
+        if ($isMobile) {
+            $user->fcm_token = null;
+            $user->save();
+        }
         if ($request->user()->currentAccessToken()->delete()) {
             return response()->json([
                 'message' => 'Berhasil logout',
