@@ -104,6 +104,9 @@ class HistoriSaldoController extends Controller
                 'nama_bank' => $request->nama_bank,
                 'no_rek' => $request->no_rek,
             ]);
+            $user->update([
+                'saldo' => $user->saldo - $request->saldo,
+            ]);
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
