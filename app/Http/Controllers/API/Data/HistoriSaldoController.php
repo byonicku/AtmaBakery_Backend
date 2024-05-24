@@ -16,7 +16,7 @@ class HistoriSaldoController extends Controller
      */
     public function index()
     {
-        $data = HistoriSaldo::with('user')->all();
+        $data = HistoriSaldo::with('user')->get();
 
         if (count($data) == 0) {
             return response()->json([
