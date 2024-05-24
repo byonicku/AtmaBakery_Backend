@@ -124,6 +124,21 @@ Route::middleware(['auth:sanctum', 'ability:mo,owner'])
             Route::get('/trash/karyawan', 'indexOnlyTrashed')->name('karyawan.trash');
             Route::get('/karyawan/restore/{id}', 'restore')->name('karyawan.restore');
         })->name('karyawan');
+
+        Route::post('/get-laporan-bulanan-keseluruhan', [ProcedureController::class, 'getLaporanBulananKeseluruhan'])
+            ->name('get-laporan-bulanan-keseluruhan');
+        Route::post('/get-laporan-bulanan-per-produk', [ProcedureController::class, 'getLaporanBulananPerProduk'])
+            ->name('get-laporan-bulanan-per-produk');
+        Route::get('/get-laporan-stok-bahan-baku', [ProcedureController::class, 'getLaporanStokBahanBaku'])
+            ->name('get-laporan-stok-bahan-baku');
+        Route::post('/get-laporan-stok-bahan-baku-periode', [ProcedureController::class, 'getLaporanStokBahanBakuPeriode'])
+            ->name('get-laporan-stok-bahan-baku-periode');
+        Route::post('/get-laporan-pemasukan-dan-pengeluaran', [ProcedureController::class, 'getLaporanPemasukanDanPengeluaran'])
+            ->name('get-laporan-pemasukan-dan-pengeluaran');
+        Route::post('/get-laporan-presensi-karyawan', [ProcedureController::class, 'getLaporanPresensiKaryawan'])
+            ->name('get-laporan-presensi-karyawan');
+        Route::post('/get-laporan-transaksi-penitip', [ProcedureController::class, 'getLaporanTransaksiPenitip'])
+            ->name('get-laporan-transaksi-penitip');
     });
 
 Route::middleware(['auth:sanctum', 'ability:mo,admin'])
