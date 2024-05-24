@@ -259,6 +259,9 @@ Route::middleware(['auth:sanctum', 'ability:admin'])
         });
     });
 
+Route::post('/send/notif', [ProcedureController::class, 'bulksend'])
+    ->name('send-notif');
+
 Route::get('/cron', function () {
     $providedToken = request()->header('cron-secret');
     $expectedToken = env('CRON_SECRET');

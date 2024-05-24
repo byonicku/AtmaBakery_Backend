@@ -73,6 +73,9 @@ class UserAuthController extends Controller
     }
     public function login(Request $request)
     {
+
+        $isMobile = $request->header('is-mobile') === 'true';
+
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required',
@@ -111,6 +114,11 @@ class UserAuthController extends Controller
             return response()->json([
                 'message' => 'Login gagal, Akun belum diverifikasi, silahkan cek Email Anda',
             ], 400);
+        }
+
+        if ($isMobile) {
+            $user->fcm_token = $request->fcm;
+            $user->save();
         }
 
         $abilities = [];

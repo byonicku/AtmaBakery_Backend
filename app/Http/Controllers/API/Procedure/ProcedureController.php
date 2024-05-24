@@ -134,4 +134,34 @@ class ProcedureController extends Controller
             'data' => $result,
         ], 200);
     }
+
+    public function bulksend() {
+        $url = 'https://fcm.googleapis.com/fcm/send';
+        $dataArr = array('click_action' => 'FLUTTER_NOTIFICATION_CLICK', 'id' => '1', 'status' => "done");
+        $notification = array('title' => 'WOI BACA', 'body' => 'WOI BACA INI', 'sound' => 'default', 'badge' => '1');
+        
+        $targetToken = "ed8uife_Q_mOLrLAqmTNSz:APA91bFwFUfRpOLGIniRnQ1xgnZzrw6Dlgb18DcAgj0-XzwLH6_a0oBWoXHonCqMsbhkMyfG3L15erzYdBi6yVFfmIgexvLVIOlD4QHCjnGuze47DdJsdQJuKbg7UuklPlOqPCJwT6DY";
+        
+        $arrayToSend = array('to' => $targetToken, 'notification' => $notification, 'data' => $dataArr, 'priority' => 'high');
+        $fields = json_encode($arrayToSend);
+        $headers = array(
+            'Authorization: key=' . "AAAAOjTG70s:APA91bHLhNpb9dUOLTtvo_yaJItJ_REQBrIgddQlO2oYhq2yfMS--nfNt5MM9f4TnW_1f-oO80dZO5UAJgk37l6sesw64vINczFh0PfQn_iRMOC1Pid7IrE4XeeYd8wD00FOLxDM5jZg",
+            'Content-Type: application/json'
+        );
+    
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+        $result = curl_exec($ch);
+        curl_close($ch);
+        
+        return response()->json([
+            'data' => $notification,
+        ], 200);
+    }
+    
+    
 }
