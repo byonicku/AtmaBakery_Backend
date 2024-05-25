@@ -724,16 +724,18 @@ class TransaksiController extends Controller
                 if ($cart->id_produk) {
                     $produk = Produk::find($cart->id_produk);
                     if ($produk->status === 'READY' || $cart->status === 'READY') {
-                        $produk->stok -= $cart->jumlah;
-                        if ($produk->status === "PO" && $cart->status === "READY") {
-                            $detailTransaksi->status = "READY";
-                        }
-                        if ($produk->stok <= 0) {
+                        if ($produk->stok < $cart->jumlah) {
                             DB::rollBack();
                             return response()->json([
                                 'message' => 'Stok produk ' . $produk->nama_produk . ' tidak mencukupi, silahkan hapus produk dari keranjang anda',
                             ], 400);
                         }
+
+                        $produk->stok -= $cart->jumlah;
+                        if ($produk->status === "PO" && $cart->status === "READY") {
+                            $detailTransaksi->status = "READY";
+                        }
+
                         $produk->save();
                     } else {
                         $remaining = (new FunctionHelper())->countStok($produk->id_produk, $transaksi->tanggal_ambil);
@@ -753,7 +755,7 @@ class TransaksiController extends Controller
 
                         $produk = Produk::find($detail->id_produk);
                         if ($produk->status === 'READY') {
-                            if ($produk->stok <= $cart->jumlah * $detail->jumlah) {
+                            if ($produk->stok < $cart->jumlah * $detail->jumlah) {
                                 DB::rollBack();
                                 return response()->json([
                                     'message' => 'Stok produk ' . $produk->nama_produk . ' di dalam hampers tidak mencukupi, silahkan hapus hampers dari keranjang anda',
