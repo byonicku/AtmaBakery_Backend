@@ -57,8 +57,8 @@ class HistoriSaldoController extends Controller
     public function paginate()
     {
         $data = HistoriSaldo::with('user')
-        ->orderBy('tanggal' ,'asc')
-        ->paginate(10);
+            ->orderBy('tanggal', 'asc')
+            ->paginate(10);
 
         if (count($data) == 0) {
             return response()->json([
@@ -102,7 +102,7 @@ class HistoriSaldoController extends Controller
 
         try {
             HistoriSaldo::create([
-                'id_user' => $user->id,
+                'id_user' => $user->id_user,
                 'saldo' => $request->saldo,
                 'nama_bank' => $request->nama_bank,
                 'no_rek' => $request->no_rek,
