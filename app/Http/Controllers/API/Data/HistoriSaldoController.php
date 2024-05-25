@@ -56,7 +56,9 @@ class HistoriSaldoController extends Controller
 
     public function paginate()
     {
-        $data = HistoriSaldo::with('user')->paginate(10);
+        $data = HistoriSaldo::with('user')
+            ->orderByRaw('ISNULL(tanggal), tanggal ASC')
+            ->paginate(10);
 
         if (count($data) == 0) {
             return response()->json([
@@ -69,6 +71,7 @@ class HistoriSaldoController extends Controller
             'data' => $data,
         ], 200);
     }
+
 
     /**
      * Store a newly created resource in storage.
