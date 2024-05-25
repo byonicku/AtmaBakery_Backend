@@ -1049,7 +1049,7 @@ class TransaksiController extends Controller
             $status = $produk->pluck('status');
             $cekStok = $produk->pluck('stok');
 
-            if ($detail_transaksi_status->contains('READY')) {
+            if ($detail_transaksi_status->contains('READY') && !($status->contains('PO')) && !$isHampersPO) {
                 if ($transaksi->tipe_delivery === 'Ambil') {
                     $transaksi->status = 'Siap Pick Up';
                 } else if ($transaksi->tipe_delivery === 'Kurir') {
