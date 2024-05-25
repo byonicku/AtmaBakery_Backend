@@ -1296,15 +1296,31 @@ class TransaksiController extends Controller
                 }
             }
 
+            $fcm_token = User::where('id_user', $transaksi->id_user)->first()->fcm_token;
+
             if ($transaksi->tipe_delivery === 'Ambil') {
                 $transaksi->status = 'Siap Pick Up';
+                if ($fcm_token) {
+                    $notification =
+                        (new FunctionHelper())
+                            ->bulkSend('Pesananmu sudah dapat diambil', 'Mohon untuk dapat mengambil pesananmu secepatnya', $fcm_token);
+                }
+
             } else if ($transaksi->tipe_delivery === 'Kurir') {
                 $transaksi->status = 'Sedang Diantar Kurir';
+                if ($fcm_token) {
+                    $notification =
+                        (new FunctionHelper())
+                            ->bulkSend('Pesananmu sedang dikirim kurir', 'Mohon untuk standby pada alamat yang anda cantumkan', $fcm_token);
+                }
             } else {
                 $transaksi->status = 'Sedang Diantar Ojol';
+                if ($fcm_token) {
+                    $notification =
+                        (new FunctionHelper())
+                            ->bulkSend('Pesananmu sedang dikirim ojol', 'Mohon untuk standby pada alamat yang anda cantumkan', $fcm_token);
+                }
             }
-
-            /* kasih notif ke user */
 
             $transaksi->save();
             DB::commit();
@@ -1319,6 +1335,7 @@ class TransaksiController extends Controller
         return response()->json([
             "message" => "Transaksi berhasil dikonfirmasi",
             "data" => $transaksi,
+            "notification" => $notification,
         ], 200);
     }
 

@@ -87,4 +87,32 @@ class FunctionHelper
 
         return $remaining;
     }
+
+    public function bulkSend($title, $body, $token)
+    {
+        try {
+            $url = 'https://fcm.googleapis.com/fcm/send';
+            $dataArr = array('click_action' => 'FLUTTER_NOTIFICATION_CLICK', 'id' => '1', 'status' => "done");
+            $notification = array('title' => $title, 'body' => $body, 'sound' => 'default', 'badge' => '1');
+            $arrayToSend = array('to' => $token, 'notification' => $notification, 'data' => $dataArr, 'priority' => 'high');
+            $fields = json_encode($arrayToSend);
+            $headers = array(
+                'Authorization: key=' . "AAAAOjTG70s:APA91bHLhNpb9dUOLTtvo_yaJItJ_REQBrIgddQlO2oYhq2yfMS--nfNt5MM9f4TnW_1f-oO80dZO5UAJgk37l6sesw64vINczFh0PfQn_iRMOC1Pid7IrE4XeeYd8wD00FOLxDM5jZg",
+                'Content-Type: application/json'
+            );
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+            $result = curl_exec($ch);
+            curl_close($ch);
+
+            return $notification;
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
 }
