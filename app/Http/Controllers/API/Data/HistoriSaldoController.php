@@ -57,7 +57,7 @@ class HistoriSaldoController extends Controller
     public function paginate()
     {
         $data = HistoriSaldo::with('user')
-        ->orderBy('tanggal ASC')
+        ->orderBy('tanggal' ,'asc')
         ->paginate(10);
 
         if (count($data) == 0) {
