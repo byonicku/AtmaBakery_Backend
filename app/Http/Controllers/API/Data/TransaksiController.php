@@ -720,12 +720,14 @@ class TransaksiController extends Controller
                 $detailTransaksi->id_hampers = $cart->id_hampers ?? null;
                 $detailTransaksi->jumlah = $cart->jumlah;
                 $detailTransaksi->harga_saat_beli = $cart->produk->harga ?? $cart->hampers->harga;
-                $detailTransaksi->save();
 
                 if ($cart->id_produk) {
                     $produk = Produk::find($cart->id_produk);
-                    if ($produk->status === 'READY') {
+                    if ($produk->status === 'READY' || $cart->status === 'READY') {
                         $produk->stok -= $cart->jumlah;
+                        if ($produk->status === "PO" && $cart->status === "READY") {
+                            $detailTransaksi->status = "READY";
+                        }
                         if ($produk->stok <= 0) {
                             DB::rollBack();
                             return response()->json([
@@ -770,6 +772,8 @@ class TransaksiController extends Controller
                         }
                     }
                 }
+
+                $detailTransaksi->save();
             }
 
             Cart::where('id_user', $user->id_user)->delete();
@@ -1120,7 +1124,7 @@ class TransaksiController extends Controller
             foreach ($detailTransaksi as $detail) {
                 if ($detail->id_produk) {
                     $produk = Produk::find($detail->id_produk);
-                    if ($produk->status === 'READY') {
+                    if ($produk->status === 'READY' || $detail->status === "READY") {
                         $produk->stok += $detail->jumlah;
                         $produk->save();
                     }

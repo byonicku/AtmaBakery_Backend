@@ -90,7 +90,7 @@ Artisan::command('remove-transaksi', function () {
             foreach ($detailTransaksi as $detail) {
                 if ($detail->id_produk) {
                     $produk = Produk::find($detail->id_produk);
-                    if ($produk->status === 'READY') {
+                    if ($produk->status === 'READY' || $detail->status === 'READY') {
                         $produk->stok += $detail->jumlah;
                         $produk->save();
                     }
