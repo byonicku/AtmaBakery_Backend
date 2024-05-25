@@ -1245,6 +1245,181 @@ class TransaksiController extends Controller
         ], 200);
     }
 
+    public function updateStatusAdminKirimPickUp(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            'no_nota' => 'required|exists:transaksi,no_nota',
+        ], [
+            'no_nota.required' => 'No nota tidak boleh kosong',
+            'no_nota.exists' => 'No nota tidak ditemukan',
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'message' => $validate->errors()->first(),
+            ], 400);
+        }
+
+        $transaksi = Transaksi::with('detail_transaksi')->where('no_nota', $request->no_nota)->first();
+
+        if ($transaksi->status !== 'Sedang Diproses') {
+            return response()->json([
+                "message" => "Transaksi tidak dapat diubah",
+            ], 400);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $detail_transaksi = $transaksi->detail_transaksi;
+
+            foreach ($detail_transaksi as $detail) {
+                if ($detail->id_produk) {
+                    $produk = Produk::find($detail->id_produk);
+                    if ($produk->ukuran === '1/2' && $detail->jumlah === 1) {
+                        $produk->stok += 1;
+                        $produk->save();
+                    }
+                } else if ($detail->id_hampers) {
+                    $dt = DetailHampers::where('id_hampers', $detail->id_hampers)->get();
+                    foreach ($dt as $item) {
+                        if ($item->id_produk === null) {
+                            continue;
+                        }
+
+                        $produk = Produk::find($item->id_produk);
+                        if ($produk->ukuran === '1/2' && ($detail->jumlah * $item->jumlah) === 1) {
+                            $produk->stok += 1;
+                            $produk->save();
+                        }
+                    }
+                }
+            }
+
+            if ($transaksi->tipe_delivery === 'Ambil') {
+                $transaksi->status = 'Siap Pick Up';
+            } else if ($transaksi->tipe_delivery === 'Kurir') {
+                $transaksi->status = 'Sedang Diantar Kurir';
+            } else {
+                $transaksi->status = 'Sedang Diantar Ojol';
+            }
+
+            /* kasih notif ke user */
+
+            $transaksi->save();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                "message" => "Gagal mengkonfirmasi transaksi",
+                "error" => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            "message" => "Transaksi berhasil dikonfirmasi",
+            "data" => $transaksi,
+        ], 200);
+    }
+
+    public function updateStatusSelesai(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            'no_nota' => 'required|exists:transaksi,no_nota',
+        ], [
+            'no_nota.required' => 'No nota tidak boleh kosong',
+            'no_nota.exists' => 'No nota tidak ditemukan',
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'message' => $validate->errors()->first(),
+            ], 400);
+        }
+
+        $transaksi = Transaksi::where('no_nota', $request->no_nota)->first();
+
+        DB::beginTransaction();
+
+        try {
+            $transaksi->status = 'Selesai';
+
+            if ($transaksi->tipe_delivery === 'Ambil') {
+                $transaksi->tanggal_ambil = Carbon::now();
+            }
+
+            $transaksi->save();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                "message" => "Gagal mengkonfirmasi transaksi",
+                "error" => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            "message" => "Transaksi berhasil dikonfirmasi",
+            "data" => $transaksi,
+        ], 200);
+    }
+
+    public function updateStatusSelesaiSelf(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthenticated'
+            ], 404);
+        }
+
+        $validate = Validator::make($request->all(), [
+            'no_nota' => 'required|exists:transaksi,no_nota',
+        ], [
+            'no_nota.required' => 'No nota tidak boleh kosong',
+            'no_nota.exists' => 'No nota tidak ditemukan',
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'message' => $validate->errors()->first(),
+            ], 400);
+        }
+
+        $transaksi = Transaksi::where('no_nota', $request->no_nota)->first();
+
+        if ($transaksi->id_user !== $user->id_user) {
+            return response()->json([
+                'message' => 'Transaksi tidak ditemukan, atau bukan transaksi anda',
+            ], 404);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $transaksi->status = 'Selesai';
+
+            if ($transaksi->tipe_delivery === 'Ambil') {
+                $transaksi->tanggal_ambil = Carbon::now();
+            }
+
+            $transaksi->save();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                "message" => "Gagal mengkonfirmasi transaksi",
+                "error" => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            "message" => "Transaksi berhasil dikonfirmasi",
+            "data" => $transaksi,
+        ], 200);
+    }
+
     /**
      * Display the specified resource.
      */

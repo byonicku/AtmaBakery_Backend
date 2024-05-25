@@ -70,6 +70,9 @@ Route::post('/transaksi/search/{id_user}', [TransaksiController::class, 'search'
 Route::apiResource('histori_saldo', HistoriSaldoController::class)
     ->middleware('auth:sanctum');
 
+Route::post('/update/transaksi/self', [TransaksiController::class, 'updateStatusSelesaiSelf'])->name('transaksi.update-status-selesai-self')
+    ->middleware('auth:sanctum');
+
 Route::controller(CartController::class)
     ->middleware('auth:sanctum')
     ->group(function () {
@@ -265,6 +268,8 @@ Route::middleware(['auth:sanctum', 'ability:admin'])
         Route::controller(TransaksiController::class)->group(function () {
             Route::post('/konfirmasi/transaksi/ongkir', 'konfirmasiAddJarakAdmin')->name('transaksi.konfirmasi-ongkir');
             Route::post('/konfirmasi/transaksi/pembayaran', 'konfirmasiTransaksiAdmin')->name('transaksi.konfirmasi-transaksi-admin');
+            Route::post('/update/transaksi', 'updateStatusAdminKirimPickUp')->name('transaksi.update-status-admin-kirim-pickup');
+            Route::post('/update/transaksi/selesai', 'updateStatusSelesai')->name('transaksi.update-status-selesai');
         });
 
         // HistoriSaldoController routes
