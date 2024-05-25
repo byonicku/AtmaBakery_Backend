@@ -1042,16 +1042,11 @@ class TransaksiController extends Controller
                 }
             }
 
+            $detail_transaksi_status = $transaksi->detail_transaksi->pluck('status');
             $status = $produk->pluck('status');
             $cekStok = $produk->pluck('stok');
 
-            if (
-                $status->contains('PO') && $cekStok->contains(0)
-                || $status->contains('PO') && $cekStok->contains(null)
-                || $isHampersPO
-            ) {
-                $transaksi->status = 'Pesanan Diterima';
-            } else {
+            if ($detail_transaksi_status->contains('READY')) {
                 if ($transaksi->tipe_delivery === 'Ambil') {
                     $transaksi->status = 'Siap Pick Up';
                 } else if ($transaksi->tipe_delivery === 'Kurir') {
@@ -1059,7 +1054,24 @@ class TransaksiController extends Controller
                 } else {
                     $transaksi->status = 'Sedang Diantar Ojol';
                 }
+            } else {
+                if (
+                    $status->contains('PO') && ($cekStok->contains(0)
+                        || $cekStok->contains(null))
+                    || $isHampersPO
+                ) {
+                    $transaksi->status = 'Pesanan Diterima';
+                } else {
+                    if ($transaksi->tipe_delivery === 'Ambil') {
+                        $transaksi->status = 'Siap Pick Up';
+                    } else if ($transaksi->tipe_delivery === 'Kurir') {
+                        $transaksi->status = 'Sedang Diantar Kurir';
+                    } else {
+                        $transaksi->status = 'Sedang Diantar Ojol';
+                    }
+                }
             }
+
 
             $user = User::find($transaksi->id_user);
             $user->poin += $transaksi->penambahan_poin;
