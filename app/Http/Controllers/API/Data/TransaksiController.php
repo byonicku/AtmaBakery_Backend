@@ -1057,6 +1057,12 @@ class TransaksiController extends Controller
             } else {
                 if ($transaksi->tipe_delivery === 'Ambil') {
                     $transaksi->status = 'Siap Pick Up';
+                    $fcm_token = User::where('id_user', $transaksi->id_user)->first()->fcm_token;
+                    if ($fcm_token) {
+                        $notification =
+                            (new FunctionHelper())
+                                ->bulkSend('Pesananmu sudah dapat diambil', 'Mohon untuk dapat mengambil pesananmu secepatnya', $fcm_token);
+                    }
                 } else if ($transaksi->tipe_delivery === 'Kurir') {
                     $transaksi->status = 'Sedang Diantar Kurir';
                 } else {
@@ -1089,6 +1095,7 @@ class TransaksiController extends Controller
             return response()->json([
                 'message' => 'Transaksi berhasil dikonfirmasi',
                 'data' => $transaksi,
+                'notification' => $notification ?? null,
             ], 200);
         }
     }
