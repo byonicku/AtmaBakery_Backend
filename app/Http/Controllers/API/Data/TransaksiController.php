@@ -1059,8 +1059,8 @@ class TransaksiController extends Controller
                     $transaksi->status = 'Siap Pick Up';
                     $fcm_token = User::where('id_user', $transaksi->id_user)->first()->fcm_token;
                     if ($fcm_token) {
-                        $notification =
-                            (new FunctionHelper())->bulkSend('Pesananmu sudah dapat diambil', 'Mohon untuk dapat mengambil pesananmu secepatnya', $fcm_token);
+                        $notification = (new FunctionHelper())
+                            ->bulkSend('Pesanan ' . $request->no_nota . ' sudah dapat diambil', 'Mohon untuk dapat mengambil pesananmu secepatnya', $fcm_token);
                     }
                 } else if ($transaksi->tipe_delivery === 'Kurir') {
                     $transaksi->status = 'Sedang Diantar Kurir';
@@ -1297,7 +1297,7 @@ class TransaksiController extends Controller
                 if ($fcm_token) {
                     $notification =
                         (new FunctionHelper())
-                            ->bulkSend('Pesananmu sudah dapat diambil', 'Mohon untuk dapat mengambil pesananmu secepatnya', $fcm_token);
+                            ->bulkSend('Pesanan ' . $request->no_nota . ' sudah dapat diambil', 'Mohon untuk dapat mengambil pesananmu secepatnya', $fcm_token);
                 }
 
             } else if ($transaksi->tipe_delivery === 'Kurir') {
@@ -1305,14 +1305,14 @@ class TransaksiController extends Controller
                 if ($fcm_token) {
                     $notification =
                         (new FunctionHelper())
-                            ->bulkSend('Pesananmu sedang dikirim kurir', 'Mohon untuk standby pada alamat yang anda cantumkan', $fcm_token);
+                            ->bulkSend('Pesanan ' . $request->no_nota . ' sedang dikirim kurir', 'Mohon untuk standby pada alamat yang anda cantumkan', $fcm_token);
                 }
             } else {
                 $transaksi->status = 'Sedang Diantar Ojol';
                 if ($fcm_token) {
                     $notification =
                         (new FunctionHelper())
-                            ->bulkSend('Pesananmu sedang dikirim ojol', 'Mohon untuk standby pada alamat yang anda cantumkan', $fcm_token);
+                            ->bulkSend('Pesanan ' . $request->no_nota . '  sedang dikirim ojol', 'Mohon untuk standby pada alamat yang anda cantumkan', $fcm_token);
                 }
             }
 
