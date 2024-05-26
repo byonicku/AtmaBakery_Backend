@@ -278,7 +278,9 @@ Route::middleware(['auth:sanctum', 'ability:admin'])
             Route::put('/histori_saldo/konfirmasi/{id}', 'konfirmasi')->name('histori_saldo.konfirmasi');
         });
 
-        Route::get('/batal/transaksi', Artisan::call('remove-transaksi'))->name('batal-transaksi');
+        Route::get('/batal/transaksi', function () {
+            Artisan::call('remove-transaksi');
+        })->name('batal-transaksi');
     });
 
 Route::post('/send/notif', [ProcedureController::class, 'bulksend'])
