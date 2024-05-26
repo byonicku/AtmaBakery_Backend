@@ -1270,7 +1270,7 @@ class TransaksiController extends Controller
             foreach ($detail_transaksi as $detail) {
                 if ($detail->id_produk) {
                     $produk = Produk::find($detail->id_produk);
-                    if ($produk->ukuran === '1/2' && $detail->jumlah === 1 && $detail->status == null) {
+                    if ($produk->ukuran === '1/2' && $detail->jumlah === 1 && $detail->status == 'PO') {
                         $produk->stok += 1;
                         $produk->save();
                     }
@@ -1282,7 +1282,7 @@ class TransaksiController extends Controller
                         }
 
                         $produk = Produk::find($item->id_produk);
-                        if ($produk->ukuran === '1/2' && ($detail->jumlah * $item->jumlah) === 1 && $detail->status == null) {
+                        if ($produk->ukuran === '1/2' && ($detail->jumlah * $item->jumlah) === 1 && $detail->status == 'PO') {
                             $produk->stok += 1;
                             $produk->save();
                         }
