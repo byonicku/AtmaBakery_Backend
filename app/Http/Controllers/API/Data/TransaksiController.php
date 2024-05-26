@@ -202,6 +202,14 @@ class TransaksiController extends Controller
                     ->orWhere('status', '=', 'Sedang Diantar Ojol')
                     ->orWhere('status', '=', 'Sedang Diproses')
                     ->paginate(10);
+            } else if ($date === "batal") {
+                $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
+                    ->where(function ($query) {
+                        $query->whereDate('tanggal_ambil', '=', date('Y-m-d', strtotime('+1 day')))
+                            ->orWhere('tanggal_ambil', '=', null);
+                    })
+                    ->where('status', '=', 'Menunggu Pembayaran')
+                    ->paginate(10);
             } else {
                 $transaksi = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
                     ->where('status', '=', $request->query('status'))
@@ -560,6 +568,26 @@ class TransaksiController extends Controller
                     ->orWhere('status', '=', 'Sedang Diantar Kurir')
                     ->orWhere('status', '=', 'Sedang Diantar Ojol')
                     ->orWhere('status', '=', 'Sedang Diproses')
+                    ->where(function ($query) use ($data) {
+                        $query->where('no_nota', 'LIKE', '%' . $data . '%')
+                            ->orWhere('total', 'LIKE', '%' . $data . '%')
+                            ->orWhere('tipe_delivery', 'LIKE', '%' . $data . '%')
+                            ->orWhereHas('detail_transaksi', function ($query) use ($data) {
+                                $query->whereHas('produk', function ($query) use ($data) {
+                                    $query->where('nama_produk', 'LIKE', '%' . $data . '%');
+                                })->orWhereHas('hampers', function ($query) use ($data) {
+                                    $query->where('nama_hampers', 'LIKE', '%' . $data . '%');
+                                });
+                            });
+                    })
+                    ->get();
+            } else if ($date === "batal") {
+                $transaksi = Transaksi::with(['detail_transaksi.produk', 'detail_transaksi.hampers'])
+                    ->where(function ($query) {
+                        $query->whereDate('tanggal_ambil', '=', date('Y-m-d', strtotime('+1 day')))
+                            ->orWhere('tanggal_ambil', '=', null);
+                    })
+                    ->where('status', '=', 'Menunggu Pembayaran')
                     ->where(function ($query) use ($data) {
                         $query->where('no_nota', 'LIKE', '%' . $data . '%')
                             ->orWhere('total', 'LIKE', '%' . $data . '%')
