@@ -1060,8 +1060,7 @@ class TransaksiController extends Controller
                     $fcm_token = User::where('id_user', $transaksi->id_user)->first()->fcm_token;
                     if ($fcm_token) {
                         $notification =
-                            (new FunctionHelper())
-                                ->bulkSend('Pesananmu sudah dapat diambil', 'Mohon untuk dapat mengambil pesananmu secepatnya', $fcm_token);
+                            (new FunctionHelper())->bulkSend('Pesananmu sudah dapat diambil', 'Mohon untuk dapat mengambil pesananmu secepatnya', $fcm_token);
                     }
                 } else if ($transaksi->tipe_delivery === 'Kurir') {
                     $transaksi->status = 'Sedang Diantar Kurir';

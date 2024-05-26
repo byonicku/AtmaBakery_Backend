@@ -110,7 +110,12 @@ class FunctionHelper
             $result = curl_exec($ch);
             curl_close($ch);
 
-            return $notification;
+            return [
+                'status' => 'success',
+                'message' => 'Notification sent successfully',
+                'notification' => $notification,
+                'result' => json_decode($result),
+            ];
         } catch (\Exception $e) {
             return $e->getMessage();
         }
