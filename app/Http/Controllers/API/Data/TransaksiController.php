@@ -737,6 +737,8 @@ class TransaksiController extends Controller
                         $produk->stok -= $cart->jumlah;
                         if ($produk->status === "PO" && $cart->status === "READY") {
                             $detailTransaksi->status = "READY";
+                        } else {
+                            $detailTransaksi->status = $produk->status;
                         }
 
                         $produk->save();
@@ -748,6 +750,8 @@ class TransaksiController extends Controller
                                 'message' => 'Limit produk ' . $produk->nama_produk . ' tidak mencukupi, silahkan hapus produk dari keranjang anda',
                             ], 400);
                         }
+
+                        $detailTransaksi->status = $produk->status;
                     }
                 } else if ($cart->id_hampers) {
                     $dt = DetailHampers::where('id_hampers', $cart->id_hampers)->get();
@@ -755,6 +759,8 @@ class TransaksiController extends Controller
                         if ($detail->id_produk === null) {
                             continue;
                         }
+
+                        $detailTransaksi->status = $cart->status;
 
                         $produk = Produk::find($detail->id_produk);
                         if ($produk->status === 'READY') {
@@ -1027,7 +1033,6 @@ class TransaksiController extends Controller
         DB::beginTransaction();
 
         try {
-            $produk = $transaksi->detail_transaksi->pluck('produk');
             $hampers = $transaksi->detail_transaksi->pluck('hampers')->whereNotNull();
             $isHampersPO = false;
 
@@ -1046,10 +1051,10 @@ class TransaksiController extends Controller
             }
 
             $detail_transaksi_status = $transaksi->detail_transaksi->pluck('status');
-            $status = $produk->pluck('status');
-            $cekStok = $produk->pluck('stok');
 
-            if ($detail_transaksi_status->contains('READY') && !($status->contains('PO')) && !$isHampersPO) {
+            if ($detail_transaksi_status->contains('PO') || $isHampersPO) {
+                $transaksi->status = 'Pesanan Diterima';
+            } else {
                 if ($transaksi->tipe_delivery === 'Ambil') {
                     $transaksi->status = 'Siap Pick Up';
                 } else if ($transaksi->tipe_delivery === 'Kurir') {
@@ -1057,24 +1062,7 @@ class TransaksiController extends Controller
                 } else {
                     $transaksi->status = 'Sedang Diantar Ojol';
                 }
-            } else {
-                if (
-                    $status->contains('PO') && ($cekStok->contains(0)
-                        || $cekStok->contains(null))
-                    || $isHampersPO
-                ) {
-                    $transaksi->status = 'Pesanan Diterima';
-                } else {
-                    if ($transaksi->tipe_delivery === 'Ambil') {
-                        $transaksi->status = 'Siap Pick Up';
-                    } else if ($transaksi->tipe_delivery === 'Kurir') {
-                        $transaksi->status = 'Sedang Diantar Kurir';
-                    } else {
-                        $transaksi->status = 'Sedang Diantar Ojol';
-                    }
-                }
             }
-
 
             $user = User::find($transaksi->id_user);
             $user->poin += $transaksi->penambahan_poin;
