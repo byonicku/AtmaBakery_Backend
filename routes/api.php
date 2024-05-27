@@ -189,9 +189,16 @@ Route::middleware(['auth:sanctum', 'ability:mo'])
 
         Route::controller(TransaksiController::class)->group(function () {
             Route::post('/konfirmasi/transaksi/pesanan', 'konfirmasiTransaksiMO')->name('transaksi.konfirmasi-transaksi-mo');
-            Route::post('/get-bahan-kurang', 'TampilBahanBakuKurang')->name('transaksi.tampil-bahan-baku-kurang');
+            Route::post('/get-bahan-kurang', 'tampilBahanBakuKurang')->name('transaksi.tampil-bahan-baku-kurang');
             Route::post('/tolak/transaksi/pesanan', 'batalTransaksi')->name('transaksi.tolak-transaksi');
             Route::post('/konfirmasi/transaksi/pemrosesan', 'konfirmasiPemrosesanMO')->name('transaksi.konfirmasi-pemrosesan');
+        });
+
+        Route::controller(ProcedureController::class)->group(function () {
+            Route::get('/get-rekap-produk', 'getRekapProduk')->name('get-rekap-produk');
+            Route::get('/get-rekap-produk-perlu-dibuat', 'getRekapProdukPerluDibuat')->name('get-rekap-produk-perlu-dibuat');
+            Route::get('/get-rekap-bahan-baku', 'getRekapBahanBaku')->name('get-rekap-bahan-baku');
+            Route::get('/get-rekap-bahan-baku-per-produk', 'getRekapBahanBakuPerProduk')->name('get-rekap-bahan-baku-per-produk');
         });
     });
 

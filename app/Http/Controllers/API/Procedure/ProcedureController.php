@@ -443,4 +443,70 @@ class ProcedureController extends Controller
             'data' => $result,
         ], 200);
     }
+
+    public function getRekapProduk()
+    {
+        try {
+            // $result = DB::select("CALL p3l.get_rekap_pesanan(?);", [date('Y-m-d', strtotime('+1 day'))]);
+            $result = DB::select("CALL p3l.get_rekap_pesanan(?);", [('2024-05-24')]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'data' => $result,
+        ], 200);
+    }
+
+    public function getRekapProdukPerluDibuat()
+    {
+        try {
+            // $result = DB::select("CALL p3l.get_pesanan_perlu_dibuat(?);", [date('Y-m-d', strtotime('+1 day'))]);
+            $result = DB::select("CALL p3l.get_pesanan_perlu_dibuat(?);", [('2024-05-24')]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'data' => $result,
+        ], 200);
+    }
+
+    public function getRekapBahanBaku()
+    {
+        try {
+            DB::statement('SET SESSION sql_require_primary_key=0');
+            // $result = DB::select("CALL p3l.get_rekap_bahan_baku(?);", [date('Y-m-d', strtotime('+1 day'))]);
+            $result = DB::select("CALL p3l.get_rekap_bahan_baku(?);", [('2024-05-24')]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'data' => $result,
+        ], 200);
+    }
+
+    public function getRekapBahanBakuPerProduk()
+    {
+        try {
+            DB::statement('SET SESSION sql_require_primary_key=0');
+            // $result = DB::select("CALL p3l.get_rekap_bahan_baku_per_produk(?);", [date('Y-m-d', strtotime('+1 day'))]);
+            $result = DB::select("CALL p3l.get_rekap_bahan_baku_per_produk(?);", [('2024-05-24')]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'data' => $result,
+        ], 200);
+    }
 }

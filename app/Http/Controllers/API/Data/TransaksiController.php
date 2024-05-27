@@ -1210,7 +1210,7 @@ class TransaksiController extends Controller
         ], 200);
     }
 
-    public function TampilBahanBakuKurang(Request $request)
+    public function tampilBahanBakuKurang(Request $request)
     {
         $validate = Validator::make($request->all(), [
             'no_nota' => 'required|exists:transaksi,no_nota',
@@ -1275,7 +1275,6 @@ class TransaksiController extends Controller
             return response()->json([
                 'message' => 'Transaksi berhasil dikonfirmasi',
                 'data' => $transaksi,
-                'notification' => $notification ?? null,
             ], 200);
         }
     }
