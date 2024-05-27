@@ -448,8 +448,7 @@ class ProcedureController extends Controller
     public function getRekapProduk()
     {
         try {
-            // $result = DB::select("CALL p3l.get_rekap_pesanan(?);", [date('Y-m-d', strtotime('+1 day'))]);
-            $result = DB::select("CALL p3l.get_rekap_pesanan(?);", [('2024-05-24')]);
+            $result = DB::select("CALL p3l.get_rekap_pesanan(?);", [date('Y-m-d', strtotime('+1 day'))]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
@@ -464,8 +463,7 @@ class ProcedureController extends Controller
     public function getRekapProdukPerluDibuat()
     {
         try {
-            // $result = DB::select("CALL p3l.get_pesanan_perlu_dibuat(?);", [date('Y-m-d', strtotime('+1 day'))]);
-            $result = DB::select("CALL p3l.get_pesanan_perlu_dibuat(?);", [('2024-05-24')]);
+            $result = DB::select("CALL p3l.get_pesanan_perlu_dibuat(?);", [date('Y-m-d', strtotime('+1 day'))]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
@@ -481,8 +479,7 @@ class ProcedureController extends Controller
     {
         try {
             DB::statement('SET SESSION sql_require_primary_key=0');
-            // $result = DB::select("CALL p3l.get_rekap_bahan_baku(?);", [date('Y-m-d', strtotime('+1 day'))]);
-            $result = DB::select("CALL p3l.get_rekap_bahan_baku(?);", [('2024-05-24')]);
+            $result = DB::select("CALL p3l.get_rekap_bahan_baku(?);", [date('Y-m-d', strtotime('+1 day'))]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
@@ -498,8 +495,7 @@ class ProcedureController extends Controller
     {
         try {
             DB::statement('SET SESSION sql_require_primary_key=0');
-            // $result = DB::select("CALL p3l.get_rekap_bahan_baku_per_produk(?);", [date('Y-m-d', strtotime('+1 day'))]);
-            $result = DB::select("CALL p3l.get_rekap_bahan_baku_per_produk(?);", [('2024-05-24')]);
+            $result = DB::select("CALL p3l.get_rekap_bahan_baku_per_produk(?);", [date('Y-m-d', strtotime('+1 day'))]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
@@ -515,8 +511,8 @@ class ProcedureController extends Controller
     {
         try {
             $result = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers', 'user')
-                ->whereDate('tanggal_ambil', '=', '2024-05-24')
-                ->where('status', '=', 'Ditolak')
+                ->whereDate('tanggal_ambil', '=', date('Y-m-d', strtotime('+1 day')))
+                ->where('status', '=', 'Pesanan Diterima')
                 ->get();
         } catch (\Exception $e) {
             return response()->json([
