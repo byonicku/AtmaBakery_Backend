@@ -199,6 +199,7 @@ Route::middleware(['auth:sanctum', 'ability:mo'])
             Route::get('/get-rekap-produk-perlu-dibuat', 'getRekapProdukPerluDibuat')->name('get-rekap-produk-perlu-dibuat');
             Route::get('/get-rekap-bahan-baku', 'getRekapBahanBaku')->name('get-rekap-bahan-baku');
             Route::get('/get-rekap-bahan-baku-per-produk', 'getRekapBahanBakuPerProduk')->name('get-rekap-bahan-baku-per-produk');
+            Route::get('/get-rekap-nota-harian', 'getRekapNotaHarian')->name('get-rekap-nota-harian');
         });
     });
 

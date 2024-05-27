@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Procedure;
 
 use App\Http\Controllers\Controller;
+use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -499,6 +500,23 @@ class ProcedureController extends Controller
             DB::statement('SET SESSION sql_require_primary_key=0');
             // $result = DB::select("CALL p3l.get_rekap_bahan_baku_per_produk(?);", [date('Y-m-d', strtotime('+1 day'))]);
             $result = DB::select("CALL p3l.get_rekap_bahan_baku_per_produk(?);", [('2024-05-24')]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'data' => $result,
+        ], 200);
+    }
+
+    public function getRekapNotaHarian()
+    {
+        try {
+            $result = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
+                ->whereDate('tanggal_ambil', '=', '2024-05-24')
+                ->where('status', '=', 'Pesanan Diterima');
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
