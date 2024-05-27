@@ -1210,6 +1210,61 @@ class TransaksiController extends Controller
         ], 200);
     }
 
+    public function TampilBahanBakuKurang(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            'no_nota' => 'required|exists:transaksi,no_nota',
+        ], [
+            'no_nota.required' => 'No nota tidak boleh kosong',
+            'no_nota.exists' => 'No nota tidak ditemukan',
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'message' => $validate->errors()->first(),
+            ], 400);
+        }
+
+        $transaksi = Transaksi::with('detail_transaksi')->where('no_nota', $request->no_nota)->first();
+
+        if ($transaksi->status !== 'Pesanan Diterima') {
+            return response()->json([
+                "message" => "Transaksi tidak dapat diubah",
+            ], 400);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            DB::statement('SET SESSION sql_require_primary_key=0');
+            $bahan_baku_kurang = DB::select('CALL p3l.get_bahan_baku_details(?)', [$transaksi->no_nota]);
+
+            if (count($bahan_baku_kurang) > 0) {
+                return response()->json([
+                    'message' => 'Transaksi tidak berhasil diproses karena stok bahan baku tidak mencukupi',
+                    'data' => $transaksi,
+                    'bahan_baku' => $bahan_baku_kurang
+                ], 200);
+            }
+
+            $histori = DB::select('CALL p3l.update_bahan_baku_dan_tambah_histori(?, ?)', [$transaksi->no_nota, Carbon::now()]);
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                "message" => "Gagal mengkonfirmasi transaksi",
+                "error" => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            "message" => "Transaksi berhasil dikonfirmasi",
+            "data" => $transaksi,
+            'histori' => $histori,
+        ], 200);
+    }
+
     public function konfirmasiPemrosesanMO(Request $request)
     {
         $validate = Validator::make($request->all(), [
