@@ -1216,7 +1216,7 @@ class TransaksiController extends Controller
             'no_nota' => 'required|exists:transaksi,no_nota',
         ], [
             'no_nota.required' => 'No nota tidak boleh kosong',
-            'no_nota.exists' => 'No nota tidak ditemukan',
+            'no_nota.exists' => 'No nota tidak ditemukan'
         ]);
 
         if ($validate->fails()) {
@@ -1225,44 +1225,59 @@ class TransaksiController extends Controller
             ], 400);
         }
 
-        $transaksi = Transaksi::with('detail_transaksi')->where('no_nota', $request->no_nota)->first();
+        $transaksi = Transaksi::where('no_nota', $request->no_nota)->first();
 
-        if ($transaksi->status !== 'Pesanan Diterima') {
+        if ($transaksi->status !== 'Menunggu Konfirmasi Pesanan') {
             return response()->json([
-                "message" => "Transaksi tidak dapat diubah",
+                'message' => 'Transaksi tidak dapat diubah',
             ], 400);
         }
+
+        DB::statement('SET SESSION sql_require_primary_key=0');
+        $bahan_baku_kurang = DB::select('CALL p3l.get_bahan_baku_details(?)', [$transaksi->no_nota]);
 
         DB::beginTransaction();
 
         try {
-            DB::statement('SET SESSION sql_require_primary_key=0');
-            $bahan_baku_kurang = DB::select('CALL p3l.get_bahan_baku_details(?)', [$transaksi->no_nota]);
+            $hampers = $transaksi->detail_transaksi->pluck('hampers')->whereNotNull();
+            $isHampersPO = false;
 
-            if (count($bahan_baku_kurang) > 0) {
-                return response()->json([
-                    'message' => 'Transaksi tidak berhasil diproses karena stok bahan baku tidak mencukupi',
-                    'data' => $transaksi,
-                    'bahan_baku' => $bahan_baku_kurang
-                ], 200);
+            foreach ($hampers as $item) {
+                $detail_hampers = DetailHampers::with('produk')
+                    ->where('id_hampers', $item->id_hampers)
+                    ->where('id_produk', '!=', null)
+                    ->get();
+
+                $status = $detail_hampers->pluck('produk.status');
+
+                if ($status->contains('PO')) {
+                    $isHampersPO = true;
+                    break;
+                }
             }
-
-            $histori = DB::select('CALL p3l.update_bahan_baku_dan_tambah_histori(?, ?)', [$transaksi->no_nota, Carbon::now()]);
 
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                "message" => "Gagal mengkonfirmasi transaksi",
-                "error" => $e->getMessage(),
+                'message' => 'Gagal mengkonfirmasi transaksi',
+                'error' => $e->getMessage(),
             ], 500);
         }
 
-        return response()->json([
-            "message" => "Transaksi berhasil dikonfirmasi",
-            "data" => $transaksi,
-            'histori' => $histori,
-        ], 200);
+        if (count($bahan_baku_kurang) > 0) {
+            return response()->json([
+                'message' => 'Transaksi berhasil dikonfirmasi dan ada Stok bahan baku tidak mencukupi',
+                'data' => $transaksi,
+                'bahan_baku' => $bahan_baku_kurang
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'Transaksi berhasil dikonfirmasi',
+                'data' => $transaksi,
+                'notification' => $notification ?? null,
+            ], 200);
+        }
     }
 
     public function konfirmasiPemrosesanMO(Request $request)
