@@ -514,7 +514,7 @@ class ProcedureController extends Controller
     public function getRekapNotaHarian()
     {
         try {
-            $result = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers')
+            $result = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers', 'user')
                 ->whereDate('tanggal_ambil', '=', '2024-05-24')
                 ->where('status', '=', 'Ditolak')
                 ->get();
