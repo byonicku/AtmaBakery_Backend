@@ -41,7 +41,10 @@ class HistoriSaldoController extends Controller
             ], 403);
         }
 
-        $data = HistoriSaldo::with('user')->where('id_user', $user->id)->orderByDesc('tanggal')->get();
+        $data = HistoriSaldo::with('user')
+            ->where('id_user', $user->id_user)
+            ->orderByDesc('tanggal')
+            ->get();
 
         if (count($data) == 0) {
             return response()->json([

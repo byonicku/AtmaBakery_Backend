@@ -67,7 +67,7 @@ Route::get('/paginate/transaksi/history/{id_user}', [TransaksiController::class,
 Route::post('/transaksi/search/{id_user}', [TransaksiController::class, 'search'])->name('users.show-self')
     ->middleware(['auth:sanctum', 'ability:admin']);
 
-Route::apiResource('histori_saldo', HistoriSaldoController::class)
+Route::apiResource('histori_saldo', HistoriSaldoController::class)->except(['show'])
     ->middleware('auth:sanctum');
 Route::get('/histori_saldo/self', [HistoriSaldoController::class, 'indexSelf'])->name('histori_saldo.index-self')
     ->middleware('auth:sanctum');
