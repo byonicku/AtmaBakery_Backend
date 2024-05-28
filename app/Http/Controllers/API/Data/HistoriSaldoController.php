@@ -110,6 +110,7 @@ class HistoriSaldoController extends Controller
             $user->update([
                 'saldo' => $user->saldo - $request->saldo,
             ]);
+            $user->save();
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
