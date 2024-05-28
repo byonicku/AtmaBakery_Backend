@@ -512,6 +512,7 @@ class ProcedureController extends Controller
         try {
             $result = Transaksi::with('detail_transaksi.produk', 'detail_transaksi.hampers', 'user')
                 ->whereDate('tanggal_ambil', '=', date('Y-m-d', strtotime('+1 day')))
+                ->where('status', '=', 'Pesanan Diterima')
                 ->get();
         } catch (\Exception $e) {
             return response()->json([
