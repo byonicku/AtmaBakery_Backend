@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API\Data;
 
 use App\Models\Produk;
+use App\Models\Notifikasi;
+use App\Models\User;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -90,6 +92,7 @@ class FunctionHelper
 
     public function bulkSend($title, $body, $token)
     {
+        
         try {
             $url = 'https://fcm.googleapis.com/fcm/send';
             $dataArr = array('click_action' => 'FLUTTER_NOTIFICATION_CLICK', 'id' => '1', 'status' => "done");
@@ -100,6 +103,38 @@ class FunctionHelper
                 'Authorization: key=' . "AAAAOjTG70s:APA91bHLhNpb9dUOLTtvo_yaJItJ_REQBrIgddQlO2oYhq2yfMS--nfNt5MM9f4TnW_1f-oO80dZO5UAJgk37l6sesw64vINczFh0PfQn_iRMOC1Pid7IrE4XeeYd8wD00FOLxDM5jZg",
                 'Content-Type: application/json'
             );
+
+            $user = User::where('fcm_token', $token)->first();
+            
+            if (!$user) {
+                return [
+                    'status' => 'error',
+                    'message' => 'User not found',
+                    'notification' => $notification,
+                    'code' => 404,
+                ];
+            }
+
+            DB::beginTransaction();
+        try {
+            Notifikasi::create([
+                'id_user' => $user->id_user,
+                'title' => $title,
+                'body' => $body,
+            ]);
+    
+            DB::commit();
+    
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return [
+                'status' => 'error',
+                'message' => 'Failed to create notification',
+                'error' => $e->getMessage(),
+                'notification' => $notification,
+                'code' => 500,
+            ];
+        }
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
