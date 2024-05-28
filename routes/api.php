@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\Auth\UserAuthController;
 use App\Http\Controllers\API\Auth\ForgotPasswordAPIController;
 use App\Http\Controllers\API\Auth\ResetPasswordAPIController;
+use App\Http\Controllers\API\Data\NotifikasiController;
 use App\Http\Controllers\API\Data\ProdukController;
 use App\Http\Controllers\API\Procedure\ProcedureController;
 use App\Http\Controllers\API\Data\PengadaanBahanBakuController;
@@ -60,6 +61,9 @@ Route::post('/transaksi/bayar', [TransaksiController::class, 'uploadBuktiBayar']
     ->middleware('auth:sanctum');
 
 Route::post('/get-nota/self', [ProcedureController::class, 'getNotaPemesananSelf'])->name('get-nota-self')
+    ->middleware('auth:sanctum');
+
+Route::post('/get-notif/self', [NotifikasiController::class, 'paginateSelf'])->name('get-notif-self')
     ->middleware('auth:sanctum');
 
 Route::get('/paginate/transaksi/history/{id_user}', [TransaksiController::class, 'paginateHistory'])->name('users.paginate-self')
