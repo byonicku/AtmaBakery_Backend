@@ -25,6 +25,7 @@ class User extends Authenticatable
         'email',
         'password',
         'no_telp',
+        'saldo',
         'tanggal_lahir',
         'jenis_kelamin',
         'foto_profil',

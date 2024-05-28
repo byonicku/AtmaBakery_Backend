@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Data;
 
 use App\Http\Controllers\Controller;
 use App\Models\HistoriSaldo;
+use App\Models\User;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
@@ -107,10 +108,13 @@ class HistoriSaldoController extends Controller
                 'nama_bank' => $request->nama_bank,
                 'no_rek' => $request->no_rek,
             ]);
+
+            $newSaldo = $user->saldo - $request->saldo;
+
             $user->update([
-                'saldo' => $user->saldo - $request->saldo,
+                'saldo' => $newSaldo,
             ]);
-            $user->save();
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();

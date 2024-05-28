@@ -69,6 +69,8 @@ Route::post('/transaksi/search/{id_user}', [TransaksiController::class, 'search'
 
 Route::apiResource('histori_saldo', HistoriSaldoController::class)
     ->middleware('auth:sanctum');
+Route::get('/histori_saldo/self', [HistoriSaldoController::class, 'indexSelf'])->name('histori_saldo.index-self')
+    ->middleware('auth:sanctum');
 
 Route::post('/update/transaksi/self', [TransaksiController::class, 'updateStatusSelesaiSelf'])->name('transaksi.update-status-selesai-self')
     ->middleware('auth:sanctum');
