@@ -66,7 +66,7 @@ class FunctionHelper
 
         $directTransaksiSum = Transaksi::whereHas('detail_transaksi', function ($query) use ($id_produk) {
             $query->where('id_produk', $id_produk)
-                ->where('status', null);
+                ->where('status', 'PO');
         })->whereDate('tanggal_ambil', $po_date)
             ->join('detail_transaksi', 'transaksi.no_nota', '=', 'detail_transaksi.no_nota')
             ->sum('detail_transaksi.jumlah');
@@ -74,7 +74,7 @@ class FunctionHelper
         $hampersTransaksiSum = Transaksi::whereHas('detail_transaksi', function ($query) use ($id_produk) {
             $query->whereHas('hampers.detail_hampers', function ($subQuery) use ($id_produk) {
                 $subQuery->where('id_produk', $id_produk);
-            })->where('status', null);
+            })->where('status', 'PO');
         })->whereDate('tanggal_ambil', $po_date)
             ->join('detail_transaksi as dt', 'transaksi.no_nota', '=', 'dt.no_nota')
             ->join('hampers', 'hampers.id_hampers', '=', 'dt.id_hampers')
