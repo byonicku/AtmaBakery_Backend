@@ -717,8 +717,7 @@ class TransaksiController extends Controller
         $transaksi->tanggal_ambil = $request->tanggal_ambil;
 
         $transaksi->penggunaan_poin = $request->penggunaan_poin;
-
-        $transaksi->total = max(0, $request->total - ($request->penggunaan_poin * 100));
+        $transaksi->total = $request->total;
         $transaksi->radius = 0;
         $transaksi->ongkir = 0;
         $transaksi->tip = 0;
@@ -827,6 +826,7 @@ class TransaksiController extends Controller
 
             $transaksi->penambahan_poin = $points[0]->points;
 
+            $transaksi->total = max(0, $transaksi->total - ($request->penggunaan_poin * 100));
             $user = User::find($user->id_user);
             $transaksi->poin_sebelum_penambahan = $user->poin;
             $user->poin -= $transaksi->penggunaan_poin;
