@@ -1386,7 +1386,7 @@ class TransaksiController extends Controller
         return response()->json([
             "message" => "Transaksi berhasil dikonfirmasi",
             "data" => $transaksi,
-            "notification" => $notification,
+            "notification" => $notification ?? null,
         ], 200);
     }
 
