@@ -274,28 +274,7 @@ class TransaksiController extends Controller
 
         $produk = Produk::find($request->id_produk);
 
-        $directTransaksiSum = Transaksi::whereHas('detail_transaksi', function ($query) use ($request) {
-            $query->where('id_produk', $request->id_produk)
-                ->where('status', 'PO');
-        })->whereDate('tanggal_ambil', $request->po_date)
-            ->join('detail_transaksi', 'transaksi.no_nota', '=', 'detail_transaksi.no_nota')
-            ->sum('detail_transaksi.jumlah');
-
-        $hampersTransaksiSum = Transaksi::whereHas('detail_transaksi', function ($query) use ($request) {
-            $query->whereHas('hampers.detail_hampers', function ($subQuery) use ($request) {
-                $subQuery->where('id_produk', $request->id_produk);
-            })->where('status', 'PO');
-        })->whereDate('tanggal_ambil', $request->po_date)
-            ->join('detail_transaksi as dt', 'transaksi.no_nota', '=', 'dt.no_nota')
-            ->join('hampers', 'hampers.id_hampers', '=', 'dt.id_hampers')
-            ->join('detail_hampers as dh', 'hampers.id_hampers', '=', 'dh.id_hampers')
-            ->where('dh.id_produk', $request->id_produk)
-            ->sum(DB::raw('dt.jumlah * dh.jumlah'));
-
-        $totalJumlah = $directTransaksiSum + $hampersTransaksiSum;
-
-        $limitOrStok = ($produk->status === 'PO') ? $produk->limit : $produk->stok;
-        $remaining = $limitOrStok - (int) $totalJumlah;
+        $remaining = (new FunctionHelper())->countStok($request->id_produk, $request->po_date);
 
         return response()->json([
             'message' => 'Data berhasil diterima',
@@ -337,27 +316,8 @@ class TransaksiController extends Controller
                 continue;
             }
 
-            $directTransaksiSum = Transaksi::whereHas('detail_transaksi', function ($query) use ($detail) {
-                $query->where('id_produk', '=', $detail->id_produk)
-                    ->where('status', 'PO');
-            })->whereDate('tanggal_ambil', '=', $request->po_date)
-                ->join('detail_transaksi', 'transaksi.no_nota', '=', 'detail_transaksi.no_nota')
-                ->sum('detail_transaksi.jumlah');
-
-            $hampersTransaksiSum = Transaksi::whereHas('detail_transaksi', function ($query) use ($request) {
-                $query->where('id_hampers', '=', $request->id_hampers)
-                    ->where('status', 'PO');
-            })->whereDate('tanggal_ambil', '=', $request->po_date)
-                ->join('detail_transaksi as dt', 'transaksi.no_nota', '=', 'dt.no_nota')
-                ->join('detail_hampers as dh', 'dh.id_hampers', '=', 'dt.id_hampers')
-                ->where('dh.id_produk', '=', $detail->id_produk)
-                ->sum(DB::raw('dt.jumlah * dh.jumlah'));
-
-            $totalTransaksiSum = $directTransaksiSum + $hampersTransaksiSum;
-
             $produk = $detail->produk;
-            $limitOrStok = ($produk->status === 'PO') ? $produk->limit : $produk->stok;
-            $remaining = $limitOrStok - (int) $totalTransaksiSum;
+            $remaining = (new FunctionHelper())->countStok($detail->id_produk, $request->po_date);
 
             $arrayCounter[] = [
                 'id_produk' => $detail->id_produk,
@@ -367,7 +327,6 @@ class TransaksiController extends Controller
                 'status' => $produk->status,
                 'limit' => $produk->limit,
                 'stok' => $produk->stok,
-                'count' => (int) $totalTransaksiSum,
                 'remaining' => $remaining,
             ];
         }
