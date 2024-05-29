@@ -276,7 +276,7 @@ class TransaksiController extends Controller
 
         $directTransaksiSum = Transaksi::whereHas('detail_transaksi', function ($query) use ($request) {
             $query->where('id_produk', $request->id_produk)
-                ->where('status', null);
+                ->where('status', 'PO');
         })->whereDate('tanggal_ambil', $request->po_date)
             ->join('detail_transaksi', 'transaksi.no_nota', '=', 'detail_transaksi.no_nota')
             ->sum('detail_transaksi.jumlah');
@@ -284,7 +284,7 @@ class TransaksiController extends Controller
         $hampersTransaksiSum = Transaksi::whereHas('detail_transaksi', function ($query) use ($request) {
             $query->whereHas('hampers.detail_hampers', function ($subQuery) use ($request) {
                 $subQuery->where('id_produk', $request->id_produk);
-            })->where('status', null);
+            })->where('status', 'PO');
         })->whereDate('tanggal_ambil', $request->po_date)
             ->join('detail_transaksi as dt', 'transaksi.no_nota', '=', 'dt.no_nota')
             ->join('hampers', 'hampers.id_hampers', '=', 'dt.id_hampers')
@@ -339,14 +339,14 @@ class TransaksiController extends Controller
 
             $directTransaksiSum = Transaksi::whereHas('detail_transaksi', function ($query) use ($detail) {
                 $query->where('id_produk', '=', $detail->id_produk)
-                    ->where('status', null);
+                    ->where('status', 'PO');
             })->whereDate('tanggal_ambil', '=', $request->po_date)
                 ->join('detail_transaksi', 'transaksi.no_nota', '=', 'detail_transaksi.no_nota')
                 ->sum('detail_transaksi.jumlah');
 
             $hampersTransaksiSum = Transaksi::whereHas('detail_transaksi', function ($query) use ($request) {
                 $query->where('id_hampers', '=', $request->id_hampers)
-                    ->where('status', null);
+                    ->where('status', 'PO');
             })->whereDate('tanggal_ambil', '=', $request->po_date)
                 ->join('detail_transaksi as dt', 'transaksi.no_nota', '=', 'dt.no_nota')
                 ->join('detail_hampers as dh', 'dh.id_hampers', '=', 'dt.id_hampers')
