@@ -7,6 +7,7 @@ use App\Models\HistoriSaldo;
 use App\Models\User;
 use Carbon\Carbon;
 use DB;
+use Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -82,16 +83,25 @@ class HistoriSaldoController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'saldo' => 'required|numeric|min:50000',
             'nama_bank' => 'required|string',
             'no_rek' => 'required|string',
         ], [
-            'saldo.min' => 'Penarikan saldo minimal 50.000',
             'saldo.required' => 'Saldo harus diisi',
+            'saldo.numeric' => 'Saldo harus berupa angka',
+            'saldo.min' => 'Saldo minimal 50.000',
             'nama_bank.required' => 'Nama bank harus diisi',
+            'nama_bank.string' => 'Nama bank harus berupa huruf',
             'no_rek.required' => 'Nomor rekening harus diisi',
+            'no_rek.string' => 'Nomor rekening harus berupa huruf',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => $validator->errors()->first(),
+            ], 400);
+        }
 
         $user = Auth::user();
 
