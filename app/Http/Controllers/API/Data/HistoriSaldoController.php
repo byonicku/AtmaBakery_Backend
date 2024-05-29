@@ -83,9 +83,14 @@ class HistoriSaldoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'saldo' => 'required|numeric',
+            'saldo' => 'required|numeric|min:50000',
             'nama_bank' => 'required|string',
             'no_rek' => 'required|string',
+        ], [
+            'saldo.min' => 'Penarikan saldo minimal 50.000',
+            'saldo.required' => 'Saldo harus diisi',
+            'nama_bank.required' => 'Nama bank harus diisi',
+            'no_rek.required' => 'Nomor rekening harus diisi',
         ]);
 
         $user = Auth::user();
@@ -96,7 +101,7 @@ class HistoriSaldoController extends Controller
             ], 400);
         }
 
-        if ($request->saldo % 50000 != 0) {
+        if ($request->saldo % 50000 != 0 && $request->saldo != 0) {
             return response()->json([
                 'message' => 'Saldo harus kelipatan 50.000',
             ], 400);
