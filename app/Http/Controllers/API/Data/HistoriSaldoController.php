@@ -95,6 +95,12 @@ class HistoriSaldoController extends Controller
 
         $user = Auth::user();
 
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthorized',
+            ], 403);
+        }
+
         if ($user->saldo < $request->saldo) {
             return response()->json([
                 'message' => 'Saldo tidak mencukupi',
@@ -105,12 +111,6 @@ class HistoriSaldoController extends Controller
             return response()->json([
                 'message' => 'Saldo harus kelipatan 50.000',
             ], 400);
-        }
-
-        if (!$user) {
-            return response()->json([
-                'message' => 'Unauthorized',
-            ], 403);
         }
 
         DB::beginTransaction();
