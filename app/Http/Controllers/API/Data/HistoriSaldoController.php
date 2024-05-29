@@ -90,7 +90,7 @@ class HistoriSaldoController extends Controller
         ], [
             'saldo.required' => 'Saldo harus diisi',
             'saldo.numeric' => 'Saldo harus berupa angka',
-            'saldo.min' => 'Saldo minimal 50.000',
+            'saldo.min' => 'Penarikan saldo minimal 50.000',
             'nama_bank.required' => 'Nama bank harus diisi',
             'nama_bank.string' => 'Nama bank harus berupa huruf',
             'no_rek.required' => 'Nomor rekening harus diisi',
