@@ -274,7 +274,7 @@ class TransaksiController extends Controller
 
         $produk = Produk::find($request->id_produk);
 
-        $remaining = (new FunctionHelper())->countStok($request->id_produk, $request->po_date);
+        $remaining = (new FunctionHelper())->countStok($request->id_produk, $request->po_date)['remaining'];
 
         return response()->json([
             'message' => 'Data berhasil diterima',
@@ -317,7 +317,7 @@ class TransaksiController extends Controller
             }
 
             $produk = $detail->produk;
-            $remaining = (new FunctionHelper())->countStok($detail->id_produk, $request->po_date);
+            $stok = (new FunctionHelper())->countStok($detail->id_produk, $request->po_date);
 
             $arrayCounter[] = [
                 'id_produk' => $detail->id_produk,
@@ -327,7 +327,8 @@ class TransaksiController extends Controller
                 'status' => $produk->status,
                 'limit' => $produk->limit,
                 'stok' => $produk->stok,
-                'remaining' => $remaining,
+                'count' => $stok['total_jumlah'],
+                'remaining' => $stok['remaining'],
             ];
         }
 
@@ -729,7 +730,7 @@ class TransaksiController extends Controller
 
                         $produk->save();
                     } else {
-                        $remaining = (new FunctionHelper())->countStok($produk->id_produk, $transaksi->tanggal_ambil);
+                        $remaining = (new FunctionHelper())->countStok($produk->id_produk, $transaksi->tanggal_ambil)['remaining'];
                         if ($remaining <= 0) {
                             DB::rollBack();
                             return response()->json([
@@ -759,7 +760,7 @@ class TransaksiController extends Controller
                             $produk->stok -= $cart->jumlah * $detail->jumlah;
                             $produk->save();
                         } else {
-                            $remaining = (new FunctionHelper())->countStok($produk->id_produk, $transaksi->tanggal_ambil);
+                            $remaining = (new FunctionHelper())->countStok($produk->id_produk, $transaksi->tanggal_ambil)['remaining'];
                             if ($remaining <= 0) {
                                 DB::rollBack();
                                 return response()->json([

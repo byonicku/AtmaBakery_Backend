@@ -83,7 +83,10 @@ class FunctionHelper
         $limitOrStok = ($produk->status === 'PO') ? $produk->limit : $produk->stok;
         $remaining = $limitOrStok - (int) $totalJumlah;
 
-        return $remaining;
+        return [
+            'total_jumlah' => $totalJumlah,
+            'remaining' => $remaining,
+        ];
     }
 
     public function bulkSend($title, $body, $token)
