@@ -934,8 +934,8 @@ class TransaksiController extends Controller
     {
         $validate = Validator::make($request->all(), [
             'no_nota' => 'required|exists:transaksi,no_nota',
-            'radius' => 'required|numeric|gte:0',
-            'ongkir' => 'required|numeric|gte:0',
+            'radius' => 'required|numeric|gt:0',
+            'ongkir' => 'required|numeric|gt:0',
         ], [
             'no_nota.required' => 'No nota tidak boleh kosong',
             'no_nota.exists' => 'No nota tidak ditemukan',
