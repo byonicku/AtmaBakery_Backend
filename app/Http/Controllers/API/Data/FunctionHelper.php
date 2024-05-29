@@ -92,7 +92,7 @@ class FunctionHelper
 
     public function bulkSend($title, $body, $token)
     {
-        
+
         try {
             $url = 'https://fcm.googleapis.com/fcm/send';
             $dataArr = array('click_action' => 'FLUTTER_NOTIFICATION_CLICK', 'id' => '1', 'status' => "done");
@@ -105,7 +105,7 @@ class FunctionHelper
             );
 
             $user = User::where('fcm_token', $token)->first();
-            
+
             if (!$user) {
                 return [
                     'status' => 'error',
@@ -116,25 +116,25 @@ class FunctionHelper
             }
 
             DB::beginTransaction();
-        try {
-            Notifikasi::create([
-                'id_user' => $user->id_user,
-                'title' => $title,
-                'body' => $body,
-            ]);
-    
-            DB::commit();
-    
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return [
-                'status' => 'error',
-                'message' => 'Failed to create notification',
-                'error' => $e->getMessage(),
-                'notification' => $notification,
-                'code' => 500,
-            ];
-        }
+            try {
+                Notifikasi::create([
+                    'id_user' => $user->id_user,
+                    'title' => $title,
+                    'body' => $body,
+                ]);
+
+                DB::commit();
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return [
+                    'status' => 'error',
+                    'message' => 'Failed to create notification',
+                    'error' => $e->getMessage(),
+                    'notification' => $notification,
+                    'code' => 500,
+                ];
+            }
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);

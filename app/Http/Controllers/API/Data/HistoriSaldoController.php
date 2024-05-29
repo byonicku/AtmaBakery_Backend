@@ -88,13 +88,19 @@ class HistoriSaldoController extends Controller
             'no_rek' => 'required|string',
         ]);
 
+        $user = Auth::user();
+
+        if ($user->saldo < $request->saldo) {
+            return response()->json([
+                'message' => 'Saldo tidak mencukupi',
+            ], 400);
+        }
+
         if ($request->saldo % 50000 != 0) {
             return response()->json([
                 'message' => 'Saldo harus kelipatan 50.000',
             ], 400);
         }
-
-        $user = Auth::user();
 
         if (!$user) {
             return response()->json([

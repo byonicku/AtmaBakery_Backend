@@ -60,8 +60,8 @@ class TransaksiController extends Controller
                     $detail->nama_produk = null;
                 }
 
-                unset ($detail->produk);
-                unset ($detail->hampers);
+                unset($detail->produk);
+                unset($detail->hampers);
 
                 return $detail;
             });
@@ -117,8 +117,8 @@ class TransaksiController extends Controller
                     $detail->nama_produk = null;
                 }
 
-                unset ($detail->produk);
-                unset ($detail->hampers);
+                unset($detail->produk);
+                unset($detail->hampers);
 
                 return $detail;
             });
@@ -168,8 +168,8 @@ class TransaksiController extends Controller
                     $detail->nama_produk = null;
                 }
 
-                unset ($detail->produk);
-                unset ($detail->hampers);
+                unset($detail->produk);
+                unset($detail->hampers);
 
                 return $detail;
             });
@@ -239,8 +239,8 @@ class TransaksiController extends Controller
                     $detail->nama_produk = null;
                 }
 
-                unset ($detail->produk);
-                unset ($detail->hampers);
+                unset($detail->produk);
+                unset($detail->hampers);
 
                 return $detail;
             });
@@ -517,8 +517,8 @@ class TransaksiController extends Controller
                     $detail->nama_produk = null;
                 }
 
-                unset ($detail->produk);
-                unset ($detail->hampers);
+                unset($detail->produk);
+                unset($detail->hampers);
 
                 return $detail;
             });
