@@ -151,7 +151,10 @@ class FunctionHelper
                 'result' => json_decode($result),
             ];
         } catch (\Exception $e) {
-            return $e->getMessage();
+            return [
+                'message' => 'Failed to send notification',
+                'error' => $e->getMessage(),
+            ];
         }
     }
 }

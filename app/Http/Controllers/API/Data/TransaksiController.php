@@ -1351,7 +1351,7 @@ class TransaksiController extends Controller
 
             if ($transaksi->tipe_delivery === 'Ambil') {
                 $transaksi->status = 'Siap Pick Up';
-                if ($fcm_token) {
+                if ($fcm_token != null) {
                     $notification =
                         (new FunctionHelper())
                             ->bulkSend('Pesanan ' . $request->no_nota . ' sudah dapat diambil', 'Mohon untuk dapat mengambil pesananmu secepatnya', $fcm_token);
@@ -1359,14 +1359,14 @@ class TransaksiController extends Controller
 
             } else if ($transaksi->tipe_delivery === 'Kurir') {
                 $transaksi->status = 'Sedang Diantar Kurir';
-                if ($fcm_token) {
+                if ($fcm_token != null) {
                     $notification =
                         (new FunctionHelper())
                             ->bulkSend('Pesanan ' . $request->no_nota . ' sedang dikirim kurir', 'Mohon untuk standby pada alamat yang anda cantumkan', $fcm_token);
                 }
             } else {
                 $transaksi->status = 'Sedang Diantar Ojol';
-                if ($fcm_token) {
+                if ($fcm_token != null) {
                     $notification =
                         (new FunctionHelper())
                             ->bulkSend('Pesanan ' . $request->no_nota . '  sedang dikirim ojol', 'Mohon untuk standby pada alamat yang anda cantumkan', $fcm_token);
