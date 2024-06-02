@@ -211,6 +211,7 @@ class ProcedureController extends Controller
 
             $result[] = [
                 'nama_produk' => $item->nama,
+                'id_kategori' => $item->id_kategori,
                 'ukuran' => $item->ukuran,
                 'harga' => (int) $item->harga_saat_beli,
                 'total_harga' => (int) $item->total_harga,
