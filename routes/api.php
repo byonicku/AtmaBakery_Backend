@@ -4,6 +4,7 @@ use App\Http\Controllers\API\Data\AlamatController;
 use App\Http\Controllers\API\Data\BahanBakuController;
 use App\Http\Controllers\API\Data\CartController;
 use App\Http\Controllers\API\Data\DetailHampersController;
+use App\Http\Controllers\API\Data\FunctionHelper;
 use App\Http\Controllers\API\Data\GambarController;
 use App\Http\Controllers\API\Data\HampersController;
 use App\Http\Controllers\API\Data\HistoriSaldoController;
@@ -297,9 +298,8 @@ Route::middleware(['auth:sanctum', 'ability:admin'])
             Artisan::call('remove-transaksi');
         })->name('batal-transaksi');
     });
-
-Route::post('/send/notif', [ProcedureController::class, 'bulksend'])
-    ->name('send-notif');
+    
+Route::post('/send/notif/{title}/{body}/{token}', [FunctionHelper::class, 'bulkSend'])->name('send-notif');
 
 Route::get('/cron', function () {
     $providedToken = request()->header('cron-secret');
