@@ -40,7 +40,7 @@ class NotifikasiController extends Controller
 
         $id_user = $user->id_user;
 
-        $data = Notifikasi::with('user')->where('id_user', '=', $id_user)->get();
+        $data = Notifikasi::with('user')->where('id_user', '=', $id_user)->orderByDesc('id_notifikasi')->get();
 
         if (count($data) == 0) {
             return response()->json([
@@ -66,7 +66,7 @@ class NotifikasiController extends Controller
 
         $id_user = $user->id_user;
 
-        $data = Notifikasi::with('user')->where('id_user', '=', $id_user)->paginate(10);
+        $data = Notifikasi::with('user')->where('id_user', '=', $id_user)->orderByDesc('id_notifikasi')->paginate(10);
 
         if (count($data) == 0) {
             return response()->json([
