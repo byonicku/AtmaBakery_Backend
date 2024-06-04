@@ -66,8 +66,7 @@ Route::post('/get-nota/self', [ProcedureController::class, 'getNotaPemesananSelf
 
 Route::get('/get-notif/self', [NotifikasiController::class, 'paginateSelf'])->name('get-notif-self')
     ->middleware('auth:sanctum');
-
-Route::apiResource('get-notif', NotifikasiController::class)->only(['index'])
+Route::get('/get-notif/self/mobile', [NotifikasiController::class, 'indexSelf'])->name('get-notif-self-mobile')
     ->middleware('auth:sanctum');
 
 Route::get('/paginate/transaksi/history/{id_user}', [TransaksiController::class, 'paginateHistory'])->name('users.paginate-self')

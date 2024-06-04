@@ -28,6 +28,32 @@ class NotifikasiController extends Controller
         ], 200);
     }
 
+    public function indexSelf()
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthenticated',
+            ], 404);
+        }
+
+        $id_user = $user->id_user;
+
+        $data = Notifikasi::where('id_user', '=', $id_user)->get();
+
+        if (count($data) == 0) {
+            return response()->json([
+                'message' => 'Data kosong',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Data berhasil diterima',
+            'data' => $data,
+        ], 200);
+    }
+
     public function paginateSelf()
     {
         $user = Auth::user();
