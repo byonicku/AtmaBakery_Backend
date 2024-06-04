@@ -64,7 +64,10 @@ Route::post('/transaksi/bayar', [TransaksiController::class, 'uploadBuktiBayar']
 Route::post('/get-nota/self', [ProcedureController::class, 'getNotaPemesananSelf'])->name('get-nota-self')
     ->middleware('auth:sanctum');
 
-Route::post('/get-notif/self', [NotifikasiController::class, 'paginateSelf'])->name('get-notif-self')
+Route::get('/get-notif/self', [NotifikasiController::class, 'paginateSelf'])->name('get-notif-self')
+    ->middleware('auth:sanctum');
+
+Route::apiResource('get-notif', NotifikasiController::class)->only(['index'])
     ->middleware('auth:sanctum');
 
 Route::get('/paginate/transaksi/history/{id_user}', [TransaksiController::class, 'paginateHistory'])->name('users.paginate-self')
@@ -298,7 +301,7 @@ Route::middleware(['auth:sanctum', 'ability:admin'])
             Artisan::call('remove-transaksi');
         })->name('batal-transaksi');
     });
-    
+
 Route::post('/send/notif/{title}/{body}/{token}', [FunctionHelper::class, 'bulkSend'])->name('send-notif');
 
 Route::get('/cron', function () {

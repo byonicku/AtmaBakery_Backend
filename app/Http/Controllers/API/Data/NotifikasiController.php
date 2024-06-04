@@ -57,7 +57,7 @@ class NotifikasiController extends Controller
     public function storeNotification(Request $request, $title, $body)
     {
         $user = User::where('fcm_token', $request->fcm_token)->first();
-    
+
         if (!$user) {
             return [
                 'status' => 'error',
@@ -65,7 +65,7 @@ class NotifikasiController extends Controller
                 'code' => 404,
             ];
         }
-    
+
         if ($user->id_role !== "CUST") {
             return [
                 'status' => 'error',
@@ -73,7 +73,7 @@ class NotifikasiController extends Controller
                 'code' => 401,
             ];
         }
-    
+
         $validate = Validator::make($request->all(), [
             'title' => 'required|string',
             'body' => 'required|string',
@@ -82,7 +82,7 @@ class NotifikasiController extends Controller
             'title.string' => 'Title harus berupa text',
             'body.string' => 'Body harus berupa text',
         ]);
-    
+
         if ($validate->fails()) {
             return [
                 'status' => 'error',
@@ -90,7 +90,7 @@ class NotifikasiController extends Controller
                 'code' => 400,
             ];
         }
-    
+
         DB::beginTransaction();
         try {
             $data = Notifikasi::create([
@@ -98,9 +98,9 @@ class NotifikasiController extends Controller
                 'title' => $title,
                 'body' => $body,
             ]);
-    
+
             DB::commit();
-    
+
             return [
                 'status' => 'success',
                 'message' => 'Data berhasil dibuat',
@@ -109,7 +109,7 @@ class NotifikasiController extends Controller
             ];
         } catch (\Exception $e) {
             DB::rollBack();
-    
+
             return [
                 'status' => 'error',
                 'message' => 'Data gagal dibuat',
